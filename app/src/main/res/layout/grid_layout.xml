@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    android:orientation="vertical" >
 
-    <GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:numColumns='auto_fit'>
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gridView1"
+        android:numColumns="auto_fit"
+        android:gravity="center"
+        android:columnWidth="50dp"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="1dp"
+        android:layout_margin="10dp"
+        android:background="@color/blue"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
-    </GridLayout>
+    </GridView>
 
 </LinearLayout>

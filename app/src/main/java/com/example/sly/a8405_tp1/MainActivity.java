@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         popToast("Starting new game");
         Intent intent = new Intent(getApplicationContext(), GridActivity.class);
         Game.setIsStarted(false);
-        intent.putExtra("gricColumns", 8);
+        intent.putExtra("gridColumns", 8);
         startActivity(intent);
 
     }
