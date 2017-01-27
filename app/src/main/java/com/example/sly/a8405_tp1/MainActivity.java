@@ -1,6 +1,7 @@
-package com.example.sly.a8405_tp1.ui;
+package com.example.sly.a8405_tp1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.sly.a8405_tp1.R;
+import com.example.sly.a8405_tp1.model.Game;
+import com.example.sly.a8405_tp1.ui.GridActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void startButtonClicked(View v){
         popToast("Starting new game");
+        Intent intent = new Intent(getApplicationContext(), GridActivity.class);
+        Game.setIsStarted(false);
+        intent.putExtra("gricColumns", 8);
+        startActivity(intent);
+
     }
 
     public void rulesButtonClicked(View v){
