@@ -5,4 +5,5 @@ package com.example.sly.a8405_tp1.ui;
  */
 
 public class GameGrid {
+    //todo
 }
