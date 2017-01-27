@@ -2,6 +2,8 @@ package com.example.sly.a8405_tp1.ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,12 +35,12 @@ import java.util.Random;
 
 public class GridActivity extends AppCompatActivity {
 
-    private static int gridColumns = 0;
-    private static int gridRows = 0;
-    private final int defaultGridColumns = 8;
-    private final int defaultGridRows = 8;
+    private static int tableColumns = 0;
+    private static int tableRows = 0;
+    private static final int DEFAULT_TABLE_WIDTH = 8;
+    private static final int DEFAULT_TABLE_HEIGHT = 8;
+    TableLayout table;
     private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red};
-    GridView gridView;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
@@ -46,51 +52,37 @@ public class GridActivity extends AppCompatActivity {
     }
 
     private void setupGrid(Bundle bundleExtra){
-        gridColumns = bundleExtra.get("gridColumns") != null ? (int)bundleExtra.get("gridColumns") : defaultGridColumns;
-        gridRows = bundleExtra.get("gridRows") != null ? (int)bundleExtra.get("gridRows") : defaultGridRows;
+        tableColumns = bundleExtra.get("gridColumns") != null ? (int)bundleExtra.get("gridColumns") : DEFAULT_TABLE_WIDTH;
+        tableRows = bundleExtra.get("gridRows") != null ? (int)bundleExtra.get("gridRows") : DEFAULT_TABLE_HEIGHT;
 
-        gridView = (GridView) findViewById(R.id.gridView1);
+        table = (TableLayout) findViewById(R.id.view_root);
+        Random rand = new Random();
 
-        gridView.setNumColumns(gridColumns);
-        gridView.setBackgroundColor(Color.WHITE);
-        gridView.setVerticalSpacing(1);
-        gridView.setHorizontalSpacing(1);
-        ArrayList<Integer> objects = new ArrayList<Integer>(gridColumns*gridRows);
-        for(int i = 0; i < gridColumns*gridRows; ++i){
-            objects.add(i);
-        }
+        // Generate table grid
+        for (int y = 0; y < tableRows; y++) {
+            final int row = y;
+            TableRow cell = new TableRow(this);
+            table.addView(cell);
+            for (int x = 0; x < tableColumns; x++) {
+                final int col = x;
+                Button btn = new Button(this);
+                TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT);
+                params.weight = 1;
+                btn.setLayoutParams(params);
+                btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
 
-        WeightListAdapter adapter = new WeightListAdapter(this, objects);
-
-        gridView.setAdapter(adapter);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                Toast.makeText(getApplicationContext(),
-                        ((TextView) v).getText(), Toast.LENGTH_SHORT).show();
+                GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
+                bgShape.setColor(ContextCompat.getColor(this, colorsArray[rand.nextInt(colorsArray.length)]));
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(), "You clicked (" + row + "," + col + ")", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                cell.addView(btn);
             }
-        });
-
+        }
         Game.setIsStarted(true);
     }
-
-    public static class WeightListAdapter extends ArrayAdapter<Integer> {
-
-        public WeightListAdapter(Context context, List<Integer> objects) {
-            super(context, R.layout.simple_list_item_black, objects);
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = super.getView(position, convertView, parent);
-
-            Random rand = new Random();
-
-            v.setBackgroundColor(ContextCompat.getColor(getContext(),  colorsArray[rand.nextInt(colorsArray.length)]));
-
-            return v;
-        }
-
-    }
-
 }
