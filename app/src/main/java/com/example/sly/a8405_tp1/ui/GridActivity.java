@@ -33,7 +33,7 @@ public class GridActivity extends AppCompatActivity {
     private static int gridRows = 0;
     private final int defaultGridColumns = 8;
     private final int defaultGridRows = 8;
-
+    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red};
     GridView gridView;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
@@ -83,15 +83,10 @@ public class GridActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = super.getView(position, convertView, parent);
-            if(position%10 ==0){
-                v.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.blue));
-            }
-            else {
-                v.setBackgroundColor(Color.parseColor("#FF00FF"));
-            }
 
             Random rand = new Random();
 
+            v.setBackgroundColor(ContextCompat.getColor(getContext(),  colorsArray[rand.nextInt(colorsArray.length)]));
 
             return v;
         }
