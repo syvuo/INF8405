@@ -44,11 +44,12 @@ public class Cell extends Button{
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     v.getBackground().setAlpha(128);
+                    v.setSelected(true);
                     v.invalidate();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     v.getBackground().setAlpha(255);
                     v.invalidate();
-                    Toast.makeText(gridActivity.getApplicationContext(), "Reverse (" + cell.getId()+")", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(gridActivity.getApplicationContext(), "Reverse (" + cell.getId()+")", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }

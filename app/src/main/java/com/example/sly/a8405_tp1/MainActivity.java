@@ -1,19 +1,27 @@
 package com.example.sly.a8405_tp1;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+
+import com.example.sly.a8405_tp1.ui.AbstractBaseActivity;
+import com.example.sly.a8405_tp1.ui.SetupActivity;
 import com.example.sly.a8405_tp1.utility.DrawingView;
 import com.example.sly.a8405_tp1.model.Game;
 import com.example.sly.a8405_tp1.ui.GridActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AbstractBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,29 +41,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     public void startButtonClicked(View v){
         popToast("Starting new game");
-        Intent intent = new Intent(getApplicationContext(), GridActivity.class);
+        Intent intent = new Intent(MainActivity.this, SetupActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Game.setIsStarted(false);
-        intent.putExtra("gridColumns", 8);
-        startActivity(intent);
-
+        this.startActivity(intent);
     }
 
     public void rulesButtonClicked(View v){
         popToast("Rules Clicked");
-
     }
 
     public void exitButtonClicked(View v){
         popToast("Application Closed");
         finish();
-    }
-
-    private void popToast(CharSequence text){
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
     }
 }
