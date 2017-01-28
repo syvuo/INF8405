@@ -8,10 +8,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 
@@ -22,7 +25,7 @@ import com.example.sly.a8405_tp1.model.Game;
 import com.example.sly.a8405_tp1.ui.GridActivity;
 
 public class MainActivity extends AbstractBaseActivity {
-
+    private final int numberLevel = 4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,7 @@ public class MainActivity extends AbstractBaseActivity {
         return true;
     }
 
+    /*
     public void startButtonClicked(View v){
         popToast("Starting new game");
         Intent intent = new Intent(MainActivity.this, SetupActivity.class);
@@ -55,6 +59,15 @@ public class MainActivity extends AbstractBaseActivity {
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Game.setIsStarted(false);
         this.startActivity(intent);
+    }*/
+    public void onClick(View v){
+        Button btn = (Button)v;
+        Intent intent = new Intent(MainActivity.this, GridActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Game.setIsStarted(false);
+        intent.putExtra("level", btn.getText());
+        startActivity(intent);
     }
 
     public void rulesButtonClicked(View v){

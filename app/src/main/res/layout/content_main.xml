@@ -19,40 +19,75 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="15dp"
-        android:layout_weight="0.3"
+        android:layout_marginBottom="1dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
         android:src="@drawable/main_logo" />
 
-    <LinearLayout
-        android:orientation="vertical"
+
+    <TableRow
+        android:id="@+id/mainTableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
-
-
+        android:layout_below="@id/mainLogo">
         <Button
-            android:text="Start"
-            android:layout_width="match_parent"
+            android:text="Niveau 1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="startButtonClicked"
-            android:id="@+id/buttonStart" />
+            android:layout_weight="0.5"
+            android:onClick="onClick"
+            android:id="@+id/level1_start" />
+        <Button
+            android:text="Niveau 2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:onClick="onClick"
+            android:id="@+id/level2_start" />
+    </TableRow>
 
+    <TableRow
+        android:id="@+id/mainTableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mainTableRow1"
+        android:layout_alignParentStart="true">
+        <Button
+            android:text="Niveau 3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:onClick="onClick"
+            android:id="@+id/level3_start" />
+        <Button
+            android:text="Niveau 4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:onClick="onClick"
+            android:id="@+id/level4_start" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/mainTableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/mainTableRow2">
         <Button
             android:text="Rules"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:onClick="rulesButtonClicked"
             android:id="@+id/buttonRules" />
-
         <Button
             android:text="Exit"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:onClick="exitButtonClicked"
             android:id="@+id/bouttonQuitter" />
-    </LinearLayout>
+    </TableRow>
 
 
 </RelativeLayout>

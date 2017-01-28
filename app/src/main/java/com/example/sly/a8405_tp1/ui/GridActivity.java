@@ -8,11 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,8 +91,6 @@ public class GridActivity extends AbstractBaseActivity {
         closeAppDialog();
         clearAttributes();
     }
-
-
     private void setupGrid(Bundle bundleExtra){
         String extra = bundleExtra.get("level").toString();
         level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : LEVEL;

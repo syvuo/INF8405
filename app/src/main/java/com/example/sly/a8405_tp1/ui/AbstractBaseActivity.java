@@ -53,12 +53,18 @@ public class AbstractBaseActivity  extends AppCompatActivity {
             // Refresh button
             case R.id.action_refresh:
                 return true;
+            case R.id.action_settings:
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    protected void closeAppDialog(){
+        closeAppDialog(MainActivity.class);
+    }
+
     // source: https://www.developpez.net/forums/d1214833/java/general-java/java-mobiles/android/evenement-clic-bouton-item-d-listview/
-    protected void closeAppDialog() {
+    protected void closeAppDialog(final Class tClass) {
         new AlertDialog.Builder(this)
                 .setMessage(R.string.close_message)
                 .setPositiveButton("Quitter", new DialogInterface.OnClickListener() {
@@ -67,7 +73,7 @@ public class AbstractBaseActivity  extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Aurevoir", Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), tClass);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("EXIT", true);
                             Game.clearData();
