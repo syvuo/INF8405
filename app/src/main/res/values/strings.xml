@@ -3,4 +3,5 @@
     <string name="action_settings">Settings</string>
     <string name="close_message">Quitter le jeu? Vos donnees vont etre effacees!</string>
     <string name="refresh">Refreshing</string>
+    <string name="rules">Regles du jeu blablabal</string>
 </resources>
