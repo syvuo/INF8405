@@ -80,6 +80,25 @@ public class GridActivity extends AbstractBaseActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Close or back button
+            case R.id.action_close:
+            case android.R.id.home:
+                clearAttributes();
+                closeAppDialog(SetupActivity.class);
+                //NavUtils.navigateUpFromSameTask(this);
+                return true;
+            // Refresh button
+            case R.id.action_refresh:
+                return true;
+            case R.id.action_settings:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         Log.d("CDA", "onBackPressed Called");
         //Intent setIntent = new Intent(Intent.ACTION_MAIN);
