@@ -21,24 +21,12 @@ import com.example.sly.a8405_tp1.model.Game;
 
 public class SetupActivity extends AbstractBaseActivity {
 
-
     private final int numberLevel = 4;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.level);
-
-        for(int i = 0; i < numberLevel; ++i){
-
-            Button btn = new Button(this);
-            final String btnName = "Level " + i;
-            TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-            params.weight = 1;
-            btn.setLayoutParams(params);
-            btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
-            btn.setText(btnName);
-            btn.setId(btn.generateViewId());
-        }
+        setContentView(R.layout.level_menu);
     }
 
     public void onClick(View v){

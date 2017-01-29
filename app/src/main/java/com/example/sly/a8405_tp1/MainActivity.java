@@ -46,7 +46,7 @@ public class MainActivity extends AbstractBaseActivity {
         mainLayout = (CoordinatorLayout)findViewById(R.id.activity_main);
         popUpWindow = new PopupWindow(this);
         rulesMsg = new TextView(this);
-        rulesMsg.setText(getResources().getString(R.string.rules));
+        rulesMsg.setText(R.string.rules);
         rulesMsg.setBackgroundColor(Color.WHITE);
 
         layoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,

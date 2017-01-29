@@ -45,9 +45,9 @@ import com.example.sly.a8405_tp1.model.*;
 public class GridActivity extends AbstractBaseActivity {
 
     private static int level = 0;
-    private static final int LEVEL = 0;
+    private static final int DEFAULT_LEVEL = 0;
     private static TableLayout table = null;
-    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red};
+    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
     private static List<Cell> cellArrays = new ArrayList<>();
 
     // source: https://www.mkyong.com/android/android-gridview-example/
@@ -112,30 +112,28 @@ public class GridActivity extends AbstractBaseActivity {
     }
     private void setupGrid(Bundle bundleExtra){
         String extra = bundleExtra.get("level").toString();
-        level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : LEVEL;
+        level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : DEFAULT_LEVEL;
 
         int tableRows = 8;
         int tableColumns = 8;
         switch(level){
             case 1:
-                popToast(level);
                 tableColumns = 5;
                 break;
             case 2:
-                popToast(level);
                 tableColumns = 6;
                 break;
             case 3:
-                popToast(level);
                 tableRows = 7;
                 tableColumns = 7;
                 break;
             case 4:
-                popToast(level);
                 tableRows = 7;
                 tableColumns = 8;
                 break;
+            default: // for future usage
         }
+        popToast(level);
         table = (TableLayout) findViewById(R.id.view_root);
 
         Random rand = new Random();
@@ -149,9 +147,6 @@ public class GridActivity extends AbstractBaseActivity {
             }
         }
         Game.setIsStarted(true);
-
-        Button test = (Button)this.findViewById(cellArrays.get(4).getId());
-        test.setBackgroundColor(ContextCompat.getColor(this, R.color.black));
     }
 
     private void scanCells() {
