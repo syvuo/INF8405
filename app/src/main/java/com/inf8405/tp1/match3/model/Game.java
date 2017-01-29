@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.model;
+package com.inf8405.tp1.match3.model;
 
 /**
  * Created by Lam on 1/26/2017.

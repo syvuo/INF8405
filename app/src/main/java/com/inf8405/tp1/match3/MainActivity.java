@@ -1,33 +1,21 @@
-package com.example.sly.a8405_tp1;
+package com.inf8405.tp1.match3;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.example.sly.a8405_tp1.ui.AbstractBaseActivity;
-import com.example.sly.a8405_tp1.ui.SetupActivity;
-import com.example.sly.a8405_tp1.utility.DrawingView;
-import com.example.sly.a8405_tp1.model.Game;
-import com.example.sly.a8405_tp1.ui.GridActivity;
+import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
+import com.inf8405.tp1.match3.ui.SetupActivity;
+import com.inf8405.tp1.match3.model.Game;
 
 public class MainActivity extends AbstractBaseActivity {
     private PopupWindow popUpWindow;

@@ -1,19 +1,12 @@
-package com.example.sly.a8405_tp1.ui;
+package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableRow;
-import android.widget.Toast;
 
-import com.example.sly.a8405_tp1.MainActivity;
-import com.example.sly.a8405_tp1.R;
-import com.example.sly.a8405_tp1.model.Cell;
-import com.example.sly.a8405_tp1.model.Game;
+import com.inf8405.tp1.match3.R;
+import com.inf8405.tp1.match3.model.Game;
 
 /**
  * Created by Lam on 1/28/2017.

@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1;
+package com.inf8405.tp1.match3;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

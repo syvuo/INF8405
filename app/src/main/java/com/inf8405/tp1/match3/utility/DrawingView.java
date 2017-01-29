@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.utility;
+package com.inf8405.tp1.match3.utility;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,8 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.example.sly.a8405_tp1.R;
 
 /**
  * Created by Lam on 1/27/2017.

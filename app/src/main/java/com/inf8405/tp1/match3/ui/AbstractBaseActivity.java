@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.ui;
+package com.inf8405.tp1.match3.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,9 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.sly.a8405_tp1.MainActivity;
-import com.example.sly.a8405_tp1.R;
-import com.example.sly.a8405_tp1.model.Game;
+import com.inf8405.tp1.match3.MainActivity;
+import com.inf8405.tp1.match3.R;
+import com.inf8405.tp1.match3.model.Game;
 
 /**
  * Created by Lam on 1/28/2017.
