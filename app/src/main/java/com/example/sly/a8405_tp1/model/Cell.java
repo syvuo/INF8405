@@ -1,18 +1,12 @@
 package com.example.sly.a8405_tp1.model;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.PaintDrawable;
-import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableLayout;
 import android.widget.Toast;
-
-import com.example.sly.a8405_tp1.R;
 import com.example.sly.a8405_tp1.ui.GridActivity;
 
 /**
@@ -49,7 +43,8 @@ public class Cell extends Button{
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     v.getBackground().setAlpha(255);
                     v.invalidate();
-                    //Toast.makeText(gridActivity.getApplicationContext(), "Reverse (" + cell.getId()+")", Toast.LENGTH_SHORT).show();
+                    TableLayout tl = (TableLayout)v.getParent().getParent();
+                    tl.performClick();
                 }
                 return true;
             }

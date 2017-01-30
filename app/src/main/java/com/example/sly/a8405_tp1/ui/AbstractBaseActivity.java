@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import com.example.sly.a8405_tp1.MainActivity;
 import com.example.sly.a8405_tp1.R;
 import com.example.sly.a8405_tp1.model.Game;
@@ -21,6 +20,8 @@ import com.example.sly.a8405_tp1.model.Game;
  */
 
 public class AbstractBaseActivity  extends AppCompatActivity {
+
+    protected Game gameMatch3 = Game.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,7 @@ public class AbstractBaseActivity  extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), tClass);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("EXIT", true);
-                            Game.clearData();
+                            gameMatch3.clearData();
                             startActivity(intent);
                         }
                     }
