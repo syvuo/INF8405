@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.model;
+package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.Toast;
-import com.example.sly.a8405_tp1.ui.GridActivity;
+import com.inf8405.tp1.match3.ui.*;
 
 /**
  * Created by Lam on 1/27/2017.

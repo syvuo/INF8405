@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.ui;
+package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import com.example.sly.a8405_tp1.R;
+import com.inf8405.tp1.match3.R;
 import java.util.Random;
-import com.example.sly.a8405_tp1.model.*;
+import com.inf8405.tp1.match3.model.*;
 
 /**
  * Created by Lam on 1/26/2017.

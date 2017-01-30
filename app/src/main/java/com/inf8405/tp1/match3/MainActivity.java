@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1;
+package com.inf8405.tp1.match3;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,8 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.example.sly.a8405_tp1.ui.AbstractBaseActivity;
-import com.example.sly.a8405_tp1.ui.SetupActivity;
+
+import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
+import com.inf8405.tp1.match3.ui.SetupActivity;
 
 public class MainActivity extends AbstractBaseActivity {
     private PopupWindow popUpWindow;

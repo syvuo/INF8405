@@ -1,10 +1,10 @@
-package com.example.sly.a8405_tp1.ui;
+package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import com.example.sly.a8405_tp1.R;
+import com.inf8405.tp1.match3.R;
 
 /**
  * Created by Lam on 1/28/2017.
