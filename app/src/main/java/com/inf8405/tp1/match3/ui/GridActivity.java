@@ -122,6 +122,7 @@ public class GridActivity extends AbstractBaseActivity {
                 rows.addView(createButton(this, rand));
             }
         }
+        gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setIsStarted(true);
     }
 
@@ -149,5 +150,6 @@ public class GridActivity extends AbstractBaseActivity {
 
     private void clearAttributes(){
         table = null;
+        gameMatch3.clearData();
     }
 }

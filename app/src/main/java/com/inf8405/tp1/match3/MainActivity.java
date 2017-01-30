@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
 
@@ -53,7 +52,6 @@ public class MainActivity extends AbstractBaseActivity {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(12);*/
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
