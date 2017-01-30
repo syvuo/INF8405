@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/activity_main"
-    tools:context="com.example.sly.a8405_tp1.MainActivity"
+    tools:context="com.inf8405.tp1.match3.MainActivity"
     android:onClick="mainOnClick">
 
     <include layout="@layout/content_main" />

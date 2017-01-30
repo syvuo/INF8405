@@ -1,4 +1,4 @@
-package com.example.sly.a8405_tp1.model;
+package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
 import android.widget.Toast;
