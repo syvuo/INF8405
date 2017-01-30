@@ -1,6 +1,12 @@
 package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.PaintDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -66,29 +72,44 @@ public final class Game extends AbstractBaseActivity{
         int nbAdjacentMatch = 0;
         int cellId = cell.getId();
         // pour cell position 1 (top left corner)
-        if(cellId%nbColumns != 1 && cellArrays.get(cellId-2).isSelected()){
-            ++nbAdjacentMatch;
-            //cell.setSelected(false);
-            //cellArrays.get(cellId-1).setSelected(false);
+        try{
+
+            if(cellId%nbColumns != 1 && cellArrays.get(cellId-2).isSelected()){
+                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId-2);
+            }
+            // pour cell dernier position
+            if(cellId%nbColumns != 0 && cellArrays.get(cellId).isSelected()){
+                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId);
+            }
+            // pour cell netant pas a la premiere ligne
+            if(cellId > nbColumns && cellArrays.get(cellId-nbColumns-1).isSelected()){
+                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId-nbColumns-1);
+            }
+            // pour cell netant pas a la derniere ligne
+            if(cellId < cellArrays.size()-nbColumns && cellArrays.get(cellId+nbColumns-1).isSelected()){
+                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId+nbColumns-1);
+            }
         }
-        // pour cell dernier position
-        if(cellId%nbColumns != 0 && cellArrays.get(cellId).isSelected()){
-            ++nbAdjacentMatch;
-            //cell.setSelected(false);
-            //cellArrays.get(cellId-1).setSelected(false);
-        }
-        // pour cell netant pas a la premiere ligne
-        if(cellId > nbColumns && cellArrays.get(cellId-nbColumns-1).isSelected()){
-            ++nbAdjacentMatch;
-            //cell.setSelected(false);
-            //cellArrays.get(cellId-1).setSelected(false);
-        }
-        // pour cell netant pas a la derniere ligne
-        if(cellId < cellArrays.size()-nbColumns && cellArrays.get(cellId+nbColumns-1).isSelected()){
-            ++nbAdjacentMatch;
-            //cell.setSelected(false);
-            //cellArrays.get(cellId-1).setSelected(false);
+        catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+            nbAdjacentMatch = 0;
         }
         return nbAdjacentMatch;
+    }
+
+    private void clearSelectedArray(){
+        for(Cell cell : cellArrays){
+            if(cell.isSelected()){
+                cell.setSelected(false);
+            }
+        }
+    }
+
+    private int checkColor(Cell centerCell, int nextCell){
+        if(centerCell.getCurrentTextColor() == cellArrays.get(nextCell).getCurrentTextColor()){
+            return 1;
+        }
+        clearSelectedArray();
+        return 0;
     }
 }

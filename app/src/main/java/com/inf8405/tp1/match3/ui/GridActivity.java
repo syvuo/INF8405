@@ -133,8 +133,11 @@ public class GridActivity extends AbstractBaseActivity {
         btn.setLayoutParams(params);
         btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
         final GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
-        bgShape.setColor(ContextCompat.getColor(this, colorsArray[rand.nextInt(colorsArray.length)]));
+        int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
+        bgShape.setColor(ContextCompat.getColor(this, colorTemp));
         btn.setId(btn.generateViewId());
+        btn.setText(String.valueOf(btn.getId()));
+        btn.setTextColor(ContextCompat.getColor(this, colorTemp));
         btn.overrideEventListener(btn, gridActivity, bgShape);
         gameMatch3.addCell(btn);
         return btn;
