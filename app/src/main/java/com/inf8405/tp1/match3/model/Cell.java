@@ -15,18 +15,18 @@ import com.inf8405.tp1.match3.ui.*;
 
 public class Cell extends Button{
 
+    protected Game gameMatch3 = Game.getInstance();
     public Cell(Context context) {
         super(context);
 
     }
 
-    public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final GradientDrawable bgShape){
+    public void overrideEventListener(final Cell cell, final GridActivity gridActivity){
         cell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Toast.makeText(gridActivity.getApplicationContext(), "You clicked (" + cell.getId()+")", Toast.LENGTH_SHORT).show();
-                //bgShape.setColor(ContextCompat.getColor(gridActivity, R.color.black));
                 cell.setFocusable(true);
                 cell.setFocusableInTouchMode(true);///add this line
                 cell.requestFocus();
@@ -39,6 +39,7 @@ public class Cell extends Button{
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     v.getBackground().setAlpha(128);
                     v.setSelected(true);
+                    gameMatch3.addSelectedCell(cell);
                     v.invalidate();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     v.getBackground().setAlpha(255);

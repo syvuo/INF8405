@@ -138,7 +138,7 @@ public class GridActivity extends AbstractBaseActivity {
         btn.setId(btn.generateViewId());
         btn.setText(String.valueOf(btn.getId()));
         btn.setTextColor(ContextCompat.getColor(this, colorTemp));
-        btn.overrideEventListener(btn, gridActivity, bgShape);
+        btn.overrideEventListener(btn, gridActivity);
         gameMatch3.addCell(btn);
         return btn;
     }

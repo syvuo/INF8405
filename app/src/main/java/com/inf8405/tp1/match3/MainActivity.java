@@ -22,7 +22,6 @@ public class MainActivity extends AbstractBaseActivity {
     private LinearLayout.LayoutParams layoutParams;
     private LinearLayout containerLayout;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
