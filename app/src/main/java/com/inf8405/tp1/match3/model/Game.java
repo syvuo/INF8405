@@ -60,15 +60,15 @@ public final class Game extends AbstractBaseActivity {
         int nbMatch = 0;
         String cellTest = "";
         if(selectedCellArrays.size() >= 2){
-            printAllTable();
+            //printAllTable();
             swapBtn(context, selectedCellArrays.get(0), selectedCellArrays.get(1));
-            printAllTable();
+            //printAllTable();
             int i = 0;
             int j = 1;
             boolean foundMatch3 = false;
             while(i < selectedCellArrays.size() && j >= 0){
                 Log.d("selectedArraySize", selectedCellArrays.size()+ "");
-                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(j).getCurrentTextColor());
+                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(i).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
@@ -137,19 +137,19 @@ public final class Game extends AbstractBaseActivity {
             if((cellPos = Integer.parseInt(String.valueOf(cell1.getText()))) >= 0){
                 // pour cell position 1 (top left corner)
                 Log.d("real pos", cell1.getText() + "=1=" + cellPos);
-                findSelected((cellPos)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos-1);
-                ++test; //
+                findSelected((cellPos)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), (cellPos%nbColumns)-1);
+                ++test; ///
                 // pour cell dernier position
                 Log.d("real pos", cell1.getText() + "=2=" + cellPos);
-                findSelected((cellPos+1)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos+1);
+                findSelected((cellPos+1)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), (cellPos%nbColumns)+1);
                 ++test;
                 // pour cell netant pas a la premiere ligne
                 Log.d("real pos", cell1.getText() + "=3=" + cellPos);
-                findSelected(cellPos > nbColumns-1, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1)-1, cellPos-nbColumns);
+                findSelected(cellPos > nbColumns-1, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1)-1, cellPos%nbColumns);
                 ++test;
                 // pour cell netant pas a la derniere ligne
                 Log.d("real pos", cell1.getText() + "=4=" + cellPos);
-                findSelected(cellPos < sizeOfTable-nbColumns, cell1,  cellColor, VisiteurTableLayoutGetIdx(cell1) + 1, cellPos+nbColumns);
+                findSelected(cellPos < sizeOfTable-nbColumns, cell1,  cellColor, VisiteurTableLayoutGetIdx(cell1) + 1, cellPos%nbColumns);
                 ++test;
             }
         }
@@ -170,7 +170,7 @@ public final class Game extends AbstractBaseActivity {
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
             if((rows.indexOfChild(cell)) >= 0){
-                return rows.indexOfChild(cell);
+                return i;
             }
         }
         return -1;
@@ -179,14 +179,16 @@ public final class Game extends AbstractBaseActivity {
     private int findSelected(boolean passCondition, Cell cell1, int cellColor,  int rowIdx, int idx){
         if(passCondition){
             TableRow row = (TableRow)gameTable.getChildAt(rowIdx);
-            Cell cell2 = (Cell)row.getChildAt(idx);
-            if(row.indexOfChild(cell2) != -1){
-                if(!((Cell)row.getChildAt(row.indexOfChild(cell2))).getCellIsVerified()){
-                    return checkColor(cell1, cell2, cellColor);
+            if(row != null){
+                    Cell cell2 = (Cell)row.getChildAt(idx);
+                    if(row.indexOfChild(cell2) != -1){
+                        if(!((Cell)row.getChildAt(row.indexOfChild(cell2))).getCellIsVerified()){
+                            return checkColor(cell1, cell2, cellColor);
+                        }
+                    }
+                    Log.d("passConditionButFailRow", (cell1 == null? "": cell1.getText()) +" " + (cell2 == null? "": cell2.getText()) + " with " + row.indexOfChild(cell2));
                 }
             }
-            Log.d("passConditionButFailRow", cell1.getText() +" " + cell2.getText() + " with " + row.indexOfChild(cell2));
-        }
         Log.d("failCondition1", cell1.getText() +" ");
 
         return 0;
@@ -203,9 +205,8 @@ public final class Game extends AbstractBaseActivity {
             Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
             return 1;
         }
-        Log.d("checkColor1", "failed with " + cell1.getText() + cell2.getText());
+        Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
-        //clearSelectedArray();
         return 0;
     }
 
@@ -306,7 +307,7 @@ public final class Game extends AbstractBaseActivity {
                 tr1.addView(view);
             }
             Log.d("trTemp", printTable(tr1));
-        } else if(Math.abs(idx1-idx2) == 1){
+        } else if(Math.abs(idx1-idx2) == 0){
             Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
             Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
             tr1.removeView(cell1);
