@@ -16,6 +16,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import com.inf8405.tp1.match3.R;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
 import com.inf8405.tp1.match3.model.*;
 
 /**
@@ -167,11 +169,12 @@ public class GridActivity extends AbstractBaseActivity {
         btn.setLayoutParams(params);
 
 
-        ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
-        btn.setBackground(cd);
-        /*btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
+        //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
+        //btn.setBackground(cd);
+        btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
+
         final GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
-        bgShape.setColor(ContextCompat.getColor(this, colorTemp));*/
+        bgShape.setColor(ContextCompat.getColor(this, colorTemp));
 
 
         btn.setText(String.valueOf(text));
@@ -185,7 +188,13 @@ public class GridActivity extends AbstractBaseActivity {
     public void tableClick(View view){
         switch(view.getId()) {
             case R.id.view_root:
-                gameMatch3.scanCells(getApplicationContext());
+                try{
+                    // TODO delete try catch
+                    gameMatch3.scanCells(getApplicationContext());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 break;
         }
     }

@@ -61,12 +61,13 @@ public final class Game extends AbstractBaseActivity {
         String cellTest = "";
         if(selectedCellArrays.size() >= 2){
             printAllTable();
-            swapBtn(context, selectedCellArrays);
+            swapBtn(context, selectedCellArrays.get(0), selectedCellArrays.get(1));
             printAllTable();
             int i = 0;
             int j = 1;
             boolean foundMatch3 = false;
-            while(i < selectedCellArrays.size()){
+            while(i < selectedCellArrays.size() && j >= 0){
+                Log.d("selectedArraySize", selectedCellArrays.size()+ "");
                 findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(j), selectedCellArrays.get(j).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
@@ -92,10 +93,11 @@ public final class Game extends AbstractBaseActivity {
             if(foundMatch3){
                 Log.d("swap", "swap");
                 //swapBtn(selectedCellArrays);
+                foundMatch3 = false;
             } else {
-                printAllTable();
+                //printAllTable();
                 swapBtn(context, selectedCellArrays.get(1), selectedCellArrays.get(0));
-                printAllTable();
+                //printAllTable();
             }
             clearMatchFoundArrays();
             clearColorVerifiedArray();
@@ -247,6 +249,7 @@ public final class Game extends AbstractBaseActivity {
 
     private void swapBtn(Context context, Cell cell1, Cell cell2){
         //exchangeButtons(cell1, cell2);
+        Log.d("swapping", cell1.getText() + " " + cell2.getText());
         int idx1 = -1;
         int idx2 = -1;
         int rowIdx1 = -1;
@@ -270,18 +273,30 @@ public final class Game extends AbstractBaseActivity {
                 break;
             }
         }
-        tr1 = (TableRow)gameTable.getChildAt(idx1);
-        tr2 = (TableRow)gameTable.getChildAt(idx2);
+        // Illegal moves
+        if(Math.abs(idx1 - idx2) > 1 ){
+            return;
+        }
+        if(Math.abs(idx1 - idx2) != 0 && Math.abs(rowIdx1 - rowIdx1) >= 1){
+            return;
+        }
+        tr1 = (TableRow)gameTable.getChildAt(rowIdx1);
+        tr2 = (TableRow)gameTable.getChildAt(rowIdx2);
         if(rowIdx1 == rowIdx2 && rowIdx1 >= 0){
             for (int i=0; i < tr1.getChildCount(); ++i){
                 if(i != idx1 && i != idx2){
                     trTemp.add(tr1.getChildAt(i));
-                } else if (i == idx1 ){
+                } else if (i == idx1 || i == idx2) {
                     // Swap 1 a 2
-                    trTemp.add(tr1.getChildAt(idx2));
-                } else if (i == idx2) {
-                    // Swap 2 a 1
-                    trTemp.add(tr1.getChildAt(idx1));
+                    if (idx1 < idx2) {
+                        trTemp.add(tr1.getChildAt(idx2));
+                        trTemp.add(tr1.getChildAt(idx1));
+                        ++i;
+                    } else {
+                        trTemp.add(tr1.getChildAt(idx1));
+                        trTemp.add(tr1.getChildAt(idx2));
+                        ++i;
+                    }
                 }
             }
             tr1.removeAllViews();
@@ -289,7 +304,7 @@ public final class Game extends AbstractBaseActivity {
                 tr1.addView(view);
             }
             Log.d("trTemp", printTable(tr1));
-        } else {
+        } else if(Math.abs(idx1-idx2) == 1){
             Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
             Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
             tr1.removeView(cell1);
