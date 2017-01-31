@@ -1,11 +1,12 @@
 package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  * Created by Lam on 1/26/2017.
  */
 
-public final class Game extends AbstractBaseActivity{
+public final class Game extends AbstractBaseActivity {
     private static Game singletonInstance = new Game();
     private boolean isStarted = false;
     private List<Cell> selectedCellArrays = new ArrayList<>();
@@ -24,6 +25,9 @@ public final class Game extends AbstractBaseActivity{
     private List<Cell> cellArrays = new ArrayList<>();
     private List<Cell> matchFoundArrays = new ArrayList<>();
     private int nbColumns = -1;
+    private float pressedDownX;
+    private float pressedDownY;
+    private TableLayout gameTable;
 
     private Game(){}
 
@@ -84,7 +88,7 @@ public final class Game extends AbstractBaseActivity{
             }
             if(foundMatch3){
                 Log.d("swap", "swap");
-                swapBtn();
+                swapBtn(selectedCellArrays);
             } else {
                 selectedCellArrays.get(0).setText(t1);
                 selectedCellArrays.get(1).setText(t0);
@@ -99,6 +103,10 @@ public final class Game extends AbstractBaseActivity{
             clearArray();
         }
 
+    }
+
+    public void setTableLayout(TableLayout tl){
+        gameTable = tl;
     }
 
     public void setTableColumns(int tableColumns) {
@@ -209,35 +217,109 @@ public final class Game extends AbstractBaseActivity{
         }
     }
 
-    private void swapBtn(){
-        final float x0 = selectedCellArrays.get(0).getX();
-        final float x1 = selectedCellArrays.get(1).getX();
-        final float y0 = selectedCellArrays.get(0).getY();
-        final float y1 = selectedCellArrays.get(1).getY();
-        final CharSequence t0 = selectedCellArrays.get(0).getText();
-        final CharSequence t1 = selectedCellArrays.get(1).getText();
-        final int c0 = selectedCellArrays.get(0).getCurrentTextColor();
-        final int c1 = selectedCellArrays.get(1).getCurrentTextColor();
+    private void swapBtn(List<Cell> arr){
+        swapBtn(arr.get(0),arr.get(1));
+    }
 
-        selectedCellArrays.get(0).setX(x1);
-        selectedCellArrays.get(0).setY(y1);
-        selectedCellArrays.get(1).setX(x0);
-        selectedCellArrays.get(1).setY(y0);
+    private void swapBtn(Cell cell1, Cell cell2){
+        int idx1 = -1;
+        int idx2 = -1;
+        int rowIdx1 = -1;
+        int rowIdx2 = -1;
+        TableRow tr1 = null;
+        TableRow tr2 = null;
+        TableRow trTemp = null;
+        for (int i=0; i < gameTable.getChildCount(); ++i){
+            TableRow rows = (TableRow) gameTable.getChildAt(i);
+            if((rows.indexOfChild(cell1)) >= 0){
+                idx1 = rows.indexOfChild(cell1);
+                tr1 = rows;
+                rowIdx1 = i;
+            }
+            if((rows.indexOfChild(cell2)) >= 0){
+                idx2 = rows.indexOfChild(cell2);
+                tr2 = rows;
+                rowIdx1 = 2;
+            }
+            if(idx1 != -1 && idx2 != -1){
+                break;
+            }
+        }
+        if(rowIdx1 == rowIdx2 && rowIdx1 > 0){
+            for (int i=0; i < tr1.getChildCount(); ++i){
+                if(i != idx1 && i != idx2){
+                    trTemp.addView(tr1.getChildAt(i));
+                } else if (i == idx1 ){
+                    // Swap 1 a 2
+                    trTemp.addView(tr1.getChildAt(idx2));
+                } else if (i == idx2) {
+                    // Swap 2 a 1
+                    trTemp.addView(tr1.getChildAt(idx1));
+                }
+            }
+            tr1.removeAllViews();
+            tr1 = trTemp;
+        } else {
+            Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
+            Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
+            tr1.removeView(cell1);
+            tr2.removeView(cell2);
+            tr1.addView(cellTemp2,idx1);
+            tr2.addView(cellTemp1,idx2);
+        }
+    }
 
+    private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
 
-        selectedCellArrays.get(0).setText(t1);
-        selectedCellArrays.get(1).setText(t0);
-        selectedCellArrays.get(0).setTextColor(c1);
-        selectedCellArrays.get(1).setTextColor(c0);
-        //selectedCellArrays.get(0).setBackgroundColor(bg1);
-        //selectedCellArrays.get(1).setBackgroundColor(bg0);
-        final ColorDrawable bg0 = (ColorDrawable)selectedCellArrays.get(0).getBackground();
-        final ColorDrawable bg1 = (ColorDrawable)selectedCellArrays.get(1).getBackground();
-        //final GradientDrawable bg0 = (GradientDrawable)selectedCellArrays.get(0).getBackground();
-        //final GradientDrawable bg1 = (GradientDrawable)selectedCellArrays.get(1).getBackground();
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                pressedDownX = event.getX();
+                pressedDownY = event.getY();
 
-        selectedCellArrays.get(1).setBackground(bg0);
-        selectedCellArrays.get(0).setBackground(bg1);
+                for (int i=0; i < gameTable.getChildCount(); ++i){
+                    TableRow rows = (TableRow)gameTable.getChildAt(i);
+                    if(pressedDownX > rows.getLeft() && pressedDownX < rows.getRight() && pressedDownY > rows.getTop() && pressedDownY < rows.getBottom()){
+
+                        for(int j=0; j< rows.getChildCount(); ++j){
+                            Cell cell = (Cell)gameTable.getChildAt(i);
+                            if(pressedDownX > cell.getLeft() && pressedDownX < cell.getRight() && pressedDownY > cell.getTop() && pressedDownY < cell.getBottom()){
+                                selectedCellArrays.add(cell);
+                            }
+                        }
+
+                        //touch is within this child
+                        if(event.getAction() == MotionEvent.ACTION_UP){
+                            //touch has ended
+                            pressedDownX = event.getX();
+                            pressedDownY = event.getY();
+
+                            for (int x=0; i < gameTable.getChildCount(); ++x) {
+                                TableRow rowsEnd = (TableRow) gameTable.getChildAt(x);
+                                if (pressedDownX > rowsEnd.getLeft() && pressedDownX < rowsEnd.getRight() && pressedDownY > rowsEnd.getTop() && pressedDownY < rowsEnd.getBottom()) {
+
+                                    for (int y = 0; y < rowsEnd.getChildCount(); ++y) {
+                                        Cell cell = (Cell) gameTable.getChildAt(i);
+                                        if (pressedDownX > cell.getLeft() && pressedDownX < cell.getRight() && pressedDownY > cell.getTop() && pressedDownY < cell.getBottom()) {
+                                            selectedCellArrays.add(cell);
+                                            CheckIfAdjacent(selectedCellArrays);
+                                            selectedCellArrays.clear();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    };
+
+    private void CheckIfAdjacent(List<Cell> selectedCellArrays) {
+        //Cell cell1 = selectedCellArrays.get(0);
+        //Cell cell2 = selectedCellArrays.get(1);
+        swapBtn(selectedCellArrays);
     }
 }
 /*
