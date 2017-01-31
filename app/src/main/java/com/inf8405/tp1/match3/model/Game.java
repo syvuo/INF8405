@@ -5,6 +5,9 @@ import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
@@ -22,9 +25,11 @@ public final class Game extends AbstractBaseActivity {
     private boolean isStarted = false;
     private List<Cell> selectedCellArrays = new ArrayList<>();
     private List<Cell> colorVerifiedCellArrays = new ArrayList<>();
-    private List<Cell> cellArrays = new ArrayList<>();
+    //private List<Cell> cellArrays = new ArrayList<>();
     private List<Cell> matchFoundArrays = new ArrayList<>();
     private int nbColumns = -1;
+    private int nbRows = -1;
+    private int sizeOfTable = -1;
     private float pressedDownX;
     private float pressedDownY;
     private TableLayout gameTable;
@@ -37,14 +42,17 @@ public final class Game extends AbstractBaseActivity {
 
     public void setIsStarted(boolean value) {
         isStarted = value;
+        if(isStarted){
+            sizeOfTable= nbColumns*nbRows;
+        }
     }
 
-    public void addCell(Cell cell){
+    /*public void addCell(Cell cell){
         cellArrays.add(cell);
-    }
+    }*/
 
     public void clearData() {
-        cellArrays = new ArrayList<>();
+        //cellArrays = new ArrayList<>();
         selectedCellArrays = new ArrayList<>();
     }
 
@@ -52,20 +60,14 @@ public final class Game extends AbstractBaseActivity {
         int nbMatch = 0;
         String cellTest = "";
         if(selectedCellArrays.size() >= 2){
-            final CharSequence t0 = selectedCellArrays.get(0).getText();
-            final CharSequence t1 = selectedCellArrays.get(1).getText();
-            selectedCellArrays.get(0).setText(t1);
-            selectedCellArrays.get(1).setText(t0);
-            cellArrays.get(Integer.parseInt(String.valueOf(t0))).setText(t1);
-            cellArrays.get(Integer.parseInt(String.valueOf(t1))).setText(t0);
-            Collections.swap(selectedCellArrays, 0, 1);
-            Collections.swap(cellArrays, Integer.parseInt(String.valueOf(t1)), Integer.parseInt(String.valueOf(t0)));
-
-
+            printAllTable();
+            swapBtn(context, selectedCellArrays);
+            printAllTable();
             int i = 0;
+            int j = 1;
             boolean foundMatch3 = false;
             while(i < selectedCellArrays.size()){
-                findSelectedManager(selectedCellArrays.get(i), selectedCellArrays.get(i).getCurrentTextColor());
+                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(j), selectedCellArrays.get(j).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
@@ -82,25 +84,23 @@ public final class Game extends AbstractBaseActivity {
                     Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
                     Log.d("non valid move", "non valid move");
+                    //swapBtn(selectedCellArrays);
                 }
                 clearMatchFoundArrays();
-                i++;
+                ++i;
+                --j;
             }
             if(foundMatch3){
                 Log.d("swap", "swap");
-                swapBtn(selectedCellArrays);
+                //swapBtn(selectedCellArrays);
             } else {
-                selectedCellArrays.get(0).setText(t1);
-                selectedCellArrays.get(1).setText(t0);
-                cellArrays.get(Integer.parseInt(String.valueOf(t0))).setText(t1);
-                cellArrays.get(Integer.parseInt(String.valueOf(t1))).setText(t0);
-                Collections.swap(cellArrays, Integer.parseInt(String.valueOf(t0)), Integer.parseInt(String.valueOf(t1)));
-                Collections.swap(selectedCellArrays, 1, 0);
+                printAllTable();
+                swapBtn(context, selectedCellArrays);
+                printAllTable();
             }
             clearMatchFoundArrays();
             clearColorVerifiedArray();
             clearSelectedArray();
-            clearArray();
         }
 
     }
@@ -113,6 +113,10 @@ public final class Game extends AbstractBaseActivity {
         nbColumns = tableColumns;
     }
 
+    public void setTableRows(int tableRows) {
+        nbRows = tableRows;
+    }
+
     public void addSelectedToArray(Cell cell){
         if(!selectedCellArrays.contains(cell)){
             selectedCellArrays.add(cell);
@@ -121,28 +125,30 @@ public final class Game extends AbstractBaseActivity {
 
     // TODO penser a un algo moins naif. Presentement on triple check le meme cell. perte de performance.
     // TODO l'utilisation recursive ou de quoi meilleure est souhaitable
-    private void findSelectedManager(Cell cell, int cellColorToCheck){
-        matchFoundArrays.add(cell);
+    private void findSelectedManager(Cell cell1, Cell cell2, int cellColorToCheck){
+        if(!matchFoundArrays.contains(cell1)){
+            matchFoundArrays.add(cell1);
+        }
         int cellColor = cellColorToCheck;
         int cellPos = -1;
         int test = 0;
         try{
-            if((cellPos = Integer.parseInt(String.valueOf(cell.getText()))) >= 0){
+            if((cellPos = Integer.parseInt(String.valueOf(cell1.getText()))) >= 0){
                 // pour cell position 1 (top left corner)
-                Log.d("real pos", cell.getText() + "=1=" + cellPos);
-                findSelected((cellPos+1)%(nbColumns) != 0, cellPos, cellPos+1, cellColor);
+                Log.d("real pos", cell1.getText() + "=1=" + cellPos);
+                findSelected((cellPos)%(nbColumns) != 0, cell1, cell2, cellColor, VisiteurTableLayout(cell1));
                 ++test;
                 // pour cell dernier position
-                Log.d("real pos", cell.getText() + "=2=" + cellPos);
-                findSelected((cellPos+1)%(nbColumns) != 1, cellPos, cellPos-1, cellColor);
+                Log.d("real pos", cell1.getText() + "=2=" + cellPos);
+                findSelected((cellPos+1)%(nbColumns) != 0, cell1, cell2, cellColor, VisiteurTableLayout(cell1));
                 ++test;
                 // pour cell netant pas a la premiere ligne
-                Log.d("real pos", cell.getText() + "=3=" + cellPos);
-                findSelected(cellPos > nbColumns-1, cellPos, cellPos-nbColumns, cellColor);
+                Log.d("real pos", cell1.getText() + "=3=" + cellPos);
+                findSelected(cellPos > nbColumns-1, cell1, cell2, cellColor, VisiteurTableLayout(cell2));
                 ++test;
                 // pour cell netant pas a la derniere ligne
-                Log.d("real pos", cell.getText() + "=4=" + cellPos);
-                findSelected(cellPos < cellArrays.size()-nbColumns, cellPos, cellPos+nbColumns, cellColor);
+                Log.d("real pos", cell1.getText() + "=4=" + cellPos);
+                findSelected(cellPos < sizeOfTable-nbColumns, cell1, cell2, cellColor, VisiteurTableLayout(cell2));
                 ++test;
             }
         }
@@ -156,27 +162,46 @@ public final class Game extends AbstractBaseActivity {
             Log.e("cellpos", String.valueOf(cellPos));
             Log.e("testpos", String.valueOf(test));
         }
+        cell1.setCellIsVerified(true);
     }
 
-    private int findSelected(boolean passCondition,int cellPos, int nextCellPos, int cellColor){
-        if(passCondition && !cellArrays.get(nextCellPos).getCellIsVerified()){
-            return checkColor(cellPos, nextCellPos, cellColor);
+    private TableRow VisiteurTableLayout(Cell cell){
+        for (int i=0; i < gameTable.getChildCount(); ++i){
+            TableRow rows = (TableRow) gameTable.getChildAt(i);
+            if((rows.indexOfChild(cell)) >= 0){
+                return rows;
+            }
         }
-        Log.d("findSelected", passCondition + " " + !cellArrays.get(nextCellPos).getCellIsVerified());
+        return null;
+    }
+
+    private int findSelected(boolean passCondition, Cell cell1, Cell cell2, int cellColor, TableRow row){
+        if(passCondition && row != null){
+            if(row.indexOfChild(cell2) != -1){
+                if(!((Cell)row.getChildAt(row.indexOfChild(cell2))).getCellIsVerified()){
+                    return checkColor(cell1, cell2, cellColor);
+                }
+            }
+            Log.d("passConditionButFailRow", cell1.getText() +" " + cell2.getText());
+        }
+        Log.d("failCondition1", cell1.getText() +" " + cell2.getText());
+
         return 0;
     }
 
-    private int checkColor(int cellPos, int nextCellPos, int cellColor){
-        cellArrays.get(nextCellPos).setCellIsVerified(true);
-        colorVerifiedCellArrays.add(cellArrays.get(nextCellPos));
-        if(cellArrays.get(cellPos).getCurrentTextColor() == cellArrays.get(nextCellPos).getCurrentTextColor() && cellColor ==cellArrays.get(cellPos).getCurrentTextColor() ){
-            Log.d("checkColor", "success with " + cellPos + nextCellPos + " <===================");
-            findSelectedManager(cellArrays.get(nextCellPos), cellColor);
+    private int checkColor(Cell cell1, Cell cell2, int cellColor){
+
+        cell2.setCellIsVerified(true);
+
+        colorVerifiedCellArrays.add(cell2);
+        if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
+            Log.d("checkColor", "success with " + cell1.getText() + cell2.getText() + " <===================");
+            findSelectedManager(cell2, cell1, cellColor);
             Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
             return 1;
         }
-        Log.d("checkColor1", "failed with " + cellPos + nextCellPos);
-        Log.d("checkColor2", cellArrays.get(cellPos).getCurrentTextColor() + " && " + cellArrays.get(nextCellPos).getCurrentTextColor() + " && " + cellColor);
+        Log.d("checkColor1", "failed with " + cell1.getText() + cell2.getText());
+        Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
         //clearSelectedArray();
         return 0;
     }
@@ -189,6 +214,7 @@ public final class Game extends AbstractBaseActivity {
                 cell.setSelected(false);
             }
         }
+        selectedCellArrays.clear();
         selectedCellArrays = new ArrayList<>();
     }
 
@@ -199,36 +225,36 @@ public final class Game extends AbstractBaseActivity {
                 cell.setCellIsVerified(false);
             }
         }
+        colorVerifiedCellArrays.clear();
         colorVerifiedCellArrays = new ArrayList<>();
     }
 
     private void clearMatchFoundArrays(){
         Log.d("mfa","Clearing");
+        matchFoundArrays.clear();
         matchFoundArrays = new ArrayList<>();
     }
-    private void clearArray(){
-        for(Cell cell : cellArrays){
-            if(cell.isSelected()){
-                cell.setSelected(false);
-            }
-            if(cell.getCellIsVerified()){
-                cell.setCellIsVerified(false);
-            }
+
+    private void swapBtn(Context context, List<Cell> arr){
+        // TODO DELETE TRY CATCH
+        try{
+            swapBtn(context, arr.get(0),arr.get(1));
         }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
-    private void swapBtn(List<Cell> arr){
-        swapBtn(arr.get(0),arr.get(1));
-    }
-
-    private void swapBtn(Cell cell1, Cell cell2){
+    private void swapBtn(Context context, Cell cell1, Cell cell2){
+        //exchangeButtons(cell1, cell2);
         int idx1 = -1;
         int idx2 = -1;
         int rowIdx1 = -1;
         int rowIdx2 = -1;
-        TableRow tr1 = null;
-        TableRow tr2 = null;
-        TableRow trTemp = null;
+        TableRow tr1 = new TableRow(context);
+        TableRow tr2 = new TableRow(context);
+        TableRow trTemp = new TableRow(context);
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
             if((rows.indexOfChild(cell1)) >= 0){
@@ -239,13 +265,13 @@ public final class Game extends AbstractBaseActivity {
             if((rows.indexOfChild(cell2)) >= 0){
                 idx2 = rows.indexOfChild(cell2);
                 tr2 = rows;
-                rowIdx1 = 2;
+                rowIdx2 = i;
             }
             if(idx1 != -1 && idx2 != -1){
                 break;
             }
         }
-        if(rowIdx1 == rowIdx2 && rowIdx1 > 0){
+        if(rowIdx1 == rowIdx2 && rowIdx1 >= 0){
             for (int i=0; i < tr1.getChildCount(); ++i){
                 if(i != idx1 && i != idx2){
                     trTemp.addView(tr1.getChildAt(i));
@@ -259,6 +285,7 @@ public final class Game extends AbstractBaseActivity {
             }
             tr1.removeAllViews();
             tr1 = trTemp;
+            Log.d("trTemp", printTable(tr1));
         } else {
             Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
             Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
@@ -266,7 +293,54 @@ public final class Game extends AbstractBaseActivity {
             tr2.removeView(cell2);
             tr1.addView(cellTemp2,idx1);
             tr2.addView(cellTemp1,idx2);
+
+            Log.d("tr1", printTable(tr1));
+            Log.d("tr2", printTable(tr2));
         }
+    }
+
+    private void printAllTable(){
+        String test = "";
+        for (int i=0; i < gameTable.getChildCount(); ++i){
+            TableRow rows = (TableRow) gameTable.getChildAt(i);
+            test += printTable(rows);
+            Log.d("allTable",test);
+        }
+    }
+
+    private String printTable(TableRow row){
+        String test = "";
+        for(int i = 0; i < row.getChildCount(); ++i){
+            test += " " + ((Cell)row.getChildAt(i)).getText();
+        }
+        return test;
+    }
+
+    private void exchangeButtons(Cell btn1, Cell btn2) {
+        // Create the animation set
+        AnimationSet exchangeAnimation = new AnimationSet(true);
+        TranslateAnimation translate = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, btn2.getLeft(),
+                Animation.RELATIVE_TO_SELF, btn1.getLeft(),
+                Animation.RELATIVE_TO_SELF, btn2.getRight(),
+                Animation.RELATIVE_TO_SELF, btn1.getRight());
+        translate.setDuration(1500);
+        exchangeAnimation.addAnimation(translate);
+        //int fromX = btn1.getLeft();
+        //int fromY = btn1.getRight();
+        //int toX = btn2.getLeft();
+        //int toY = btn2.getRight();
+
+        AnimationSet exchangeAnimation1 = new AnimationSet(true);
+        TranslateAnimation translate1 = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, btn1.getLeft(),
+                Animation.RELATIVE_TO_SELF, btn2.getLeft(),
+                Animation.RELATIVE_TO_SELF, btn1.getRight(),
+                Animation.RELATIVE_TO_SELF, btn2.getRight());
+        translate1.setDuration(500);
+        exchangeAnimation1.addAnimation(translate1);
+        // EXECUTE btn1.startAnimation(exchangeAnimation);
+        btn2.startAnimation(exchangeAnimation1);
     }
 
     private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -302,7 +376,7 @@ public final class Game extends AbstractBaseActivity {
                                         Cell cell = (Cell) gameTable.getChildAt(i);
                                         if (pressedDownX > cell.getLeft() && pressedDownX < cell.getRight() && pressedDownY > cell.getTop() && pressedDownY < cell.getBottom()) {
                                             selectedCellArrays.add(cell);
-                                            CheckIfAdjacent(selectedCellArrays);
+                                            //CheckIfAdjacent(selectedCellArrays);
                                             selectedCellArrays.clear();
                                         }
                                     }
@@ -316,10 +390,10 @@ public final class Game extends AbstractBaseActivity {
         }
     };
 
-    private void CheckIfAdjacent(List<Cell> selectedCellArrays) {
+    private void CheckIfAdjacent(Context context, List<Cell> selectedCellArrays) {
         //Cell cell1 = selectedCellArrays.get(0);
         //Cell cell2 = selectedCellArrays.get(1);
-        swapBtn(selectedCellArrays);
+        swapBtn(context, selectedCellArrays);
     }
 }
 /*

@@ -154,6 +154,7 @@ public class GridActivity extends AbstractBaseActivity {
             }
         }
         gameMatch3.setTableColumns(tableColumns);
+        gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(true);
     }
@@ -177,7 +178,7 @@ public class GridActivity extends AbstractBaseActivity {
         btn.setTextColor(ContextCompat.getColor(this, colorTemp));
 
         btn.overrideEventListener(btn, gridActivity, gameMatch3);
-        gameMatch3.addCell(btn);
+        //gameMatch3.addCell(btn);
         return btn;
     }
 
