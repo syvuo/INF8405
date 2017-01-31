@@ -109,24 +109,26 @@ public class GridActivity extends AbstractBaseActivity {
                 break;
             default: // for future usage
         }
-        popToast(level);
+        //popToast(level);
         table = (TableLayout) findViewById(R.id.view_root);
 
         Random rand = new Random();
 
         // Generate table grid
+        int btnPos = 0;
         for (int y = 0; y < tableRows; y++) {
             final TableRow rows = new TableRow(this);
             table.addView(rows);
             for (int x = 0; x < tableColumns; x++) {
-                rows.addView(createButton(this, rand));
+                rows.addView(createButton(this, rand, btnPos));
+                ++btnPos;
             }
         }
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setIsStarted(true);
     }
 
-    private Button createButton(final GridActivity gridActivity, final Random rand) {
+    private Button createButton(final GridActivity gridActivity, final Random rand, int text) {
         final Cell btn = new Cell(this);
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         params.weight = 1;
@@ -135,10 +137,9 @@ public class GridActivity extends AbstractBaseActivity {
         final GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
         int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
         bgShape.setColor(ContextCompat.getColor(this, colorTemp));
-        btn.setId(btn.generateViewId());
-        btn.setText(String.valueOf(btn.getId()));
+        btn.setText(String.valueOf(text));
         btn.setTextColor(ContextCompat.getColor(this, colorTemp));
-        btn.overrideEventListener(btn, gridActivity, bgShape);
+        btn.overrideEventListener(btn, gridActivity, gameMatch3);
         gameMatch3.addCell(btn);
         return btn;
     }
@@ -154,5 +155,6 @@ public class GridActivity extends AbstractBaseActivity {
     private void clearAttributes(){
         table = null;
         gameMatch3.clearData();
+        gameMatch3 = Game.getInstance();
     }
 }

@@ -12,8 +12,6 @@ import com.inf8405.tp1.match3.R;
 
 public class SetupActivity extends AbstractBaseActivity {
 
-    private final int numberLevel = 4;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

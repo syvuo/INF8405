@@ -1,17 +1,8 @@
 package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.PaintDrawable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +13,7 @@ import java.util.List;
 public final class Game extends AbstractBaseActivity{
     private static Game singletonInstance = new Game();
     private boolean isStarted = false;
+    private List<Cell> selectedCellArrays = new ArrayList<>();
     private List<Cell> cellArrays = new ArrayList<>();
     private int nbColumns = -1;
 
@@ -41,75 +33,124 @@ public final class Game extends AbstractBaseActivity{
 
     public void clearData() {
         cellArrays = new ArrayList<>();
+        selectedCellArrays = new ArrayList<>();
     }
 
     public void scanCells(Context context) {
         int nbMatch = 0;
-        for(int i = 0; i < cellArrays.size(); ++i){
-            Cell cell = cellArrays.get(i);
-            if(cell.isSelected()){
-                nbMatch+=foundSelected(cell);
+        String cellTest = "";
+        if(selectedCellArrays.size() >= 2){
+            for(Cell cell : selectedCellArrays){
+                nbMatch+=findSelectedManager(cell);
+                cellTest += (" " + cell.getText());
             }
-        }
-        if(nbMatch >= 3){
-            // TODO test
-            for(Cell cell : cellArrays){
-                if(cell.isSelected()){
+            Log.d("array", cellTest);
+            if(nbMatch >= 3){
+                // TODO test
+                for(Cell cell : selectedCellArrays){
                     cell.setSelected(false);
+                    cell.setCellIsVerified(false);
                     cell.getBackground().setAlpha(0);
+                    clearSelectedArray();
                 }
             }
+            if(nbMatch < 1){
+                clearSelectedArray();
+            }
         }
+
     }
 
     public void setTableColumns(int tableColumns) {
         nbColumns = tableColumns;
     }
 
+    public void addSelectedToArray(Cell cell){
+        if(!selectedCellArrays.contains(cell)){
+            selectedCellArrays.add(cell);
+        }
+    }
+
     // TODO penser a un algo moins naif. Presentement on triple check le meme cell. perte de performance.
     // TODO l'utilisation recursive ou de quoi meilleure est souhaitable
-    private int foundSelected(Cell cell){
+    private int findSelectedManager(Cell cell){
         int nbAdjacentMatch = 0;
-        int cellId = cell.getId();
-        // pour cell position 1 (top left corner)
+        int cellPos = -1;
+        int test = 0;
         try{
-
-            if(cellId%nbColumns != 1 && cellArrays.get(cellId-2).isSelected()){
-                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId-2);
-            }
-            // pour cell dernier position
-            if(cellId%nbColumns != 0 && cellArrays.get(cellId).isSelected()){
-                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId);
-            }
-            // pour cell netant pas a la premiere ligne
-            if(cellId > nbColumns && cellArrays.get(cellId-nbColumns-1).isSelected()){
-                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId-nbColumns-1);
-            }
-            // pour cell netant pas a la derniere ligne
-            if(cellId < cellArrays.size()-nbColumns && cellArrays.get(cellId+nbColumns-1).isSelected()){
-                nbAdjacentMatch = nbAdjacentMatch + checkColor(cell, cellId+nbColumns-1);
+            if((cellPos = Integer.parseInt(String.valueOf(cell.getText()))) >= 0){
+                // pour cell position 1 (top left corner)
+                Log.d("real pos", cell.getText() + "=1=" + cellPos);
+                nbAdjacentMatch += findSelected((cellPos+1)%(nbColumns) != 0, cellPos, cellPos+1);
+                ++test;
+                // pour cell dernier position
+                Log.d("real pos", cell.getText() + "=2=" + cellPos);
+                nbAdjacentMatch += findSelected((cellPos+1)%(nbColumns) != 1, cellPos, cellPos-1);
+                ++test;
+                // pour cell netant pas a la premiere ligne
+                Log.d("real pos", cell.getText() + "=3=" + cellPos);
+                nbAdjacentMatch += findSelected(cellPos > nbColumns-1, cellPos, cellPos-nbColumns);
+                ++test;
+                // pour cell netant pas a la derniere ligne
+                Log.d("real pos", cell.getText() + "=4=" + cellPos);
+                nbAdjacentMatch += findSelected(cellPos < cellArrays.size()-nbColumns, cellPos, cellPos+nbColumns);
+                ++test;
             }
         }
         catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
+            Log.e("cellpos", String.valueOf(cellPos));
+            Log.e("testpos", String.valueOf(test));
             nbAdjacentMatch = 0;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally{
+            Log.d("nbadjacentMatch",String.valueOf(nbAdjacentMatch));
         }
         return nbAdjacentMatch;
     }
 
+    private int findSelected(boolean passCondition,int cellPos, int nextCellPos){
+        if(selectedCellArrays.size() > 0 && passCondition && cellArrays.get(nextCellPos).isSelected()){
+            return checkColor(cellPos, nextCellPos);
+        }
+        if(passCondition)
+        if(passCondition)
+            Log.d("fail", "fail with " + cellPos + nextCellPos + passCondition + cellArrays.get(nextCellPos).isSelected());
+        else
+            Log.d("fail", "fail with " + cellPos + nextCellPos + passCondition);
+        return 0;
+    }
+
+    private int checkColor(int cellPos, int nextCellPos){
+        cellArrays.get(nextCellPos).setCellIsVerified(true);
+        if(cellArrays.get(cellPos).getCurrentTextColor() == cellArrays.get(nextCellPos).getCurrentTextColor()){
+            Log.d("checkColor", "success with " + cellPos + nextCellPos + " <===================");
+            return 1;
+        }
+        Log.d("checkColor", "failed with " + cellPos + nextCellPos);
+        clearSelectedArray();
+        return 0;
+    }
+
+
     private void clearSelectedArray(){
+        Log.d("CD","Clearing");
+        for(Cell cell : selectedCellArrays){
+            if(cell.isSelected()){
+                cell.setSelected(false);
+            }
+        }
+        selectedCellArrays = new ArrayList<>();
+    }
+
+    private void clearArray(){
         for(Cell cell : cellArrays){
             if(cell.isSelected()){
                 cell.setSelected(false);
             }
         }
-    }
-
-    private int checkColor(Cell centerCell, int nextCell){
-        if(centerCell.getCurrentTextColor() == cellArrays.get(nextCell).getCurrentTextColor()){
-            return 1;
-        }
-        clearSelectedArray();
-        return 0;
     }
 }

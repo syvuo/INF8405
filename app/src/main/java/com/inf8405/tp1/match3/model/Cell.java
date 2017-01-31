@@ -1,12 +1,10 @@
 package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
-import android.widget.Toast;
 import com.inf8405.tp1.match3.ui.*;
 
 /**
@@ -15,18 +13,17 @@ import com.inf8405.tp1.match3.ui.*;
 
 public class Cell extends Button{
 
+    private boolean cellIsVerified = false;
+
     public Cell(Context context) {
         super(context);
 
     }
 
-    public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final GradientDrawable bgShape){
+    public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final Game instance){
         cell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast.makeText(gridActivity.getApplicationContext(), "You clicked (" + cell.getId()+")", Toast.LENGTH_SHORT).show();
-                //bgShape.setColor(ContextCompat.getColor(gridActivity, R.color.black));
                 cell.setFocusable(true);
                 cell.setFocusableInTouchMode(true);///add this line
                 cell.requestFocus();
@@ -39,6 +36,7 @@ public class Cell extends Button{
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     v.getBackground().setAlpha(128);
                     v.setSelected(true);
+                    instance.addSelectedToArray(cell);
                     v.invalidate();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     v.getBackground().setAlpha(255);
@@ -49,5 +47,13 @@ public class Cell extends Button{
                 return true;
             }
         });
+    }
+
+    public void setCellIsVerified(boolean checked){
+        cellIsVerified = checked;
+    }
+
+    public boolean getCellIsVerified(){
+        return cellIsVerified;
     }
 }
