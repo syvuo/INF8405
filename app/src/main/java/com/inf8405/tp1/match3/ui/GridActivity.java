@@ -1,12 +1,15 @@
 package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -25,6 +28,8 @@ public class GridActivity extends AbstractBaseActivity {
     private static final int DEFAULT_LEVEL = 0;
     private static TableLayout table = null;
     private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
+    private float x1,x2;
+    static final int MIN_DISTANCE = 150;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
@@ -72,6 +77,30 @@ public class GridActivity extends AbstractBaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        switch(event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                x1 = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = event.getX();
+                float deltaX = x2 - x1;
+                if (Math.abs(deltaX) > MIN_DISTANCE)
+                {
+                    //Toast.makeText(this, "left2right swipe", Toast.LENGTH_SHORT).show ();
+                }
+                else
+                {
+                    // consider as something else - a screen tap for example
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -130,15 +159,22 @@ public class GridActivity extends AbstractBaseActivity {
 
     private Button createButton(final GridActivity gridActivity, final Random rand, int text) {
         final Cell btn = new Cell(this);
+        int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         params.weight = 1;
         btn.setLayoutParams(params);
-        btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
+
+
+        ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
+        btn.setBackground(cd);
+        /*btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
         final GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
-        int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
-        bgShape.setColor(ContextCompat.getColor(this, colorTemp));
+        bgShape.setColor(ContextCompat.getColor(this, colorTemp));*/
+
+
         btn.setText(String.valueOf(text));
         btn.setTextColor(ContextCompat.getColor(this, colorTemp));
+
         btn.overrideEventListener(btn, gridActivity, gameMatch3);
         gameMatch3.addCell(btn);
         return btn;
