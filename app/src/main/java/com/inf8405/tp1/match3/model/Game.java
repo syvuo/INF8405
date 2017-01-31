@@ -138,7 +138,7 @@ public final class Game extends AbstractBaseActivity {
                 // pour cell position 1 (top left corner)
                 Log.d("real pos", cell1.getText() + "=1=" + cellPos);
                 findSelected((cellPos)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos-1);
-                ++test;
+                ++test; //
                 // pour cell dernier position
                 Log.d("real pos", cell1.getText() + "=2=" + cellPos);
                 findSelected((cellPos+1)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos+1);
