@@ -68,7 +68,7 @@ public final class Game extends AbstractBaseActivity {
             boolean foundMatch3 = false;
             while(i < selectedCellArrays.size() && j >= 0){
                 Log.d("selectedArraySize", selectedCellArrays.size()+ "");
-                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(j), selectedCellArrays.get(j).getCurrentTextColor());
+                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(j).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
@@ -126,7 +126,7 @@ public final class Game extends AbstractBaseActivity {
 
     // TODO penser a un algo moins naif. Presentement on triple check le meme cell. perte de performance.
     // TODO l'utilisation recursive ou de quoi meilleure est souhaitable
-    private void findSelectedManager(Cell cell1, Cell cell2, int cellColorToCheck){
+    private void findSelectedManager(Cell cell1, int cellColorToCheck){
         if(!matchFoundArrays.contains(cell1)){
             matchFoundArrays.add(cell1);
         }
@@ -137,19 +137,19 @@ public final class Game extends AbstractBaseActivity {
             if((cellPos = Integer.parseInt(String.valueOf(cell1.getText()))) >= 0){
                 // pour cell position 1 (top left corner)
                 Log.d("real pos", cell1.getText() + "=1=" + cellPos);
-                findSelected((cellPos)%(nbColumns) != 0, cell1, cell2, cellColor, VisiteurTableLayout(cell1));
+                findSelected((cellPos)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos-1);
                 ++test;
                 // pour cell dernier position
                 Log.d("real pos", cell1.getText() + "=2=" + cellPos);
-                findSelected((cellPos+1)%(nbColumns) != 0, cell1, cell2, cellColor, VisiteurTableLayout(cell1));
+                findSelected((cellPos+1)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), cellPos+1);
                 ++test;
                 // pour cell netant pas a la premiere ligne
                 Log.d("real pos", cell1.getText() + "=3=" + cellPos);
-                findSelected(cellPos > nbColumns-1, cell1, cell2, cellColor, VisiteurTableLayout(cell2));
+                findSelected(cellPos > nbColumns-1, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1)-1, cellPos-nbColumns);
                 ++test;
                 // pour cell netant pas a la derniere ligne
                 Log.d("real pos", cell1.getText() + "=4=" + cellPos);
-                findSelected(cellPos < sizeOfTable-nbColumns, cell1, cell2, cellColor, VisiteurTableLayout(cell2));
+                findSelected(cellPos < sizeOfTable-nbColumns, cell1,  cellColor, VisiteurTableLayoutGetIdx(cell1) + 1, cellPos+nbColumns);
                 ++test;
             }
         }
@@ -166,26 +166,28 @@ public final class Game extends AbstractBaseActivity {
         cell1.setCellIsVerified(true);
     }
 
-    private TableRow VisiteurTableLayout(Cell cell){
+    private int VisiteurTableLayoutGetIdx(Cell cell){
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
             if((rows.indexOfChild(cell)) >= 0){
-                return rows;
+                return rows.indexOfChild(cell);
             }
         }
-        return null;
+        return -1;
     }
 
-    private int findSelected(boolean passCondition, Cell cell1, Cell cell2, int cellColor, TableRow row){
-        if(passCondition && row != null){
+    private int findSelected(boolean passCondition, Cell cell1, int cellColor,  int rowIdx, int idx){
+        if(passCondition){
+            TableRow row = (TableRow)gameTable.getChildAt(rowIdx);
+            Cell cell2 = (Cell)row.getChildAt(idx);
             if(row.indexOfChild(cell2) != -1){
                 if(!((Cell)row.getChildAt(row.indexOfChild(cell2))).getCellIsVerified()){
                     return checkColor(cell1, cell2, cellColor);
                 }
             }
-            Log.d("passConditionButFailRow", cell1.getText() +" " + cell2.getText());
+            Log.d("passConditionButFailRow", cell1.getText() +" " + cell2.getText() + " with " + row.indexOfChild(cell2));
         }
-        Log.d("failCondition1", cell1.getText() +" " + cell2.getText());
+        Log.d("failCondition1", cell1.getText() +" ");
 
         return 0;
     }
@@ -197,7 +199,7 @@ public final class Game extends AbstractBaseActivity {
         colorVerifiedCellArrays.add(cell2);
         if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
             Log.d("checkColor", "success with " + cell1.getText() + cell2.getText() + " <===================");
-            findSelectedManager(cell2, cell1, cellColor);
+            findSelectedManager(cell2, cellColor);
             Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
             return 1;
         }
