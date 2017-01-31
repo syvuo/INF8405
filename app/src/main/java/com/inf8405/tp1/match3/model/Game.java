@@ -84,7 +84,6 @@ public final class Game extends AbstractBaseActivity {
                     Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
                     Log.d("non valid move", "non valid move");
-                    //swapBtn(selectedCellArrays);
                 }
                 clearMatchFoundArrays();
                 ++i;
@@ -95,7 +94,7 @@ public final class Game extends AbstractBaseActivity {
                 //swapBtn(selectedCellArrays);
             } else {
                 printAllTable();
-                swapBtn(context, selectedCellArrays);
+                swapBtn(context, selectedCellArrays.get(1), selectedCellArrays.get(0));
                 printAllTable();
             }
             clearMatchFoundArrays();
@@ -252,9 +251,9 @@ public final class Game extends AbstractBaseActivity {
         int idx2 = -1;
         int rowIdx1 = -1;
         int rowIdx2 = -1;
-        TableRow tr1 = new TableRow(context);
-        TableRow tr2 = new TableRow(context);
-        TableRow trTemp = new TableRow(context);
+        TableRow tr1;
+        TableRow tr2;
+        List<View> trTemp = new ArrayList<>();
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
             if((rows.indexOfChild(cell1)) >= 0){
@@ -271,20 +270,24 @@ public final class Game extends AbstractBaseActivity {
                 break;
             }
         }
+        tr1 = (TableRow)gameTable.getChildAt(idx1);
+        tr2 = (TableRow)gameTable.getChildAt(idx2);
         if(rowIdx1 == rowIdx2 && rowIdx1 >= 0){
             for (int i=0; i < tr1.getChildCount(); ++i){
                 if(i != idx1 && i != idx2){
-                    trTemp.addView(tr1.getChildAt(i));
+                    trTemp.add(tr1.getChildAt(i));
                 } else if (i == idx1 ){
                     // Swap 1 a 2
-                    trTemp.addView(tr1.getChildAt(idx2));
+                    trTemp.add(tr1.getChildAt(idx2));
                 } else if (i == idx2) {
                     // Swap 2 a 1
-                    trTemp.addView(tr1.getChildAt(idx1));
+                    trTemp.add(tr1.getChildAt(idx1));
                 }
             }
             tr1.removeAllViews();
-            tr1 = trTemp;
+            for(View view : trTemp){
+                tr1.addView(view);
+            }
             Log.d("trTemp", printTable(tr1));
         } else {
             Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
@@ -300,9 +303,10 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void printAllTable(){
-        String test = "";
+
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
+            String test = "";
             test += printTable(rows);
             Log.d("allTable",test);
         }
