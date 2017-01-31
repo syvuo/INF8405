@@ -74,7 +74,7 @@ public final class Game extends AbstractBaseActivity {
                     foundMatch3 = true;
                     int idx = matchFoundArrays.indexOf(selectedCellArrays.get(0));
                     Log.d("idx", ""+idx);
-                    String matchFoundArrayString = "";
+                    String matchFoundArrayString = ""; //
                     for(int x = 0; x < matchFoundArrays.size(); ++x){
                         Cell cell = matchFoundArrays.get(x);
                         matchFoundArrayString+= cell.getText() + " ";
