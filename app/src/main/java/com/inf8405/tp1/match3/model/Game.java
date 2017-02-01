@@ -257,6 +257,14 @@ public final class Game extends AbstractBaseActivity {
         int idx2 = -1;
         int rowIdx1 = -1;
         int rowIdx2 = -1;
+        final CharSequence t1 = cell1.getText();
+        final CharSequence t2 = cell2.getText();
+
+        // Unique use because in the findSelectedManager method we parse the cell text to get its cellPos.
+        // But the cellPos text does no longer correspond to its real cell postion. its counter part is!
+        cell1.setText(t2);
+        cell2.setText(t1);
+
         TableRow tr1;
         TableRow tr2;
         List<View> trTemp = new ArrayList<>();
