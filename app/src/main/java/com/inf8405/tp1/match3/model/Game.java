@@ -90,20 +90,13 @@ public final class Game extends AbstractBaseActivity {
                 ++i;
                 --j;
             }
-            if(foundMatch3){
-                Log.d("swap", "swap");
-                //swapBtn(selectedCellArrays);
-                foundMatch3 = false;
-            } else {
-                //printAllTable();
+            if(!foundMatch3){
                 swapBtn(context, selectedCellArrays.get(1), selectedCellArrays.get(0));
-                //printAllTable();
             }
             clearMatchFoundArrays();
             clearColorVerifiedArray();
             clearSelectedArray();
         }
-
     }
 
     public void setTableLayout(TableLayout tl){
@@ -155,13 +148,9 @@ public final class Game extends AbstractBaseActivity {
         }
         catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
-            Log.e("cellpos", String.valueOf(cellPos));
-            Log.e("testpos", String.valueOf(test));
         }
         catch (IndexOutOfBoundsException e){
             e.printStackTrace();
-            Log.e("cellpos", String.valueOf(cellPos));
-            Log.e("testpos", String.valueOf(test));
         }
         cell1.setCellIsVerified(true);
     }
@@ -190,14 +179,12 @@ public final class Game extends AbstractBaseActivity {
                 }
             }
         Log.d("failCondition1", cell1.getText() +" ");
-
         return 0;
     }
 
     private int checkColor(Cell cell1, Cell cell2, int cellColor){
 
         cell2.setCellIsVerified(true);
-
         colorVerifiedCellArrays.add(cell2);
         if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
             Log.d("checkColor", "success with " + cell1.getText() + cell2.getText() + " <===================");
@@ -212,7 +199,6 @@ public final class Game extends AbstractBaseActivity {
 
 
     private void clearSelectedArray(){
-        Log.d("sa","Clearing");
         for(Cell cell : selectedCellArrays){
             if(cell.isSelected()){
                 cell.setSelected(false);
@@ -223,7 +209,6 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void clearColorVerifiedArray(){
-        Log.d("cva","Clearing");
         for(Cell cell : colorVerifiedCellArrays){
             if(cell.getCellIsVerified()){
                 cell.setCellIsVerified(false);
@@ -234,7 +219,6 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void clearMatchFoundArrays(){
-        Log.d("mfa","Clearing");
         matchFoundArrays.clear();
         matchFoundArrays = new ArrayList<>();
     }
@@ -247,7 +231,6 @@ public final class Game extends AbstractBaseActivity {
         catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
     private void swapBtn(Context context, Cell cell1, Cell cell2){
@@ -288,7 +271,10 @@ public final class Game extends AbstractBaseActivity {
         if(Math.abs(idx1 - idx2) > 1 ){
             return;
         }
-        if(Math.abs(idx1 - idx2) != 0 && Math.abs(rowIdx1 - rowIdx1) >= 1){
+        if(Math.abs(idx1 - idx2) != 0 && Math.abs(rowIdx1 - rowIdx2) >= 1){
+            return;
+        }
+        if(Math.abs(rowIdx1 - rowIdx2) > 1){
             return;
         }
         tr1 = (TableRow)gameTable.getChildAt(rowIdx1);
@@ -314,7 +300,6 @@ public final class Game extends AbstractBaseActivity {
             for(View view : trTemp){
                 tr1.addView(view);
             }
-            Log.d("trTemp", printTable(tr1));
         } else if(Math.abs(idx1-idx2) == 0){
             Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
             Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
@@ -322,9 +307,6 @@ public final class Game extends AbstractBaseActivity {
             tr2.removeView(cell2);
             tr1.addView(cellTemp2,idx1);
             tr2.addView(cellTemp1,idx2);
-
-            Log.d("tr1", printTable(tr1));
-            Log.d("tr2", printTable(tr2));
         }
     }
 
@@ -391,7 +373,6 @@ public final class Game extends AbstractBaseActivity {
                                 selectedCellArrays.add(cell);
                             }
                         }
-
                         //touch is within this child
                         if(event.getAction() == MotionEvent.ACTION_UP){
                             //touch has ended
@@ -421,52 +402,6 @@ public final class Game extends AbstractBaseActivity {
     };
 
     private void CheckIfAdjacent(Context context, List<Cell> selectedCellArrays) {
-        //Cell cell1 = selectedCellArrays.get(0);
-        //Cell cell2 = selectedCellArrays.get(1);
         swapBtn(context, selectedCellArrays);
     }
 }
-/*
-    final float x0 = selectedCellArrays.get(0).getX();
-    final float x1 = selectedCellArrays.get(1).getX();
-    final float y0 = selectedCellArrays.get(0).getY();
-    final float y1 = selectedCellArrays.get(1).getY();
-    final CharSequence t0 = selectedCellArrays.get(0).getText();
-    final CharSequence t1 = selectedCellArrays.get(1).getText();
-    final int c0 = selectedCellArrays.get(0).getCurrentTextColor();
-    final int c1 = selectedCellArrays.get(1).getCurrentTextColor();
-            selectedCellArrays.get(0).setX(x1);
-            selectedCellArrays.get(0).setY(y1);
-            selectedCellArrays.get(1).setX(x0);
-            selectedCellArrays.get(1).setY(y0);
-            selectedCellArrays.get(0).setText(t1);
-            selectedCellArrays.get(1).setText(t0);
-            selectedCellArrays.get(0).setTextColor(c1);
-            selectedCellArrays.get(1).setTextColor(c0);*/
-
-            /*cellArrays.get(Integer.parseInt(String.valueOf(t0))).setX(x1);
-            cellArrays.get(Integer.parseInt(String.valueOf(t0))).setY(y1);
-            cellArrays.get(Integer.parseInt(String.valueOf(t1))).setX(x0);
-            cellArrays.get(Integer.parseInt(String.valueOf(t1))).setY(y0);
-            cellArrays.get(Integer.parseInt(String.valueOf(t0))).setText(t1);
-            cellArrays.get(Integer.parseInt(String.valueOf(t1))).setText(t0);
-            cellArrays.get(Integer.parseInt(String.valueOf(t0))).setTextColor(c1);
-            cellArrays.get(Integer.parseInt(String.valueOf(t1))).setTextColor(c0);*/
-
-/*
-                selectedCellArrays.get(0).setX(x0);
-                selectedCellArrays.get(0).setY(y0);
-                selectedCellArrays.get(1).setX(x1);
-                selectedCellArrays.get(1).setY(y1);
-                selectedCellArrays.get(0).setText(t0);
-                selectedCellArrays.get(1).setText(t1);
-                selectedCellArrays.get(0).setTextColor(c0);
-                selectedCellArrays.get(1).setTextColor(c1);*/
-                /*cellArrays.get(Integer.parseInt(String.valueOf(t0))).setX(x0);
-                cellArrays.get(Integer.parseInt(String.valueOf(t0))).setY(y0);
-                cellArrays.get(Integer.parseInt(String.valueOf(t1))).setX(x1);
-                cellArrays.get(Integer.parseInt(String.valueOf(t1))).setY(y1);
-                cellArrays.get(Integer.parseInt(String.valueOf(t0))).setText(t0);
-                cellArrays.get(Integer.parseInt(String.valueOf(t1))).setText(t1);
-                cellArrays.get(Integer.parseInt(String.valueOf(t0))).setTextColor(c0);
-                cellArrays.get(Integer.parseInt(String.valueOf(t1))).setTextColor(c1);*/
