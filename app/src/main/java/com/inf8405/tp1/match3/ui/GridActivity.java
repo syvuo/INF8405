@@ -149,6 +149,7 @@ public class GridActivity extends AbstractBaseActivity {
         int btnPos = 0;
         for (int y = 0; y < tableRows; y++) {
             final TableRow rows = new TableRow(this);
+            rows.setId(View.generateViewId());
             table.addView(rows);
             for (int x = 0; x < tableColumns; x++) {
                 rows.addView(createButton(this, rand, btnPos));
@@ -162,6 +163,7 @@ public class GridActivity extends AbstractBaseActivity {
     }
 
     private Button createButton(final GridActivity gridActivity, final Random rand, int text) {
+
         final Cell btn = new Cell(this);
         int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);

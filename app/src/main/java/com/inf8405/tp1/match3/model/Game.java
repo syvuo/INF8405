@@ -13,6 +13,7 @@ import android.widget.TableRow;
 
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public final class Game extends AbstractBaseActivity {
 
     public void clearData() {
         //cellArrays = new ArrayList<>();
-        selectedCellArrays = new ArrayList<>();
+        selectedCellArrays =  new ArrayList<>();;
     }
 
     public void scanCells(Context context) {
@@ -67,13 +68,11 @@ public final class Game extends AbstractBaseActivity {
             int j = 1;
             boolean foundMatch3 = false;
             while(i < selectedCellArrays.size() && j >= 0){
-                Log.d("selectedArraySize", selectedCellArrays.size()+ "");
+                //Log.d("selectedArraySize", selectedCellArrays.size()+ "");
                 findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(i).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
-                    int idx = matchFoundArrays.indexOf(selectedCellArrays.get(0));
-                    Log.d("idx", ""+idx);
                     String matchFoundArrayString = ""; //
                     for(int x = 0; x < matchFoundArrays.size(); ++x){
                         Cell cell = matchFoundArrays.get(x);
@@ -82,9 +81,9 @@ public final class Game extends AbstractBaseActivity {
                         cell.setCellIsVerified(false);
                         cell.getBackground().setAlpha(0);
                     }
-                    Log.d("matchFoundArrayString", matchFoundArrayString);
+                    //Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
-                    Log.d("non valid move", "non valid move");
+                    //Log.d("non valid move", "non valid move");
                 }
                 clearMatchFoundArrays();
                 ++i;
@@ -112,7 +111,7 @@ public final class Game extends AbstractBaseActivity {
     }
 
     public void addSelectedToArray(Cell cell){
-        if(!selectedCellArrays.contains(cell)){
+        if(!selectedCellArrays.contains(cell) && selectedCellArrays.size()<=1){
             selectedCellArrays.add(cell);
         }
     }
@@ -129,19 +128,19 @@ public final class Game extends AbstractBaseActivity {
         try{
             if((cellPos = Integer.parseInt(String.valueOf(cell1.getText()))) >= 0){
                 // pour cell position 1 (top left corner)
-                Log.d("real pos", cell1.getText() + "=1=" + cellPos);
+                //Log.d("real pos", cell1.getText() + "=1=" + cellPos);
                 findSelected((cellPos)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), (cellPos%nbColumns)-1);
                 ++test; ///
                 // pour cell dernier position
-                Log.d("real pos", cell1.getText() + "=2=" + cellPos);
+                //Log.d("real pos", cell1.getText() + "=2=" + cellPos);
                 findSelected((cellPos+1)%(nbColumns) != 0, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1), (cellPos%nbColumns)+1);
                 ++test;
                 // pour cell netant pas a la premiere ligne
-                Log.d("real pos", cell1.getText() + "=3=" + cellPos);
+                //Log.d("real pos", cell1.getText() + "=3=" + cellPos);
                 findSelected(cellPos > nbColumns-1, cell1, cellColor, VisiteurTableLayoutGetIdx(cell1)-1, cellPos%nbColumns);
                 ++test;
                 // pour cell netant pas a la derniere ligne
-                Log.d("real pos", cell1.getText() + "=4=" + cellPos);
+                //Log.d("real pos", cell1.getText() + "=4=" + cellPos);
                 findSelected(cellPos < sizeOfTable-nbColumns, cell1,  cellColor, VisiteurTableLayoutGetIdx(cell1) + 1, cellPos%nbColumns);
                 ++test;
             }
@@ -175,10 +174,10 @@ public final class Game extends AbstractBaseActivity {
                             return checkColor(cell1, cell2, cellColor);
                         }
                     }
-                    Log.d("passConditionButFailRow", (cell1 == null? "": cell1.getText()) +" " + (cell2 == null? "": cell2.getText()) + " with " + row.indexOfChild(cell2));
+                    //Log.d("passConditionButFailRow", (cell1 == null? "": cell1.getText()) +" " + (cell2 == null? "": cell2.getText()) + " with " + row.indexOfChild(cell2));
                 }
             }
-        Log.d("failCondition1", cell1.getText() +" ");
+        //Log.d("failCondition1", cell1.getText() +" ");
         return 0;
     }
 
@@ -187,13 +186,13 @@ public final class Game extends AbstractBaseActivity {
         cell2.setCellIsVerified(true);
         colorVerifiedCellArrays.add(cell2);
         if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
-            Log.d("checkColor", "success with " + cell1.getText() + cell2.getText() + " <===================");
+            //Log.d("checkColor", "success with " + cell1.getText() + cell2.getText() + " <===================");
             findSelectedManager(cell2, cellColor);
-            Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
+            //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
             return 1;
         }
-        Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
-        Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
+        //Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
+        //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
         return 0;
     }
 
@@ -204,7 +203,6 @@ public final class Game extends AbstractBaseActivity {
                 cell.setSelected(false);
             }
         }
-        selectedCellArrays.clear();
         selectedCellArrays = new ArrayList<>();
     }
 
@@ -235,7 +233,7 @@ public final class Game extends AbstractBaseActivity {
 
     private void swapBtn(Context context, Cell cell1, Cell cell2){
         //exchangeButtons(cell1, cell2);
-        Log.d("swapping", cell1.getText() + " " + cell2.getText());
+        //Log.d("swapping", cell1.getText() + " " + cell2.getText());
         int idx1 = -1;
         int idx2 = -1;
         int rowIdx1 = -1;
@@ -403,5 +401,9 @@ public final class Game extends AbstractBaseActivity {
 
     private void CheckIfAdjacent(Context context, List<Cell> selectedCellArrays) {
         swapBtn(context, selectedCellArrays);
+    }
+
+    public int getNbColumns() {
+        return nbColumns;
     }
 }
