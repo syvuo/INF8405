@@ -1,8 +1,9 @@
 package com.inf8405.tp1.match3.model;
 
+import android.app.Activity;
 import android.content.Context;
-import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -10,11 +11,8 @@ import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -245,6 +243,11 @@ public final class Game extends AbstractBaseActivity {
         // But the cellPos text does no longer correspond to its real cell postion. its counter part is!
         cell1.setText(t2);
         cell2.setText(t1);
+        cell1.setId(Integer.parseInt(t2.toString()));
+        cell2.setId(Integer.parseInt(t1.toString()));
+
+        Log.d("swap: cell 1 ", cell1.getText() + " " + cell1.getId());
+        Log.d("swap: cell 2 ", cell2.getText() + " " + cell2.getId());
 
         TableRow tr1;
         TableRow tr2;
