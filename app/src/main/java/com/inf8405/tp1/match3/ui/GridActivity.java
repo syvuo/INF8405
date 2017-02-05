@@ -15,6 +15,9 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import com.inf8405.tp1.match3.R;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -30,6 +33,7 @@ public class GridActivity extends AbstractBaseActivity {
     private static final int DEFAULT_LEVEL = 0;
     private static TableLayout table = null;
     private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
+    private static List<Cell> cells = new ArrayList<Cell>();
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
 
@@ -147,13 +151,38 @@ public class GridActivity extends AbstractBaseActivity {
 
         // Generate table grid
         int btnPos = 0;
-        for (int y = 0; y < tableRows; y++) {
+        for (int y = 0; y < tableRows; ++y) {
             final TableRow rows = new TableRow(this);
-            rows.setId(View.generateViewId());
+            rows.setId(rows.generateViewId());
             table.addView(rows);
-            for (int x = 0; x < tableColumns; x++) {
-                rows.addView(createButton(this, rand, btnPos));
+            for (int x = 0; x < tableColumns; ++x) {
+                Button btn = createButton(this, rand, btnPos);
+                cells.add((Cell)btn);
+                rows.addView(btn);
                 ++btnPos;
+            }
+        }
+        for (int y = 0; y < tableRows; ++y) {
+            TableRow row = (TableRow)table.getChildAt(y);
+            for (int x = 0; x < tableColumns; ++x) {
+                Cell cell = cells.get(y * tableColumns + x);
+                // Bottom neighbour
+                if (y < tableRows - 1) {
+                    cell.setBottomCell(cells.get((y + 1) * tableColumns + x));
+                }
+                // Right neighbour
+                if (x < tableColumns - 1) {
+                    cell.setRightCell(cells.get(y * tableColumns + x + 1));
+                }
+                // Top neighbour
+                if (y > 0) {
+                    cell.setTopCell(cells.get((y - 1) * tableColumns + x));
+                }
+                // Left neighbour
+                if (x > 0) {
+                    cell.setLeftCell(cells.get(y * tableColumns + x - 1));
+                }
+                cell.setParentLayout(row);
             }
         }
         gameMatch3.setTableColumns(tableColumns);

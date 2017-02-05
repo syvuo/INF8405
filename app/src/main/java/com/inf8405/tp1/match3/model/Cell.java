@@ -25,7 +25,7 @@ public class Cell extends Button{
     private Cell rightNeighbour;
     private Cell bottomNeighbour;
     private Cell leftNeighbour;
-    private GridLayout parent;
+    private TableRow parent;
     public Cell(Context context) {
         super(context);
     }
@@ -46,6 +46,36 @@ public class Cell extends Button{
     public void setLeftCell(Cell cell) {
         leftNeighbour = cell;
     }
+
+    public void setParentLayout(TableRow parent) {
+        this.parent = parent;
+    }
+
+    public Cell getTopCell() {
+        return topNeighbour;
+    }
+
+    public Cell getRightCell() {
+        return rightNeighbour;
+    }
+
+    public Cell getBottomCell() {
+        return bottomNeighbour;
+    }
+
+    public Cell getLeftCell() {
+        return leftNeighbour;
+    }
+
+    public TableRow getParentLayout() {
+        return this.parent;
+    }
+
+    public void setCellSurrounding(int nbCol, int nbRow){
+
+    }
+
+
 /*
     public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final Game instance){
 
@@ -180,7 +210,5 @@ public class Cell extends Button{
         return isMatched;
     }
 
-    public void setParent(GridLayout parent) {
-        this.parent = parent;
-    }
+
 }
