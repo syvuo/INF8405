@@ -35,11 +35,10 @@ public class GridActivity extends AbstractBaseActivity {
     private static int level = 0;
     private static final int DEFAULT_LEVEL = 0;
     private static GridLayout table = null;
-    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
     private static List<Cell> cells = new ArrayList<Cell>();
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
-    final int CELL_SPACING = 1;
+    int cellSpacing = 1;
     private int tableRows = 8;
     private int tableColumns = 8;
 
@@ -96,6 +95,8 @@ public class GridActivity extends AbstractBaseActivity {
             // Close or back button
             case R.id.action_close:
             case android.R.id.home:
+                table.removeAllViews();
+                table = null;
                 clearAttributes();
                 closeAppDialog(SetupActivity.class);
                 //NavUtils.navigateUpFromSameTask(this);
@@ -142,10 +143,12 @@ public class GridActivity extends AbstractBaseActivity {
         //Intent intent = new Intent(GridActivity.this, MainActivity.class);
         //moveTaskToBack(true);
         //startActivity(intent);
+        table.removeAllViews();
         closeAppDialog();
         clearAttributes();
     }
     private void setupGrid(Bundle bundleExtra){
+        cellSpacing = gameMatch3.getCellSpacing();
         String extra = bundleExtra.get("level").toString();
         level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : DEFAULT_LEVEL;
 
@@ -178,8 +181,10 @@ public class GridActivity extends AbstractBaseActivity {
         int btnPos = 0;
         for (int y = 0; y < tableRows; ++y) {
             for (int x = 0; x < tableColumns; ++x) {
-                Cell btn = new Cell(this, x, y, table);
-                btn = createButton(this, rand, btnPos, btn);
+                //Cell btn = new Cell(this, x, y, table);
+                Cell btn = new Cell(this, rand, btnPos, table);
+                btn.overrideEventListener(btn, gameMatch3);
+                //btn = createButton(this, rand, btnPos, btn);
                 cells.add(btn);
                 //btn.setGravity(Gravity.FILL);
                 table.addView(btn);
@@ -199,9 +204,9 @@ public class GridActivity extends AbstractBaseActivity {
                             for (int xPos = 0; xPos < tableColumns; xPos++) {
                                 GridLayout.LayoutParams params =
                                         (GridLayout.LayoutParams) cells.get(yPos * tableColumns + xPos).getLayoutParams();
-                                params.width = cellWidth - 2 * CELL_SPACING;
-                                params.height = cellHeight - 2 * CELL_SPACING;
-                                params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
+                                params.width = cellWidth - 2 * cellSpacing;
+                                params.height = cellHeight - 2 * cellSpacing;
+                                params.setMargins(cellSpacing, cellSpacing, cellSpacing, cellSpacing);
                                 cells.get(yPos * tableColumns + xPos).setLayoutParams(params);
                                 //cells.get(yPos * tableColumns + xPos).setCellId(yPos * tableColumns + xPos);
                             }
@@ -233,57 +238,12 @@ public class GridActivity extends AbstractBaseActivity {
                     }
                 }
         );
-        /*
-        for (int y = 0; y < tableRows; ++y) {
-            for (int x = 0; x < tableColumns; ++x) {
-                Cell cell = cells.get(y * tableColumns + x);
-                // Bottom neighbour
-                if (y < tableRows - 1) {
-                    cell.setBottomCell(cells.get((y + 1) * tableColumns + x));
-                }
-                // Right neighbour
-                if (x < tableColumns - 1) {
-                    cell.setRightCell(cells.get(y * tableColumns + x + 1));
-                }
-                // Top neighbour
-                if (y > 0) {
-                    cell.setTopCell(cells.get((y - 1) * tableColumns + x));
-                }
-                // Left neighbour
-                if (x > 0) {
-                    cell.setLeftCell(cells.get(y * tableColumns + x - 1));
-                }
-            }
-        }*/
+
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(true);
     }
-
-    private Cell createButton(final GridActivity gridActivity, final Random rand, int text, Cell btn) {
-
-        int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
-        //params.weight = 1;
-        //btn.setLayoutParams(params);
-
-
-        //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
-        //btn.setBackground(cd);
-        btn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape));
-
-        final GradientDrawable bgShape = (GradientDrawable) btn.getBackground();
-        bgShape.setColor(ContextCompat.getColor(this, colorTemp));
-
-
-        btn.setText(String.valueOf(text));
-        btn.setTextColor(ContextCompat.getColor(this, colorTemp));
-
-        btn.overrideEventListener(btn, gridActivity, gameMatch3);
-        //gameMatch3.addCell(btn);
-        return btn;
-    }
-
 
     private void clearAttributes(){
         table = null;

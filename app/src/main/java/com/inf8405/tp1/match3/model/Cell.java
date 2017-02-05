@@ -1,17 +1,17 @@
 package com.inf8405.tp1.match3.model;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.Toast;
+import com.inf8405.tp1.match3.R;
+import java.util.Random;
 
-import com.inf8405.tp1.match3.ui.*;
 /**
  * Created by Lam on 1/27/2017.
  */
@@ -23,19 +23,41 @@ public class Cell extends Button{
     private boolean cellIsVerified = false;
     private boolean isMatched = false;
     private int xPosI = 0, yPosI = 0;
+
     private Cell topNeighbour;
     private Cell rightNeighbour;
     private Cell bottomNeighbour;
     private Cell leftNeighbour;
     private GridLayout parent;
+    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
+
     public Cell(Context context) {
         super(context);
     }
 
-
-    public Cell(Context context, int x, int y, GridLayout layout_parent) {
+    public Cell(Context context, final Random rand, int text, GridLayout layout){
         super(context);
-        parent = layout_parent;
+        parent = layout;
+        //TODO remove blue
+        int colorTemp;
+        if(rand == null)
+            colorTemp = colorsArray[0];
+        else
+            colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
+        //params.weight = 1;
+        //btn.setLayoutParams(params);
+
+
+        //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
+        //btn.setBackground(cd);
+        setBackground(ContextCompat.getDrawable(context, R.drawable.shape));
+
+        final GradientDrawable bgShape = (GradientDrawable) getBackground();
+        bgShape.setColor(ContextCompat.getColor(context, colorTemp));
+
+
+        setText(String.valueOf(text));
+        setTextColor(ContextCompat.getColor(context, colorTemp));
     }
 
 
@@ -133,7 +155,7 @@ public class Cell extends Button{
         });
     }*/
 
-    public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final Game instance){
+    public void overrideEventListener(final Cell cell, final Game instance){
         cell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
