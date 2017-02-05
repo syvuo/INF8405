@@ -20,7 +20,7 @@ public class Cell extends Button{
     //private DIR dir;
     private boolean cellIsVerified = false;
     private boolean isMatched = false;
-    private int x = 0, y = 0;
+    private int xPosI = 0, yPosI = 0;
     private Cell topNeighbour;
     private Cell rightNeighbour;
     private Cell bottomNeighbour;
@@ -70,11 +70,6 @@ public class Cell extends Button{
     public TableRow getParentLayout() {
         return this.parent;
     }
-
-    public void setCellSurrounding(int nbCol, int nbRow){
-
-    }
-
 
 /*
     public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final Game instance){
@@ -144,53 +139,61 @@ public class Cell extends Button{
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    v.getBackground().setAlpha(128);
+                    //v.getBackground().setAlpha(128);
                     v.setSelected(true);
+                    xPosI = (int)event.getX();
+                    yPosI = (int)event.getY();
                     instance.addSelectedToArray(cell);
                     v.invalidate();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    v.getBackground().setAlpha(255);
-                    v.invalidate();
+                    //v.getBackground().setAlpha(255);
+                    //v.invalidate();
+                    v.setSelected(true);
                     TableLayout tl = (TableLayout)v.getParent().getParent();
-                    tl.performClick();
+                    Cell cell2 = swipeCheckDirection(xPosI, yPosI, (int)event.getX(), (int)event.getY(), cell, instance);
+                    if(cell2 != null){
+                        instance.addSelectedToArray(cell2);
+                        tl.performClick();
+                    }
                 }
                 return true;
             }
         });
     }
 
-    private Cell SwipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
+    private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
         Cell cell2 = null;
-        View row = (View)cell.getParent();
         String dir = "";
         boolean horizontal = Math.abs(y - dy) < getHeight();
         // RIGHT
         if(dx > x && horizontal){
-            cell2 = (Cell)row.findViewById(cell.getId()+1);
+            cell2 = cell.getRightCell();
             dir = "RIGHT";
         }
         // LEFT
         else if (dx < x && horizontal){
-            cell2 = (Cell)row.findViewById(cell.getId()-1);
+            cell2 = cell.getLeftCell();
             dir = "LEFT";
         }
         // DOWN
         else if (dy > y && !horizontal) {
-            TableLayout tl = (TableLayout)row.getParent();
-            //TableRow row2 = (TableRow)tl.findViewById(row.getId()+1);
-            cell2 = (Cell)tl.findViewById(cell.getId()+instance.getNbColumns());
+            cell2 = cell.getBottomCell();
             dir = "DOWN";
         }
         // UP
         else if (dy < y && !horizontal){
-            TableLayout tl = (TableLayout)row.getParent();
-            //TableRow row2 = (TableRow)tl.findViewById(row.getId()-1);
-            cell2 = (Cell)tl.findViewById(cell.getId()-instance.getNbColumns());
+            cell2 = cell.getTopCell();
             dir = "UP";
         }
         Log.d("DIR", dir);
-        Log.d("cell1", " " + cell.getText());
-        Log.d("cell2", " " + cell2.getText());
+        try{
+            Log.d("cell1", " " + cell.getText());
+            Log.d("cell2", " " + cell2.getText());
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
         return cell2;
     }
 

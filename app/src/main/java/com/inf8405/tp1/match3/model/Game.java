@@ -122,44 +122,26 @@ public final class Game extends AbstractBaseActivity {
         }
         int cellColor = cellColorToCheck;
         int test = 0;
-        try{
-            // pour cell position 1 (top left corner)
-            //Log.d("real pos", cell1.getText() + "=1=" + cellPos);
-            // Check RIGHT
-            checkColor(cell1, cell1.getRightCell(), cellColor);
-            ++test; ///
-            // pour cell dernier position
-            //Log.d("real pos", cell1.getText() + "=2=" + cellPos);
-            // Check LEFT
-            checkColor(cell1, cell1.getLeftCell(), cellColor);
-            ++test;
-            // pour cell netant pas a la premiere ligne
-            //Log.d("real pos", cell1.getText() + "=3=" + cellPos);
-            // Check TOP
-            checkColor(cell1, cell1.getTopCell(), cellColor);
-            ++test;
-            // pour cell netant pas a la derniere ligne
-            //Log.d("real pos", cell1.getText() + "=4=" + cellPos);
-            // Check BOTTOM
-            checkColor(cell1, cell1.getBottomCell(), cellColor);
-        }
-        catch (ArrayIndexOutOfBoundsException e){
-            e.printStackTrace();
-        }
-        catch (IndexOutOfBoundsException e){
-            e.printStackTrace();
-        }
+        // pour cell position 1 (top left corner)
+        //Log.d("real pos", cell1.getText() + "=1=" + cellPos);
+        // Check RIGHT
+        checkColor(cell1, cell1.getRightCell(), cellColor);
+        ++test; ///
+        // pour cell dernier position
+        //Log.d("real pos", cell1.getText() + "=2=" + cellPos);
+        // Check LEFT
+        checkColor(cell1, cell1.getLeftCell(), cellColor);
+        ++test;
+        // pour cell netant pas a la premiere ligne
+        //Log.d("real pos", cell1.getText() + "=3=" + cellPos);
+        // Check TOP
+        checkColor(cell1, cell1.getTopCell(), cellColor);
+        ++test;
+        // pour cell netant pas a la derniere ligne
+        //Log.d("real pos", cell1.getText() + "=4=" + cellPos);
+        // Check BOTTOM
+        checkColor(cell1, cell1.getBottomCell(), cellColor);
         cell1.setCellIsVerified(true);
-    }
-
-    private int VisiteurTableLayoutGetIdx(Cell cell){
-        for (int i=0; i < gameTable.getChildCount(); ++i){
-            TableRow rows = (TableRow) gameTable.getChildAt(i);
-            if((rows.indexOfChild(cell)) >= 0){
-                return i;
-            }
-        }
-        return -1;
     }
 
     private int checkColor(Cell cell1, Cell cell2, int cellColor){
@@ -178,7 +160,6 @@ public final class Game extends AbstractBaseActivity {
         //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
         return 0;
     }
-
 
     private void clearSelectedArray(){
         for(Cell cell : selectedCellArrays){
@@ -323,7 +304,6 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void printAllTable(){
-
         for (int i=0; i < gameTable.getChildCount(); ++i){
             TableRow rows = (TableRow) gameTable.getChildAt(i);
             String test = "";
