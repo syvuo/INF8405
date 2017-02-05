@@ -7,11 +7,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import com.inf8405.tp1.match3.R;
@@ -31,11 +34,14 @@ public class GridActivity extends AbstractBaseActivity {
 
     private static int level = 0;
     private static final int DEFAULT_LEVEL = 0;
-    private static TableLayout table = null;
+    private static GridLayout table = null;
     private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
     private static List<Cell> cells = new ArrayList<Cell>();
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
+    final int CELL_SPACING = 1;
+    private int tableRows = 8;
+    private int tableColumns = 8;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
@@ -47,6 +53,24 @@ public class GridActivity extends AbstractBaseActivity {
         if(table == null){
             Bundle bundleExtra = intent.getExtras();
             setupGrid(bundleExtra);
+
+            table.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    switch(v.getId()) {
+                        case R.id.view_root:
+                            try{
+                                // TODO delete try catch
+                                gameMatch3.scanCells(getApplicationContext());
+                            }
+                            catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                }
+
+            });
         }
     }
 
@@ -125,8 +149,7 @@ public class GridActivity extends AbstractBaseActivity {
         String extra = bundleExtra.get("level").toString();
         level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : DEFAULT_LEVEL;
 
-        int tableRows = 8;
-        int tableColumns = 8;
+
         switch(level){
             case 1:
                 tableColumns = 5;
@@ -145,25 +168,73 @@ public class GridActivity extends AbstractBaseActivity {
             default: // for future usage
         }
         //popToast(level);
-        table = (TableLayout) findViewById(R.id.view_root);
+        table = (GridLayout) findViewById(R.id.view_root);
+        table.setColumnCount(tableColumns);
+        table.setRowCount(tableRows);
 
         Random rand = new Random();
 
         // Generate table grid
         int btnPos = 0;
         for (int y = 0; y < tableRows; ++y) {
-            final TableRow rows = new TableRow(this);
-            rows.setId(rows.generateViewId());
-            table.addView(rows);
             for (int x = 0; x < tableColumns; ++x) {
-                Button btn = createButton(this, rand, btnPos);
-                cells.add((Cell)btn);
-                rows.addView(btn);
+                Cell btn = new Cell(this, x, y, table);
+                btn = createButton(this, rand, btnPos, btn);
+                cells.add(btn);
+                //btn.setGravity(Gravity.FILL);
+                table.addView(btn);
                 ++btnPos;
             }
         }
+        table.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        int gridLayoutWidth = table.getWidth();
+                        int gridLayoutHeight = table.getHeight();
+                        int cellWidth = gridLayoutWidth / tableColumns;
+                        int cellHeight = gridLayoutHeight / tableRows;
+
+                        for (int yPos = 0; yPos < tableRows; yPos++) {
+                            for (int xPos = 0; xPos < tableColumns; xPos++) {
+                                GridLayout.LayoutParams params =
+                                        (GridLayout.LayoutParams) cells.get(yPos * tableColumns + xPos).getLayoutParams();
+                                params.width = cellWidth - 2 * CELL_SPACING;
+                                params.height = cellHeight - 2 * CELL_SPACING;
+                                params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
+                                cells.get(yPos * tableColumns + xPos).setLayoutParams(params);
+                                //cells.get(yPos * tableColumns + xPos).setCellId(yPos * tableColumns + xPos);
+                            }
+                        }
+                        // Register neighbours
+
+                        for (int y = 0; y < tableRows; ++y) {
+                            for (int x = 0; x < tableColumns; ++x) {
+                                Cell cell = cells.get(y * tableColumns + x);
+                                // Bottom neighbour
+                                if (y < tableRows - 1) {
+                                    cell.setBottomCell(cells.get((y + 1) * tableColumns + x));
+                                }
+                                // Right neighbour
+                                if (x < tableColumns - 1) {
+                                    cell.setRightCell(cells.get(y * tableColumns + x + 1));
+                                }
+                                // Top neighbour
+                                if (y > 0) {
+                                    cell.setTopCell(cells.get((y - 1) * tableColumns + x));
+                                }
+                                // Left neighbour
+                                if (x > 0) {
+                                    cell.setLeftCell(cells.get(y * tableColumns + x - 1));
+                                }
+                            }
+                        }
+                        table.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+        );
+        /*
         for (int y = 0; y < tableRows; ++y) {
-            TableRow row = (TableRow)table.getChildAt(y);
             for (int x = 0; x < tableColumns; ++x) {
                 Cell cell = cells.get(y * tableColumns + x);
                 // Bottom neighbour
@@ -182,22 +253,19 @@ public class GridActivity extends AbstractBaseActivity {
                 if (x > 0) {
                     cell.setLeftCell(cells.get(y * tableColumns + x - 1));
                 }
-                cell.setParentLayout(row);
             }
-        }
+        }*/
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(true);
     }
 
-    private Button createButton(final GridActivity gridActivity, final Random rand, int text) {
+    private Cell createButton(final GridActivity gridActivity, final Random rand, int text, Cell btn) {
 
-        final Cell btn = new Cell(this);
         int colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
-        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        params.weight = 1;
-        btn.setLayoutParams(params);
+        //params.weight = 1;
+        //btn.setLayoutParams(params);
 
 
         //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
@@ -216,19 +284,6 @@ public class GridActivity extends AbstractBaseActivity {
         return btn;
     }
 
-    public void tableClick(View view){
-        switch(view.getId()) {
-            case R.id.view_root:
-                try{
-                    // TODO delete try catch
-                    gameMatch3.scanCells(getApplicationContext());
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-                break;
-        }
-    }
 
     private void clearAttributes(){
         table = null;

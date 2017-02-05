@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
@@ -25,9 +26,15 @@ public class Cell extends Button{
     private Cell rightNeighbour;
     private Cell bottomNeighbour;
     private Cell leftNeighbour;
-    private TableRow parent;
+    private GridLayout parent;
     public Cell(Context context) {
         super(context);
+    }
+
+
+    public Cell(Context context, int x, int y, GridLayout layout_parent) {
+        super(context);
+        parent = layout_parent;
     }
 
 
@@ -47,7 +54,7 @@ public class Cell extends Button{
         leftNeighbour = cell;
     }
 
-    public void setParentLayout(TableRow parent) {
+    public void setParentLayout(GridLayout parent) {
         this.parent = parent;
     }
 
@@ -67,7 +74,7 @@ public class Cell extends Button{
         return leftNeighbour;
     }
 
-    public TableRow getParentLayout() {
+    public GridLayout getParentLayout() {
         return this.parent;
     }
 
@@ -149,7 +156,7 @@ public class Cell extends Button{
                     //v.getBackground().setAlpha(255);
                     //v.invalidate();
                     v.setSelected(true);
-                    TableLayout tl = (TableLayout)v.getParent().getParent();
+                    GridLayout tl = (GridLayout)v.getParent();
                     Cell cell2 = swipeCheckDirection(xPosI, yPosI, (int)event.getX(), (int)event.getY(), cell, instance);
                     if(cell2 != null){
                         instance.addSelectedToArray(cell2);
@@ -164,7 +171,7 @@ public class Cell extends Button{
     private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
         Cell cell2 = null;
         String dir = "";
-        boolean horizontal = Math.abs(y - dy) < getHeight();
+        boolean horizontal = Math.abs(y - dy) < getHeight()*2;
         // RIGHT
         if(dx > x && horizontal){
             cell2 = cell.getRightCell();
@@ -186,13 +193,9 @@ public class Cell extends Button{
             dir = "UP";
         }
         Log.d("DIR", dir);
-        try{
-            Log.d("cell1", " " + cell.getText());
-            Log.d("cell2", " " + cell2.getText());
-        }
-        catch (NullPointerException e){
-            e.printStackTrace();
-        }
+        if(cell != null) Log.d("cell1", " " + cell.getText());
+        if(cell2!= null) Log.d("cell2", " " + cell2.getText());
+
 
         return cell2;
     }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
+import android.widget.GridLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
@@ -31,7 +32,7 @@ public final class Game extends AbstractBaseActivity {
     private int sizeOfTable = -1;
     private float pressedDownX;
     private float pressedDownY;
-    private TableLayout gameTable;
+    private GridLayout gameTable;
 
     private Game(){}
 
@@ -60,7 +61,7 @@ public final class Game extends AbstractBaseActivity {
         String cellTest = "";
         if(selectedCellArrays.size() >= 2){
             //printAllTable();
-            swapBtn(context, selectedCellArrays.get(0), selectedCellArrays.get(1));
+            swapBtn(selectedCellArrays.get(0), selectedCellArrays.get(1));
             //printAllTable();
             int i = 0;
             int j = 1;
@@ -88,7 +89,19 @@ public final class Game extends AbstractBaseActivity {
                 --j;
             }
             if(!foundMatch3){
-                swapBtn(context, selectedCellArrays.get(1), selectedCellArrays.get(0));
+                swapBtn(selectedCellArrays.get(1), selectedCellArrays.get(0));
+            }
+            for(int x = 0; x < colorVerifiedCellArrays.size(); ++x){
+                Cell cell = colorVerifiedCellArrays.get(x);
+                if(cell == null){
+                    continue;
+                }
+                cell.setSelected(false);
+                cell.setCellIsVerified(false);
+                if(!cell.getCellIsMatched()){
+                    cell.getBackground().setAlpha(255);
+                    Log.d("255", cell.getText() + "");
+                }
             }
             clearMatchFoundArrays();
             clearColorVerifiedArray();
@@ -96,7 +109,7 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
-    public void setTableLayout(TableLayout tl){
+    public void setTableLayout(GridLayout tl){
         gameTable = tl;
     }
 
@@ -146,24 +159,27 @@ public final class Game extends AbstractBaseActivity {
 
     private int checkColor(Cell cell1, Cell cell2, int cellColor){
         if(cell2 != null && !cell2.getCellIsVerified()){
-            Log.d("checkColor", "success with " + cell1.getText() + " && " +cell2.getText() + " <===================");
+            Log.d("checkColor", cell1.getText() + " && " +cell2.getText());
             Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
             cell2.setCellIsVerified(true);
-            colorVerifiedCellArrays.add(cell2);
+
             if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
+                cell1.setCellIsMatched(true);
+                cell2.setCellIsMatched(true);
                 findSelectedManager(cell2, cellColor);
-                //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
+                Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
                 return 1;
             }
         }
         //Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
+        colorVerifiedCellArrays.add(cell2);
         return 0;
     }
 
     private void clearSelectedArray(){
         for(Cell cell : selectedCellArrays){
-            if(cell.isSelected()){
+            if(cell != null && cell.isSelected()){
                 cell.setSelected(false);
             }
         }
@@ -172,7 +188,7 @@ public final class Game extends AbstractBaseActivity {
 
     private void clearColorVerifiedArray(){
         for(Cell cell : colorVerifiedCellArrays){
-            if(cell.getCellIsVerified()){
+            if(cell != null && cell.getCellIsVerified()){
                 cell.setCellIsVerified(false);
             }
         }
@@ -185,166 +201,48 @@ public final class Game extends AbstractBaseActivity {
         matchFoundArrays = new ArrayList<>();
     }
 
-    private void swapBtn(Context context, List<Cell> arr){
-        // TODO DELETE TRY CATCH
-        try{
-            swapBtn(context, arr.get(0),arr.get(1));
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+    private void swapBtn(Cell cell1, Cell cell2){
 
-    private void swapBtn(Context context, Cell cell1, Cell cell2){
-        //exchangeButtons(cell1, cell2);
-        //Log.d("swapping", cell1.getText() + " " + cell2.getText());
-        int idx1 = -1;
-        int idx2 = -1;
-        int rowIdx1 = -1;
-        int rowIdx2 = -1;
         final CharSequence t1 = cell1.getText();
         final CharSequence t2 = cell2.getText();
-
-        // Unique use because in the findSelectedManager method we parse the cell text to get its cellPos.
-        // But the cellPos text does no longer correspond to its real cell postion. its counter part is!
-        cell1.setText(t2);
-        cell2.setText(t1);
-        cell1.setId(Integer.parseInt(t2.toString()));
-        cell2.setId(Integer.parseInt(t1.toString()));
-        exchangeSurroundingCells(cell1, cell2);
+        final int idx1 = gameTable.indexOfChild(cell1);
+        final int idx2 = gameTable.indexOfChild(cell2);
 
         Log.d("swap: cell 1 ", cell1.getText() + " " + cell1.getId());
         Log.d("swap: cell 2 ", cell2.getText() + " " + cell2.getId());
 
-        TableRow tr1;
-        TableRow tr2;
-        List<View> trTemp = new ArrayList<>();
-        for (int i=0; i < gameTable.getChildCount(); ++i){
-            TableRow rows = (TableRow) gameTable.getChildAt(i);
-            if((rows.indexOfChild(cell1)) >= 0){
-                idx1 = rows.indexOfChild(cell1);
-                tr1 = rows;
-                rowIdx1 = i;
-            }
-            if((rows.indexOfChild(cell2)) >= 0){
-                idx2 = rows.indexOfChild(cell2);
-                tr2 = rows;
-                rowIdx2 = i;
-            }
-            if(idx1 != -1 && idx2 != -1){
-                break;
-            }
-        }
-        // Illegal moves
-        if(Math.abs(idx1 - idx2) > 1 ){
-            return;
-        }
-        if(Math.abs(idx1 - idx2) != 0 && Math.abs(rowIdx1 - rowIdx2) >= 1){
-            return;
-        }
-        if(Math.abs(rowIdx1 - rowIdx2) > 1){
-            return;
-        }
-        tr1 = (TableRow)gameTable.getChildAt(rowIdx1);
-        tr2 = (TableRow)gameTable.getChildAt(rowIdx2);
-        if(rowIdx1 == rowIdx2 && rowIdx1 >= 0){
-            for (int i=0; i < tr1.getChildCount(); ++i){
-                if(i != idx1 && i != idx2){
-                    trTemp.add(tr1.getChildAt(i));
-                } else if (i == idx1 || i == idx2) {
-                    // Swap 1 a 2
-                    if (idx1 < idx2) {
-                        trTemp.add(tr1.getChildAt(idx2));
-                        trTemp.add(tr1.getChildAt(idx1));
-                        ++i;
-                    } else {
-                        trTemp.add(tr1.getChildAt(idx1));
-                        trTemp.add(tr1.getChildAt(idx2));
-                        ++i;
-                    }
-                }
-            }
-            tr1.removeAllViews();
-            for(View view : trTemp){
-                tr1.addView(view);
-            }
-        } else if(Math.abs(idx1-idx2) == 0){
-            Cell cellTemp1 = (Cell)tr1.getChildAt(idx1);
-            Cell cellTemp2 = (Cell)tr2.getChildAt(idx2);
-            tr1.removeView(cell1);
-            tr2.removeView(cell2);
-            tr1.addView(cellTemp2,idx1);
-            tr2.addView(cellTemp1,idx2);
-        }
+        gameTable.removeView(cell1);
+        gameTable.addView(cell1, idx2);
+        gameTable.removeView(cell2);
+        gameTable.addView(cell2, idx1);
+        updateSurroundingCells(cell1);
+        updateSurroundingCells(cell2);
+        printAllTable();
     }
 
-    private void exchangeSurroundingCells(Cell cell1, Cell cell2){
-        final Cell topNeighbour1 = cell1.getTopCell();
-        final Cell rightNeighbour1 = cell1.getRightCell();
-        final Cell bottomNeighbour1 = cell1.getBottomCell();
-        final Cell leftNeighbour1 = cell1.getLeftCell();
-        final TableRow parent1 = cell1.getParentLayout();
-        final Cell topNeighbour2 = cell2.getTopCell();
-        final Cell rightNeighbour2 = cell2.getRightCell();
-        final Cell bottomNeighbour2 = cell2.getBottomCell();
-        final Cell leftNeighbour2 = cell2.getLeftCell();
-        final TableRow parent2 = cell2.getParentLayout();
-
-        cell1.setTopCell(topNeighbour2);
-        cell1.setRightCell(rightNeighbour2);
-        cell1.setBottomCell(bottomNeighbour2);
-        cell1.setLeftCell(leftNeighbour2);
-        cell1.setParentLayout(parent2);
-
-        cell2.setTopCell(topNeighbour1);
-        cell2.setRightCell(rightNeighbour1);
-        cell2.setBottomCell(bottomNeighbour1);
-        cell2.setLeftCell(leftNeighbour1);
-        cell2.setParentLayout(parent1);
+    private void updateSurroundingCells(Cell cell){
+        final int idx = gameTable.indexOfChild(cell);
+        Cell cell2 = (Cell)gameTable.getChildAt(idx-gameTable.getColumnCount());
+        cell.setTopCell(cell2);
+        cell2 = (Cell)gameTable.getChildAt(idx+1);
+        cell.setRightCell(cell2);
+        cell2 = (Cell)gameTable.getChildAt(idx+gameTable.getColumnCount());
+        cell.setBottomCell(cell2);
+        cell2 = (Cell)gameTable.getChildAt(idx-1);
+        cell.setLeftCell(cell2);
     }
 
     private void printAllTable(){
-        for (int i=0; i < gameTable.getChildCount(); ++i){
-            TableRow rows = (TableRow) gameTable.getChildAt(i);
-            String test = "";
-            test += printTable(rows);
-            Log.d("allTable",test);
-        }
-    }
 
-    private String printTable(TableRow row){
         String test = "";
-        for(int i = 0; i < row.getChildCount(); ++i){
-            test += " " + ((Cell)row.getChildAt(i)).getText();
+        for (int i=0; i < gameTable.getChildCount(); ++i){
+
+            if(i%gameTable.getColumnCount() == 0){
+                test+="\n";
+            }
+            test += ((Cell)gameTable.getChildAt(i)).getText();
         }
-        return test;
-    }
-
-    private void exchangeButtons(Cell btn1, Cell btn2) {
-        // Create the animation set
-        AnimationSet exchangeAnimation = new AnimationSet(true);
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, btn2.getLeft(),
-                Animation.RELATIVE_TO_SELF, btn1.getLeft(),
-                Animation.RELATIVE_TO_SELF, btn2.getRight(),
-                Animation.RELATIVE_TO_SELF, btn1.getRight());
-        translate.setDuration(1500);
-        exchangeAnimation.addAnimation(translate);
-        //int fromX = btn1.getLeft();
-        //int fromY = btn1.getRight();
-        //int toX = btn2.getLeft();
-        //int toY = btn2.getRight();
-
-        AnimationSet exchangeAnimation1 = new AnimationSet(true);
-        TranslateAnimation translate1 = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, btn1.getLeft(),
-                Animation.RELATIVE_TO_SELF, btn2.getLeft(),
-                Animation.RELATIVE_TO_SELF, btn1.getRight(),
-                Animation.RELATIVE_TO_SELF, btn2.getRight());
-        translate1.setDuration(500);
-        exchangeAnimation1.addAnimation(translate1);
-        // EXECUTE btn1.startAnimation(exchangeAnimation);
-        btn2.startAnimation(exchangeAnimation1);
+        Log.d("allTable",test);
     }
 
     private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -392,10 +290,6 @@ public final class Game extends AbstractBaseActivity {
             return true;
         }
     };
-
-    private void CheckIfAdjacent(Context context, List<Cell> selectedCellArrays) {
-        swapBtn(context, selectedCellArrays);
-    }
 
     public int getNbColumns() {
         return nbColumns;
