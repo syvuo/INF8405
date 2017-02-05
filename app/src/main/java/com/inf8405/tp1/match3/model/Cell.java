@@ -9,6 +9,7 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import com.inf8405.tp1.match3.ui.*;
 /**
@@ -17,8 +18,8 @@ import com.inf8405.tp1.match3.ui.*;
 
 public class Cell extends Button{
 
-    //private enum DIR {CENTER, LEFT, RIGHT, UP, DOWN};
-    //private DIR dir;
+    private enum DIR {CENTER, LEFT, RIGHT, UP, DOWN};
+    private String dir;
     private boolean cellIsVerified = false;
     private boolean isMatched = false;
     private int xPosI = 0, yPosI = 0;
@@ -170,7 +171,6 @@ public class Cell extends Button{
 
     private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
         Cell cell2 = null;
-        String dir = "";
         boolean horizontal = Math.abs(y - dy) < getHeight()*2;
         // RIGHT
         if(dx > x && horizontal){
@@ -192,6 +192,7 @@ public class Cell extends Button{
             cell2 = cell.getTopCell();
             dir = "UP";
         }
+        Toast.makeText(getContext(), dir, Toast.LENGTH_SHORT).show();
         Log.d("DIR", dir);
         if(cell != null) Log.d("cell1", " " + cell.getText());
         if(cell2!= null) Log.d("cell2", " " + cell2.getText());
