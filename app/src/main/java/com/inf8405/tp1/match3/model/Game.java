@@ -334,7 +334,7 @@ public final class Game extends AbstractBaseActivity {
             for(int i = 0; i < nbSwitches+1; ++i){
                 swapBtn(cell, cell.getTopCell(), true);
             }
-
+            /*
             idx = gameTable.indexOfChild(cell);
             Random rand = new Random();
             //TODO use rand when done
@@ -360,7 +360,7 @@ public final class Game extends AbstractBaseActivity {
             params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
             btn.setLayoutParams(params);
             btn.overrideEventListener(btn, gameMatch3);
-            test += cell.getText() + "\t";
+            test += cell.getText() + "\t";*/
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);

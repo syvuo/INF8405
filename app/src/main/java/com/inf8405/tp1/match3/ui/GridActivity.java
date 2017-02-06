@@ -38,7 +38,7 @@ public class GridActivity extends AbstractBaseActivity {
     private static List<Cell> cells = new ArrayList<Cell>();
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
-    int cellSpacing = 1;
+    int cellSpacing = 5;
     private int tableRows = 8;
     private int tableColumns = 8;
 
@@ -47,7 +47,7 @@ public class GridActivity extends AbstractBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-
+        cells = new ArrayList<Cell>();
         setContentView(R.layout.grid_layout);
         if(table == null){
             Bundle bundleExtra = intent.getExtras();
@@ -103,6 +103,31 @@ public class GridActivity extends AbstractBaseActivity {
                 return true;
             // Refresh button
             case R.id.action_refresh:
+                table.removeAllViews();
+                table = null;
+                cells = new ArrayList<Cell>();
+                clearAttributes();
+                gameMatch3.clearData();
+                setupGrid(level);
+
+                table.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        switch(v.getId()) {
+                            case R.id.view_root:
+                                try{
+                                    // TODO delete try catch
+                                    gameMatch3.scanCells(getApplicationContext());
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
+                    }
+
+                });
+                //onCreate(new Bundle());
                 return true;
             case R.id.action_settings:
                 return true;
@@ -147,11 +172,15 @@ public class GridActivity extends AbstractBaseActivity {
         closeAppDialog();
         clearAttributes();
     }
+
     private void setupGrid(Bundle bundleExtra){
         cellSpacing = gameMatch3.getCellSpacing();
         String extra = bundleExtra.get("level").toString();
         level = extra != null ? Integer.valueOf(extra.substring(extra.length() - 1)) : DEFAULT_LEVEL;
+        setupGrid(level);
+    }
 
+    private void setupGrid(int level){
 
         switch(level){
             case 1:
@@ -171,9 +200,11 @@ public class GridActivity extends AbstractBaseActivity {
             default: // for future usage
         }
         //popToast(level);
+        table = new GridLayout(this);
         table = (GridLayout) findViewById(R.id.view_root);
         table.setColumnCount(tableColumns);
         table.setRowCount(tableRows);
+
 
         Random rand = new Random();
 
@@ -183,6 +214,7 @@ public class GridActivity extends AbstractBaseActivity {
             for (int x = 0; x < tableColumns; ++x) {
                 //Cell btn = new Cell(this, x, y, table);
                 Cell btn = new Cell(this, rand, btnPos, table);
+
                 btn.overrideEventListener(btn, gameMatch3);
                 //btn = createButton(this, rand, btnPos, btn);
                 cells.add(btn);
@@ -200,12 +232,15 @@ public class GridActivity extends AbstractBaseActivity {
                         int cellWidth = gridLayoutWidth / tableColumns;
                         int cellHeight = gridLayoutHeight / tableRows;
 
+                        Log.d("width", cellWidth + "" + " cell spacing " + cellSpacing);
+
                         for (int yPos = 0; yPos < tableRows; yPos++) {
                             for (int xPos = 0; xPos < tableColumns; xPos++) {
                                 GridLayout.LayoutParams params =
                                         (GridLayout.LayoutParams) cells.get(yPos * tableColumns + xPos).getLayoutParams();
                                 params.width = cellWidth - 2 * cellSpacing;
                                 params.height = cellHeight - 2 * cellSpacing;
+
                                 params.setMargins(cellSpacing, cellSpacing, cellSpacing, cellSpacing);
                                 cells.get(yPos * tableColumns + xPos).setLayoutParams(params);
                                 //cells.get(yPos * tableColumns + xPos).setCellId(yPos * tableColumns + xPos);

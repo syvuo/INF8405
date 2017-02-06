@@ -14,9 +14,6 @@
         android:background="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:numColumns="auto_fit"
         tools:context=".ui.GridActivity"
         android:theme="@android:style/Widget.DeviceDefault.GridView">
     </GridLayout>
