@@ -4,6 +4,7 @@
     <string name="close_message">Quitter le jeu? Vos donnees vont etre effacees!</string>
     <string name="refresh">Refreshing</string>
     <string name="rules">Regles du jeu blablabal</string>
+    <string name="allowed_level">Vous navez pas encore debloque ce niveau. Essayer le niveau :</string>
     <string name="score">Score</string>
     <string name="move">Move left</string>
     <string name="level1">Niveau 1</string>

@@ -2,6 +2,7 @@ package com.inf8405.tp1.match3.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,7 @@ public final class Game extends AbstractBaseActivity {
     private static Game singletonInstance = new Game();
     private Activity currentActivity;
     private boolean isStarted = false;
+
     private List<Cell> selectedCellArrays = new ArrayList<>();
     private List<Cell> colorVerifiedCellArrays = new ArrayList<>();
     private List<Cell> cellToRemoveArrays = new ArrayList<>();
@@ -40,6 +42,7 @@ public final class Game extends AbstractBaseActivity {
     private int currentMove = 0;
     private int scoreToWin = 100;
     private int currentScore = 0;
+    private int gameLevel = 0;
 
     private Game(){}
 
@@ -48,8 +51,10 @@ public final class Game extends AbstractBaseActivity {
     }
 
     public void setIsStarted(boolean value, Activity activity, int level) {
+        clearGame();
         currentActivity = activity;
-        setGameStatus(level);
+        gameLevel = level;
+        setGameStatus(gameLevel);
         isStarted = value;
         if(isStarted){
             sizeOfTable= nbColumns*nbRows;
@@ -63,6 +68,10 @@ public final class Game extends AbstractBaseActivity {
     public void clearData() {
         //cellArrays = new ArrayList<>();
         selectedCellArrays =  new ArrayList<>();;
+    }
+
+    public int getGameLevel(){
+        return gameLevel;
     }
 
     public int getCellSpacing(){
@@ -177,10 +186,20 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
+    private void clearGame(){
+        nbMoves = 100;
+        currentMove = 0;
+        scoreToWin = 100;
+        currentScore = 0;
+    }
+
     private void checkGameStatus(){
         if(currentMove > nbMoves){
             if(currentScore > scoreToWin){
                 // TODO VICTORY
+                Intent intent = new Intent(Game.this, GridActivity.class);
+                intent.putExtra("level", ++gameLevel);
+                startActivity(intent);
             } else {
                 // TODO DEFEAT
             }

@@ -47,30 +47,28 @@ public class GridActivity extends AbstractBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        cells = new ArrayList<Cell>();
+        cells = new ArrayList<>();
         setContentView(R.layout.grid_layout);
-        if(table == null){
-            Bundle bundleExtra = intent.getExtras();
-            setupGrid(bundleExtra);
 
-            table.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    switch(v.getId()) {
-                        case R.id.view_root:
-                            try{
-                                // TODO delete try catch
-                                gameMatch3.scanCells(getApplicationContext());
-                            }
-                            catch (Exception e){
-                                e.printStackTrace();
-                            }
-                            break;
-                    }
+        Bundle bundleExtra = intent.getExtras();
+        setupGrid(bundleExtra);
+
+        table.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                switch(v.getId()) {
+                    case R.id.view_root:
+                        try{
+                            // TODO delete try catch
+                            gameMatch3.scanCells(getApplicationContext());
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-
-            });
-        }
+            }
+        });
     }
 
     protected void onNewIntent(Intent intent)
