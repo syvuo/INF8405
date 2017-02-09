@@ -46,29 +46,16 @@ public class GridActivity extends AbstractBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startNewGame();
+    }
+
+    protected void startNewGame(){
         Intent intent = getIntent();
         cells = new ArrayList<>();
         setContentView(R.layout.grid_layout);
 
         Bundle bundleExtra = intent.getExtras();
         setupGrid(bundleExtra);
-
-        table.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                switch(v.getId()) {
-                    case R.id.view_root:
-                        try{
-                            // TODO delete try catch
-                            gameMatch3.scanCells(getApplicationContext());
-                        }
-                        catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-            }
-        });
     }
 
     protected void onNewIntent(Intent intent)
@@ -276,6 +263,23 @@ public class GridActivity extends AbstractBaseActivity {
         gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(true, this, level);
+
+        table.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                switch(v.getId()) {
+                    case R.id.view_root:
+                        try{
+                            // TODO delete try catch
+                            gameMatch3.scanCells(getApplicationContext());
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+            }
+        });
     }
 
     private void clearAttributes(){

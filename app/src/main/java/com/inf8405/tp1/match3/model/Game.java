@@ -1,18 +1,24 @@
 package com.inf8405.tp1.match3.model;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.inf8405.tp1.match3.MainActivity;
 import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.GridActivity;
+import com.inf8405.tp1.match3.ui.SetupActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,16 +197,16 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void checkGameStatus(){
-        if(currentMove > nbMoves){
+        if(currentMove < nbMoves){
             if(currentScore > scoreToWin){
                 // TODO VICTORY
-                Intent intent = new Intent(Game.this, GridActivity.class);
-                intent.putExtra("level", ++gameLevel);
-                clearData();
-                startActivity(intent);
-            } else {
-                // TODO DEFEAT
+                ++gameLevel;
+                victoryAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
             }
+        }
+        else {
+            // TODO DEFEAT
+            victoryAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
         }
         printGameStatus();
     }
@@ -334,15 +340,29 @@ public final class Game extends AbstractBaseActivity {
         Log.d("swap: cell 1 ", cell1.getText()+"");
         Log.d("swap: cell 2 ", cell2.getText()+"");
 
-        gameTable.removeView(cell1);
-        gameTable.addView(cell1, idx2);
-        gameTable.removeView(cell2);
-        gameTable.addView(cell2, idx1);
+        removeCellFromParent(cell1);
+        addCellToParent(cell1, idx2);
+        removeCellFromParent(cell2);
+        addCellToParent(cell2, idx1);
         updateSurroundingCells(cell1);
         if(!onRemoveState){
             updateSurroundingCells(cell2);
         }
         printAllTable();
+    }
+
+    private void addCellToParent(Cell cell, int idx){
+        if(gameTable.indexOfChild(cell) == -1){
+            gameTable.addView(cell, idx);
+        }
+    }
+
+    private void removeCellFromParent(Cell cell){
+        if(cell.getParent() != null){
+            GridLayout glP = (GridLayout)cell.getParent();
+            glP.removeView(cell);
+            Log.d("removeE", "error while removing cell1. Had to attempt twice");
+        }
     }
 
     private void updateSurroundingCells(Cell cell){
@@ -461,5 +481,29 @@ public final class Game extends AbstractBaseActivity {
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
+    }
+
+    protected void victoryAppDialog(String title, String msg) {
+        new AlertDialog.Builder(currentActivity)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(currentActivity, GridActivity.class);
+                        intent.putExtra("level", gameLevel);
+                        clearData();
+                        currentActivity.startActivity(intent);// continue with delete
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(currentActivity, SetupActivity.class);
+                        intent.putExtra("level", gameLevel);
+                        clearData();
+                        currentActivity.startActivity(intent);// continue with delete
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
     }
 }
