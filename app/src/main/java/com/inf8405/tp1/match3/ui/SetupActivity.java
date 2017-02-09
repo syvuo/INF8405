@@ -3,6 +3,7 @@ package com.inf8405.tp1.match3.ui;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -24,56 +25,71 @@ public class SetupActivity extends AbstractBaseActivity {
     private LinearLayout.LayoutParams layoutParams;
     private LinearLayout containerLayout;
     private PopupWindow popUpWindow;
-    private boolean isClicked = true;
     private LinearLayout setupLevelLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int levelAllowed = Game.getInstance().getGameLevel();
         setContentView(R.layout.level_menu);
         setupLevelLayout = (LinearLayout)findViewById(R.id.level);
-    }
+        popUpWindow = new PopupWindow(this);
+        containerLayout = new LinearLayout(this);
+        rulesMsg = new TextView(this);
+        rulesMsg.setText(setupLevelLayout.getResources().getString(R.string.allowed_level) + " " + levelAllowed);
+        rulesMsg.setBackgroundColor(Color.WHITE);
 
-    public void onClick(View v){
-        Button btn = (Button)v;
-        Intent intent = new Intent(SetupActivity.this, GridActivity.class);
-        int levelAllowed = Game.getInstance().getGameLevel();
-        int btnLevel = Integer.valueOf(btn.getText().toString().substring(btn.getText().length() - 1));
-        if(btnLevel <= levelAllowed){
-            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //gameMatch3.setIsStarted(false);
-            intent.putExtra("level", btn.getText());
-            startActivity(intent);
+        layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        containerLayout.setOrientation(LinearLayout.VERTICAL);
+        containerLayout.addView(rulesMsg, layoutParams);
+        popUpWindow.setContentView(containerLayout);
+
+        for(int i = 1; i < 5; ++i){
+
+            Button btn = new Button(this);
+            btn.setText("Niveau "+i);
+            LinearLayout.LayoutParams layoutParamsBtn = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            btn.setLayoutParams(layoutParamsBtn);
+            btn.setDuplicateParentStateEnabled(true);
+            btn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    Button btn = (Button)v;
+                    Intent intent = new Intent(SetupActivity.this, GridActivity.class);
+                    int levelAllowed = Game.getInstance().getGameLevel();
+                    int btnLevel = Integer.valueOf(btn.getText().toString().substring(btn.getText().length() - 1));
+                    if(btnLevel <= levelAllowed){
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //gameMatch3.setIsStarted(false);
+                        intent.putExtra("level", btnLevel);
+                        popUpWindow.dismiss();
+                        startActivity(intent);
+                    }
+                    else {
+
+                        popUpWindow.showAtLocation(setupLevelLayout, Gravity.CENTER, 0, 0);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // close your dialog
+                                popUpWindow.dismiss();
+                            }
+
+                        }, 3000); // 3,000 ms delay
+
+                    }
+                }
+            });
+            setupLevelLayout.addView(btn);
         }
-        else {
-            popUpWindow = new PopupWindow(this);
-            containerLayout = new LinearLayout(this);
-            rulesMsg = new TextView(this);
-            rulesMsg.setText(setupLevelLayout.getResources().getString(R.string.allowed_level) + " " + ++levelAllowed);
-            rulesMsg.setBackgroundColor(Color.WHITE);
-
-            layoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            containerLayout.setOrientation(LinearLayout.VERTICAL);
-            containerLayout.addView(rulesMsg, layoutParams);
-            popUpWindow.setContentView(containerLayout);
-            if (isClicked) {
-                isClicked = false;
-                popUpWindow.showAtLocation(setupLevelLayout, Gravity.CENTER, 0, 0);
-                //popUpWindow.update(5, 10, 320, 90);
-            } else {
-                closePopUpWindow();
-            }
-        }
     }
 
-    public void mainOnClick(View v){
-        closePopUpWindow();
-    }
-
-    private void closePopUpWindow(){
-        isClicked = true;
+    public void setupOnClick(View v){
         popUpWindow.dismiss();
     }
 }

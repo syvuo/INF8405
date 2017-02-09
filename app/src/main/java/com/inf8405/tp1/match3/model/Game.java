@@ -42,7 +42,7 @@ public final class Game extends AbstractBaseActivity {
     private int currentMove = 0;
     private int scoreToWin = 100;
     private int currentScore = 0;
-    private int gameLevel = 0;
+    private int gameLevel = 1;
 
     private Game(){}
 
@@ -51,7 +51,7 @@ public final class Game extends AbstractBaseActivity {
     }
 
     public void setIsStarted(boolean value, Activity activity, int level) {
-        clearGame();
+        clearData();
         currentActivity = activity;
         gameLevel = level;
         setGameStatus(gameLevel);
@@ -67,7 +67,11 @@ public final class Game extends AbstractBaseActivity {
 
     public void clearData() {
         //cellArrays = new ArrayList<>();
-        selectedCellArrays =  new ArrayList<>();;
+        selectedCellArrays =  new ArrayList<>();
+        nbMoves = 100;
+        currentMove = 0;
+        scoreToWin = 100;
+        currentScore = 0;
     }
 
     public int getGameLevel(){
@@ -186,19 +190,13 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
-    private void clearGame(){
-        nbMoves = 100;
-        currentMove = 0;
-        scoreToWin = 100;
-        currentScore = 0;
-    }
-
     private void checkGameStatus(){
         if(currentMove > nbMoves){
             if(currentScore > scoreToWin){
                 // TODO VICTORY
                 Intent intent = new Intent(Game.this, GridActivity.class);
                 intent.putExtra("level", ++gameLevel);
+                clearData();
                 startActivity(intent);
             } else {
                 // TODO DEFEAT

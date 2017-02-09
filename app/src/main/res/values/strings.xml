@@ -7,10 +7,6 @@
     <string name="allowed_level">Vous navez pas encore debloque ce niveau. Essayer le niveau :</string>
     <string name="score">Score</string>
     <string name="move">Move left</string>
-    <string name="level1">Niveau 1</string>
-    <string name="level2">Niveau 2</string>
-    <string name="level3">Niveau 3</string>
-    <string name="level4">Niveau 4</string>
     <string name="current_score">Current score :</string>
 
 </resources>

@@ -65,6 +65,7 @@ public class MainActivity extends AbstractBaseActivity {
         Intent intent = new Intent(MainActivity.this, SetupActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        closePopUpWindow();
         this.startActivity(intent);
     }
 

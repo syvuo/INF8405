@@ -93,9 +93,9 @@ public class GridActivity extends AbstractBaseActivity {
             // Close or back button
             case R.id.action_close:
             case android.R.id.home:
-                table.removeAllViews();
-                table = null;
-                clearAttributes();
+                //table.removeAllViews();
+                //table = null;
+                //clearAttributes();
                 closeAppDialog(SetupActivity.class);
                 //NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -103,7 +103,7 @@ public class GridActivity extends AbstractBaseActivity {
             case R.id.action_refresh:
                 table.removeAllViews();
                 table = null;
-                cells = new ArrayList<Cell>();
+                cells = new ArrayList<>();
                 clearAttributes();
                 gameMatch3.clearData();
                 setupGrid(level);

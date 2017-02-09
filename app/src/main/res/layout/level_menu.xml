@@ -7,10 +7,9 @@
     android:fitsSystemWindows="true"
     tools:context="com.inf8405.tp1.match3.MainActivity">
 
-
     <LinearLayout
         android:id="@+id/level"
-        android:onClick="mainOnClick"
+        android:onClick="setupOnClick"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,35 +17,6 @@
         android:layout_marginBottom="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
-
-        <Button
-            android:text="@string/level1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:id="@+id/level1_start" />
-
-        <Button
-            android:text="@string/level2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:id="@+id/level2_start" />
-        <Button
-            android:text="@string/level3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:id="@+id/level3_start" />
-        <Button
-            android:text="@string/level4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:id="@+id/level4_start" />
-
     </LinearLayout>
-
-
 
 </android.support.design.widget.CoordinatorLayout>
