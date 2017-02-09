@@ -23,7 +23,7 @@ public class SetupActivity extends AbstractBaseActivity {
         Intent intent = new Intent(SetupActivity.this, GridActivity.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        gameMatch3.setIsStarted(false);
+        //gameMatch3.setIsStarted(false);
         intent.putExtra("level", btn.getText());
         startActivity(intent);
     }

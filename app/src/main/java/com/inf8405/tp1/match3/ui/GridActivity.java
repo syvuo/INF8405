@@ -277,7 +277,7 @@ public class GridActivity extends AbstractBaseActivity {
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
-        gameMatch3.setIsStarted(true);
+        gameMatch3.setIsStarted(true, this, level);
     }
 
     private void clearAttributes(){

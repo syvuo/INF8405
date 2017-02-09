@@ -1,11 +1,15 @@
 package com.inf8405.tp1.match3.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+
+import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.GridActivity;
 
@@ -19,6 +23,7 @@ import java.util.Random;
 
 public final class Game extends AbstractBaseActivity {
     private static Game singletonInstance = new Game();
+    private Activity currentActivity;
     private boolean isStarted = false;
     private List<Cell> selectedCellArrays = new ArrayList<>();
     private List<Cell> colorVerifiedCellArrays = new ArrayList<>();
@@ -31,6 +36,10 @@ public final class Game extends AbstractBaseActivity {
     private float pressedDownY;
     private GridLayout gameTable;
     private final int CELL_SPACING = 1;
+    private int nbMoves = 100;
+    private int currentMove = 0;
+    private int scoreToWin = 100;
+    private int currentScore = 0;
 
     private Game(){}
 
@@ -38,7 +47,9 @@ public final class Game extends AbstractBaseActivity {
         return singletonInstance;
     }
 
-    public void setIsStarted(boolean value) {
+    public void setIsStarted(boolean value, Activity activity, int level) {
+        currentActivity = activity;
+        setGameStatus(level);
         isStarted = value;
         if(isStarted){
             sizeOfTable= nbColumns*nbRows;
@@ -82,6 +93,7 @@ public final class Game extends AbstractBaseActivity {
                         cell.setCellIsVerified(false);
                         cell.getBackground().setAlpha(0);
                     }
+                    updateScore();
                     //Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
                     //Log.d("non valid move", "non valid move");
@@ -91,10 +103,19 @@ public final class Game extends AbstractBaseActivity {
                 --j;
             }
             if(!foundMatch3){
+                //
                 swapBtn(selectedCellArrays.get(1), selectedCellArrays.get(0));
             } else {
                 removeAndUpdateCells(cellToRemoveArrays);
                 clearCellToRemoveArrays();
+                // TODO CHECK DOUBLE POINTAGE IF MATCH3 SEE BELOW :
+                /*
+                 Lorsque des combos sont réalisés (après la disparition d’un groupe, un nouveau groupe
+                est formé et peut être supprimé sans action du joueur), le score du nouveau groupe qui disparait est
+                multiplié par 2. Si le combo se poursuit (par exemple la disparition de ce groupe permet la
+                formation d’un nouveau groupe), le score est multiplié par 3. Et ainsi de suite jusqu’à ce que le
+                combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
+                 */
             }
 
             for(int x = 0; x < colorVerifiedCellArrays.size(); ++x){
@@ -113,6 +134,8 @@ public final class Game extends AbstractBaseActivity {
             clearColorVerifiedArray();
             clearSelectedArray();
         }
+        currentMove++;
+        checkGameStatus();
     }
 
     public void setTableLayout(GridLayout tl){
@@ -141,6 +164,61 @@ public final class Game extends AbstractBaseActivity {
 
     public int getNbColumns() {
         return nbColumns;
+    }
+
+    private void updateScore(){
+        int nbMatches = matchFoundArrays.size();
+        if(nbMatches >= 5){
+            currentScore+= 300;
+        } else if(nbMatches == 4) {
+            currentScore+= 200;
+        } else {
+            currentScore+= 100;
+        }
+    }
+
+    private void checkGameStatus(){
+        if(currentMove > nbMoves){
+            if(currentScore > scoreToWin){
+                // TODO VICTORY
+            } else {
+                // TODO DEFEAT
+            }
+        }
+        printGameStatus();
+    }
+
+    private void setGameStatus(int level) {
+        switch (level) {
+            case 1:
+                nbMoves = 6;
+                scoreToWin = 800;
+                break;
+            case 2:
+                nbMoves = 10;
+                scoreToWin = 1200;
+                break;
+            case 3:
+                nbMoves = 10;
+                scoreToWin = 1400;
+                break;
+            case 4:
+                nbMoves = 10;
+                scoreToWin = 1800;
+                break;
+            default:
+                nbMoves = 6;
+                scoreToWin = 800;
+                break;
+        }
+        printGameStatus();
+    }
+
+    private void printGameStatus(){
+        TextView txM = (TextView) currentActivity.findViewById(R.id.text_move_player);
+        TextView txS = (TextView) currentActivity.findViewById(R.id.text_score_player);
+        txS.setText(currentActivity.getResources().getString(R.string.score)+" " + String.valueOf(scoreToWin) + " " + currentActivity.getResources().getString(R.string.current_score) + currentScore);
+        txM.setText(currentActivity.getResources().getString(R.string.move)+" " + String.valueOf(nbMoves-currentMove) + " ");
     }
 
     // TODO penser a un algo moins naif. Presentement on triple check le meme cell. perte de performance.
@@ -274,7 +352,7 @@ public final class Game extends AbstractBaseActivity {
         }
         Log.d("allTable",test);
     }
-
+/*
     private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
 
         @Override
@@ -321,7 +399,7 @@ public final class Game extends AbstractBaseActivity {
         }
     };
 
-
+*/
     private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
@@ -334,7 +412,7 @@ public final class Game extends AbstractBaseActivity {
             for(int i = 0; i < nbSwitches+1; ++i){
                 swapBtn(cell, cell.getTopCell(), true);
             }
-            /*
+/*
             idx = gameTable.indexOfChild(cell);
             Random rand = new Random();
             //TODO use rand when done
@@ -359,8 +437,10 @@ public final class Game extends AbstractBaseActivity {
             params.height = cellHeight - 2 * CELL_SPACING;
             params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
             btn.setLayoutParams(params);
+            gameMatch3 = Game.getInstance();
             btn.overrideEventListener(btn, gameMatch3);
-            test += cell.getText() + "\t";*/
+            test += cell.getText() + "\t";
+            */
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);

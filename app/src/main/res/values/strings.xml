@@ -4,4 +4,12 @@
     <string name="close_message">Quitter le jeu? Vos donnees vont etre effacees!</string>
     <string name="refresh">Refreshing</string>
     <string name="rules">Regles du jeu blablabal</string>
+    <string name="score">Score</string>
+    <string name="move">Move left</string>
+    <string name="level1">Niveau 1</string>
+    <string name="level2">Niveau 2</string>
+    <string name="level3">Niveau 3</string>
+    <string name="level4">Niveau 4</string>
+    <string name="current_score">Current score :</string>
+
 </resources>
