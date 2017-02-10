@@ -256,6 +256,9 @@ public class GridActivity extends AbstractBaseActivity {
                         catch (Exception e){
                             e.printStackTrace();
                         }
+                        finally{
+                            gameMatch3.clearSelectedArray();
+                        }
                         break;
                 }
             }

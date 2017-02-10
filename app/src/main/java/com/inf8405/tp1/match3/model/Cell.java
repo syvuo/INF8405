@@ -135,7 +135,7 @@ public class Cell extends Button{
     private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
         Cell cell2 = null;
         dir = "UNKNOWN";
-        boolean horizontal = Math.abs(y - dy) < getHeight()*2;
+        boolean horizontal = Math.abs(y - dy) < getHeight();
         // RIGHT
         if(dx > x && horizontal){
             cell2 = cell.getRightCell();

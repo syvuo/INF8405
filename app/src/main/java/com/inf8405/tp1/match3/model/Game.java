@@ -93,9 +93,8 @@ public final class Game extends AbstractBaseActivity {
             swapBtn(selectedCellArray.get(0), selectedCellArray.get(1));
             //printAllTable();
             int i = 0;
-            int j = 1;
             boolean foundMatch3 = false;
-            while(i < selectedCellArray.size() && j >= 0){
+            while(i < selectedCellArray.size()){
                 //Log.d("selectedArraySize", selectedCellArrays.size()+ "");
                 findSelectedManager(selectedCellArray.get(i),  selectedCellArray.get(i).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
@@ -115,7 +114,6 @@ public final class Game extends AbstractBaseActivity {
                 }
                 clearMatchFoundArrays();
                 ++i;
-                --j;
             }
             if(!foundMatch3){
                 //
@@ -253,21 +251,20 @@ public final class Game extends AbstractBaseActivity {
         if(!matchFoundArrays.contains(cell1)){
             addMatchFoundArrays(cell1);
         }
-        int cellColor = cellColorToCheck;
         // Check RIGHT
-        checkColor(cell1, cell1.getRightCell(), cellColor);
+        checkColor(cell1, cell1.getRightCell(), cellColorToCheck);
         // Check LEFT
-        checkColor(cell1, cell1.getLeftCell(), cellColor);
+        checkColor(cell1, cell1.getLeftCell(), cellColorToCheck);
         // Check TOP
-        checkColor(cell1, cell1.getTopCell(), cellColor);
+        checkColor(cell1, cell1.getTopCell(), cellColorToCheck);
         // Check BOTTOM
-        checkColor(cell1, cell1.getBottomCell(), cellColor);
+        checkColor(cell1, cell1.getBottomCell(), cellColorToCheck);
         cell1.setCellIsVerified(true);
     }
 
     private int checkColor(Cell cell1, Cell cell2, int cellColor){
         if(cell2 != null && !cell2.getCellIsVerified()){
-            //Log.d("checkColor", cell1.getText() + " && " +cell2.getText());
+            Log.d("checkColor", cell1.getText() + " && " +cell2.getText());
             //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
             cell2.setCellIsVerified(true);
 
@@ -282,14 +279,14 @@ public final class Game extends AbstractBaseActivity {
                 //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
                 return 1;
             }
+            Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         }
-        //Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
         colorVerifiedCellArray.add(cell2);
         return 0;
     }
 
-    private void clearSelectedArray(){
+    public void clearSelectedArray(){
         selectedCellArray = new ArrayList<>();
     }
 
@@ -355,6 +352,10 @@ public final class Game extends AbstractBaseActivity {
         cell.setBottomCell(cell2);
         cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
         cell.setLeftCell(cell2);
+        //Log.d("updateSurrounding", "\t"+cell.getTopCell()==null?"null":cell.getTopCell().getText().toString());
+        //Log.d("updateSurrounding", "\t"+cell.getLeftCell()==null?"null":cell.getLeftCell().getText().toString() +"\t"+cell.getText()+
+        //        "\t"+cell.getRightCell()==null?"null":cell.getRightCell().getText().toString());
+        //Log.d("updateSurrounding", "\t"+cell.getBottomCell()==null?"null":cell.getBottomCell().getText().toString());
     }
 
     private void printAllTable(){
