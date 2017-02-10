@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:background="@color/blue"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/text_score"
