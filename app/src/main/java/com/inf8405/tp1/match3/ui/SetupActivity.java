@@ -2,8 +2,13 @@ package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +31,7 @@ public class SetupActivity extends AbstractBaseActivity {
     private LinearLayout containerLayout;
     private PopupWindow popUpWindow;
     private LinearLayout setupLevelLayout;
+    private final int NB_LEVEL = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,7 @@ public class SetupActivity extends AbstractBaseActivity {
         containerLayout.addView(rulesMsg, layoutParams);
         popUpWindow.setContentView(containerLayout);
 
-        for(int i = 1; i < 5; ++i){
+        for(int i = 1; i <= NB_LEVEL; ++i){
 
             Button btn = new Button(this);
             btn.setText("Niveau "+i);
@@ -85,9 +91,24 @@ public class SetupActivity extends AbstractBaseActivity {
                     }
                 }
             });
+            Drawable bgShape = btn.getBackground();
+            //bgShape.setColor(ContextCompat.getColor(this, R.color.silver));
+            bgShape.setAlpha(32);
+            btn.setBackground(bgShape);
+            btn.setTag(i);
             setupLevelLayout.addView(btn);
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        int levelAllowed = Game.getInstance().getGameLevel();
+        for (int i = 1; i <= levelAllowed; ++i){
+            setupLevelLayout.findViewWithTag(i).getBackground().setAlpha(255);
+        }
+    }
+
 
     public void setupOnClick(View v){
         popUpWindow.dismiss();

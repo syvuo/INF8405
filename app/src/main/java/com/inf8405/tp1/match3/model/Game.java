@@ -109,9 +109,9 @@ public final class Game extends AbstractBaseActivity {
                         cell.getBackground().setAlpha(0);
                     }
                     updateScore();
-                    //Log.d("matchFoundArrayString", matchFoundArrayString);
+                    Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
-                    //Log.d("non valid move", "non valid move");
+                    Log.d("non valid move", "non valid move");
                 }
                 clearMatchFoundArrays();
                 ++i;
@@ -172,11 +172,19 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
-    public void addCellToRemoveArray(Cell cell){
+    private void addCellToRemoveArray(Cell cell){
         if(!cellToRemoveArray.contains(cell)){
             cellToRemoveArray.add(cell);
         }
     }
+
+    private void addMatchFoundArrays(Cell cell){
+        if(!matchFoundArrays.contains(cell)){
+            matchFoundArrays.add(cell);
+        }
+    }
+
+
 
     public int getNbColumns() {
         return nbColumns;
@@ -194,12 +202,12 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void checkGameStatus(){
-        if(currentScore > scoreToWin){
+        if(currentScore >= scoreToWin){
             // TODO VICTORY
             ++gameLevel;
             endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
         }
-        else if(currentMove > nbMoves){
+        else if(currentMove >= nbMoves){
             // TODO DEFEAT
             endGameAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
         }
@@ -243,7 +251,7 @@ public final class Game extends AbstractBaseActivity {
     // TODO l'utilisation recursive ou de quoi meilleure est souhaitable
     private void findSelectedManager(Cell cell1, int cellColorToCheck){
         if(!matchFoundArrays.contains(cell1)){
-            matchFoundArrays.add(cell1);
+            addMatchFoundArrays(cell1);
         }
         int cellColor = cellColorToCheck;
         // Check RIGHT
@@ -266,6 +274,8 @@ public final class Game extends AbstractBaseActivity {
             if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
                 cell1.setCellIsMatched(true);
                 cell2.setCellIsMatched(true);
+                addMatchFoundArrays(cell1);
+                addMatchFoundArrays(cell2);
                 addCellToRemoveArray(cell1);
                 addCellToRemoveArray(cell2);
                 findSelectedManager(cell2, cellColor);
