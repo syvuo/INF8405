@@ -138,10 +138,6 @@ public final class Game extends AbstractBaseActivity {
                 }
                 cell.setSelected(false);
                 cell.setCellIsVerified(false);
-                if(!cell.getCellIsMatched()){
-                    cell.getBackground().setAlpha(255);
-                    Log.d("255", cell.getText() + "");
-                }
             }
             clearColorVerifiedArray();
             clearMatchFoundArrays();
@@ -170,6 +166,10 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
+    public int getNbColumns() {
+        return nbColumns;
+    }
+
     private void addCellToRemoveArray(Cell cell){
         if(!cellToRemoveArray.contains(cell)){
             cellToRemoveArray.add(cell);
@@ -180,12 +180,6 @@ public final class Game extends AbstractBaseActivity {
         if(!matchFoundArrays.contains(cell)){
             matchFoundArrays.add(cell);
         }
-    }
-
-
-
-    public int getNbColumns() {
-        return nbColumns;
     }
 
     private void updateScore(){
@@ -417,7 +411,7 @@ public final class Game extends AbstractBaseActivity {
         Log.d("ARR", "test : " + arr.size() + " with " + test);
     }
 
-    protected void endGameAppDialog(String title, String msg) {
+    private void endGameAppDialog(String title, String msg) {
         new AlertDialog.Builder(currentActivity)
                 .setTitle(title)
                 .setMessage(msg)

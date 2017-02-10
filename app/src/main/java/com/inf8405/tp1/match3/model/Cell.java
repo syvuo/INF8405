@@ -55,7 +55,6 @@ public class Cell extends Button{
         setTextColor(ContextCompat.getColor(context, colorTemp));
     }
 
-
     public void setTopCell(Cell cell) {
         topNeighbour = cell;
     }
@@ -110,7 +109,7 @@ public class Cell extends Button{
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    //v.getBackground().setAlpha(128);
+                    v.getBackground().setAlpha(128);
                     v.setSelected(true);
                     xPosI = (int)event.getX();
                     yPosI = (int)event.getY();
@@ -130,6 +129,22 @@ public class Cell extends Button{
                 return true;
             }
         });
+    }
+
+    public void setCellIsVerified(boolean checked){
+        cellIsVerified = checked;
+    }
+
+    public boolean getCellIsVerified(){
+        return cellIsVerified;
+    }
+
+    public void setCellIsMatched(boolean checked){
+        isMatched = checked;
+    }
+
+    public boolean getCellIsMatched(){
+        return isMatched;
     }
 
     private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
@@ -162,22 +177,4 @@ public class Cell extends Button{
         if(cell2!= null) Log.d("cell2", " " + cell2.getText());
         return cell2;
     }
-
-    public void setCellIsVerified(boolean checked){
-        cellIsVerified = checked;
-    }
-
-    public boolean getCellIsVerified(){
-        return cellIsVerified;
-    }
-
-    public void setCellIsMatched(boolean checked){
-        isMatched = checked;
-    }
-
-    public boolean getCellIsMatched(){
-        return isMatched;
-    }
-
-
 }

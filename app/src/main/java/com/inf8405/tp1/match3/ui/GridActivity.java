@@ -257,7 +257,7 @@ public class GridActivity extends AbstractBaseActivity {
                             e.printStackTrace();
                         }
                         finally{
-                            gameMatch3.clearSelectedArray();
+                            clearAlphaAllCells();
                         }
                         break;
                 }
@@ -269,5 +269,14 @@ public class GridActivity extends AbstractBaseActivity {
         table = null;
         gameMatch3.clearData();
         gameMatch3 = Game.getInstance();
+    }
+
+    private void clearAlphaAllCells(){
+        for(int i = 0; i < table.getChildCount(); ++i){
+            Cell cell = (Cell)table.getChildAt(i);
+            if(!cell.getCellIsMatched()){
+                cell.getBackground().setAlpha(255);
+            }
+        }
     }
 }
