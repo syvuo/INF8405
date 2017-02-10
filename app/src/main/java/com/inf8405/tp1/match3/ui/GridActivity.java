@@ -257,7 +257,7 @@ public class GridActivity extends AbstractBaseActivity {
                             e.printStackTrace();
                         }
                         finally{
-                            clearAlphaAllCells();
+                            //clearAlphaAllCells();
                         }
                         break;
                 }

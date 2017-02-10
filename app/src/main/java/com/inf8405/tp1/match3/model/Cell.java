@@ -116,15 +116,16 @@ public class Cell extends Button{
                     instance.addSelectedToArray(cell);
                     v.invalidate();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //v.getBackground().setAlpha(255);
-                    //v.invalidate();
                     v.setSelected(true);
                     GridLayout tl = (GridLayout)v.getParent();
                     Cell cell2 = swipeCheckDirection(xPosI, yPosI, (int)event.getX(), (int)event.getY(), cell, instance);
                     if(cell2 != null){
                         instance.addSelectedToArray(cell2);
                         tl.performClick();
+                    } else {
+                        v.getBackground().setAlpha(255);
                     }
+                    v.invalidate();
                 }
                 return true;
             }

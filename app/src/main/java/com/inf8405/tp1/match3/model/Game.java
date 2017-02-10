@@ -112,7 +112,7 @@ public final class Game extends AbstractBaseActivity {
                 } else {
                     Log.d("non valid move", "non valid move");
                 }
-                clearMatchFoundArrays();
+                clearMatchFoundArrays(!foundMatch3);
                 ++i;
             }
             if(!foundMatch3){
@@ -140,7 +140,7 @@ public final class Game extends AbstractBaseActivity {
                 cell.setCellIsVerified(false);
             }
             clearColorVerifiedArray();
-            clearMatchFoundArrays();
+            clearMatchFoundArrays(true);
             clearColorVerifiedArray();
             clearSelectedArray();
         }
@@ -288,7 +288,12 @@ public final class Game extends AbstractBaseActivity {
         colorVerifiedCellArray = new ArrayList<>();
     }
 
-    private void clearMatchFoundArrays(){
+    private void clearMatchFoundArrays(boolean clear){
+        if(clear){
+            for(Cell cell : matchFoundArrays){
+                cell.getBackground().setAlpha(255);
+            }
+        }
         matchFoundArrays = new ArrayList<>();
     }
 
@@ -346,10 +351,17 @@ public final class Game extends AbstractBaseActivity {
         cell.setBottomCell(cell2);
         cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
         cell.setLeftCell(cell2);
-        //Log.d("updateSurrounding", "\t"+cell.getTopCell()==null?"null":cell.getTopCell().getText().toString());
-        //Log.d("updateSurrounding", "\t"+cell.getLeftCell()==null?"null":cell.getLeftCell().getText().toString() +"\t"+cell.getText()+
-        //        "\t"+cell.getRightCell()==null?"null":cell.getRightCell().getText().toString());
-        //Log.d("updateSurrounding", "\t"+cell.getBottomCell()==null?"null":cell.getBottomCell().getText().toString());
+        printSurroundingCell(cell);
+    }
+
+    private void printSurroundingCell(Cell cell){
+        String textL = cell.getLeftCell()==null?"N":cell.getLeftCell().getText().toString();
+        String textR = cell.getRightCell()==null?"N":cell.getRightCell().getText().toString();
+        String textT = cell.getTopCell()==null?"N":cell.getTopCell().getText().toString();
+        String textB = cell.getBottomCell()==null?"N":cell.getBottomCell().getText().toString();
+        Log.d("updateSurrounding", "\t\t"+textT);
+        Log.d("updateSurrounding", "\t"+ textL +"\t"+cell.getText()+ "\t"+textR);
+        Log.d("updateSurrounding", "\t\t"+textB);
     }
 
     private void printAllTable(){
