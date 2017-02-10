@@ -6,23 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.GridLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.inf8405.tp1.match3.MainActivity;
 import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.GridActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Lam on 1/26/2017.
@@ -33,13 +24,14 @@ public final class Game extends AbstractBaseActivity {
     private Activity currentActivity;
     private boolean isStarted = false;
 
-    private List<Cell> selectedCellArrays = new ArrayList<>();
-    private List<Cell> colorVerifiedCellArrays = new ArrayList<>();
-    private List<Cell> cellToRemoveArrays = new ArrayList<>();
+    private List<Cell> selectedCellArray = new ArrayList<>();
+    private List<Cell> colorVerifiedCellArray = new ArrayList<>();
+    private List<Cell> cellToRemoveArray = new ArrayList<>();
     private List<Cell> matchFoundArrays = new ArrayList<>();
     private int nbColumns = -1;
     private int nbRows = -1;
     private int sizeOfTable = -1;
+
     private float pressedDownX;
     private float pressedDownY;
     private GridLayout gameTable;
@@ -49,6 +41,15 @@ public final class Game extends AbstractBaseActivity {
     private int scoreToWin = 100;
     private int currentScore = 0;
     private int gameLevel = 1;
+
+    private final int LEVEL1_MOVE = 6;
+    private final int LEVEL1_SCORE = 800;
+    private final int LEVEL2_MOVE = 10;
+    private final int LEVEL2_SCORE = 1200;
+    private final int LEVEL3_MOVE = 10;
+    private final int LEVEL3_SCORE = 1400;
+    private final int LEVEL4_MOVE = 10;
+    private final int LEVEL4_SCORE = 1800;
 
     private Game(){}
 
@@ -67,13 +68,9 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
-    /*public void addCell(Cell cell){
-        cellArrays.add(cell);
-    }*/
-
     public void clearData() {
         //cellArrays = new ArrayList<>();
-        selectedCellArrays =  new ArrayList<>();
+        selectedCellArray =  new ArrayList<>();
         nbMoves = 100;
         currentMove = 0;
         scoreToWin = 100;
@@ -91,16 +88,16 @@ public final class Game extends AbstractBaseActivity {
     public void scanCells(Context context) {
         int nbMatch = 0;
         String cellTest = "";
-        if(selectedCellArrays.size() >= 2){
+        if(selectedCellArray.size() >= 2){
             //printAllTable();
-            swapBtn(selectedCellArrays.get(0), selectedCellArrays.get(1));
+            swapBtn(selectedCellArray.get(0), selectedCellArray.get(1));
             //printAllTable();
             int i = 0;
             int j = 1;
             boolean foundMatch3 = false;
-            while(i < selectedCellArrays.size() && j >= 0){
+            while(i < selectedCellArray.size() && j >= 0){
                 //Log.d("selectedArraySize", selectedCellArrays.size()+ "");
-                findSelectedManager(selectedCellArrays.get(i),  selectedCellArrays.get(i).getCurrentTextColor());
+                findSelectedManager(selectedCellArray.get(i),  selectedCellArray.get(i).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
@@ -109,7 +106,6 @@ public final class Game extends AbstractBaseActivity {
                         Cell cell = matchFoundArrays.get(x);
                         matchFoundArrayString+= cell.getText() + " ";
                         cell.setSelected(false);
-                        cell.setCellIsVerified(false);
                         cell.getBackground().setAlpha(0);
                     }
                     updateScore();
@@ -123,9 +119,9 @@ public final class Game extends AbstractBaseActivity {
             }
             if(!foundMatch3){
                 //
-                swapBtn(selectedCellArrays.get(1), selectedCellArrays.get(0));
+                swapBtn(selectedCellArray.get(1), selectedCellArray.get(0));
             } else {
-                //removeAndUpdateCells(cellToRemoveArrays);
+                removeAndUpdateCells(cellToRemoveArray);
                 clearCellToRemoveArrays();
                 // TODO CHECK DOUBLE POINTAGE IF MATCH3 SEE BELOW :
                 /*
@@ -137,8 +133,8 @@ public final class Game extends AbstractBaseActivity {
                  */
             }
 
-            for(int x = 0; x < colorVerifiedCellArrays.size(); ++x){
-                Cell cell = colorVerifiedCellArrays.get(x);
+            for(int x = 0; x < colorVerifiedCellArray.size(); ++x){
+                Cell cell = colorVerifiedCellArray.get(x);
                 if(cell == null){
                     continue;
                 }
@@ -149,6 +145,7 @@ public final class Game extends AbstractBaseActivity {
                     Log.d("255", cell.getText() + "");
                 }
             }
+            clearColorVerifiedArray();
             clearMatchFoundArrays();
             clearColorVerifiedArray();
             clearSelectedArray();
@@ -170,14 +167,14 @@ public final class Game extends AbstractBaseActivity {
     }
 
     public void addSelectedToArray(Cell cell){
-        if(!selectedCellArrays.contains(cell) && selectedCellArrays.size()<=1){
-            selectedCellArrays.add(cell);
+        if(!selectedCellArray.contains(cell) && selectedCellArray.size()<=1){
+            selectedCellArray.add(cell);
         }
     }
 
     public void addCellToRemoveArray(Cell cell){
-        if(!cellToRemoveArrays.contains(cell)){
-            cellToRemoveArrays.add(cell);
+        if(!cellToRemoveArray.contains(cell)){
+            cellToRemoveArray.add(cell);
         }
     }
 
@@ -197,16 +194,14 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void checkGameStatus(){
-        if(currentMove < nbMoves){
-            if(currentScore > scoreToWin){
-                // TODO VICTORY
-                ++gameLevel;
-                victoryAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
-            }
+        if(currentScore > scoreToWin){
+            // TODO VICTORY
+            ++gameLevel;
+            endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
         }
-        else {
+        else if(currentMove > nbMoves){
             // TODO DEFEAT
-            victoryAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
+            endGameAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
         }
         printGameStatus();
     }
@@ -214,24 +209,24 @@ public final class Game extends AbstractBaseActivity {
     private void setGameStatus(int level) {
         switch (level) {
             case 1:
-                nbMoves = 6;
-                scoreToWin = 800;
+                nbMoves = LEVEL1_MOVE;
+                scoreToWin = LEVEL1_SCORE;
                 break;
             case 2:
-                nbMoves = 10;
-                scoreToWin = 1200;
+                nbMoves = LEVEL2_MOVE;
+                scoreToWin = LEVEL2_SCORE;
                 break;
             case 3:
-                nbMoves = 10;
-                scoreToWin = 1400;
+                nbMoves = LEVEL3_MOVE;
+                scoreToWin = LEVEL3_SCORE;
                 break;
             case 4:
-                nbMoves = 10;
-                scoreToWin = 1800;
+                nbMoves = LEVEL4_MOVE;
+                scoreToWin = LEVEL4_SCORE;
                 break;
             default:
-                nbMoves = 6;
-                scoreToWin = 800;
+                nbMoves = LEVEL1_MOVE;
+                scoreToWin = LEVEL1_SCORE;
                 break;
         }
         printGameStatus();
@@ -251,24 +246,12 @@ public final class Game extends AbstractBaseActivity {
             matchFoundArrays.add(cell1);
         }
         int cellColor = cellColorToCheck;
-        int test = 0;
-        // pour cell position 1 (top left corner)
-        //Log.d("real pos", cell1.getText() + "=1=" + cellPos);
         // Check RIGHT
         checkColor(cell1, cell1.getRightCell(), cellColor);
-        ++test; ///
-        // pour cell dernier position
-        //Log.d("real pos", cell1.getText() + "=2=" + cellPos);
         // Check LEFT
         checkColor(cell1, cell1.getLeftCell(), cellColor);
-        ++test;
-        // pour cell netant pas a la premiere ligne
-        //Log.d("real pos", cell1.getText() + "=3=" + cellPos);
         // Check TOP
         checkColor(cell1, cell1.getTopCell(), cellColor);
-        ++test;
-        // pour cell netant pas a la derniere ligne
-        //Log.d("real pos", cell1.getText() + "=4=" + cellPos);
         // Check BOTTOM
         checkColor(cell1, cell1.getBottomCell(), cellColor);
         cell1.setCellIsVerified(true);
@@ -292,37 +275,24 @@ public final class Game extends AbstractBaseActivity {
         }
         //Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
-        colorVerifiedCellArrays.add(cell2);
+        colorVerifiedCellArray.add(cell2);
         return 0;
     }
 
     private void clearSelectedArray(){
-        for(Cell cell : selectedCellArrays){
-            if(cell != null && cell.isSelected()){
-                cell.setSelected(false);
-            }
-        }
-        selectedCellArrays = new ArrayList<>();
+        selectedCellArray = new ArrayList<>();
     }
 
     private void clearColorVerifiedArray(){
-        for(Cell cell : colorVerifiedCellArrays){
-            if(cell != null && cell.getCellIsVerified()){
-                cell.setCellIsVerified(false);
-            }
-        }
-        colorVerifiedCellArrays.clear();
-        colorVerifiedCellArrays = new ArrayList<>();
+        colorVerifiedCellArray = new ArrayList<>();
     }
 
     private void clearMatchFoundArrays(){
-        matchFoundArrays.clear();
         matchFoundArrays = new ArrayList<>();
     }
 
     private void clearCellToRemoveArrays(){
-        cellToRemoveArrays.clear();
-        cellToRemoveArrays = new ArrayList<>();
+        cellToRemoveArray = new ArrayList<>();
     }
 
     private void swapBtn(Cell cell1, Cell cell2){
@@ -389,56 +359,9 @@ public final class Game extends AbstractBaseActivity {
         }
         Log.d("allTable",test);
     }
-/*
-    private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
 
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                pressedDownX = event.getX();
-                pressedDownY = event.getY();
-
-                for (int i=0; i < gameTable.getChildCount(); ++i){
-                    TableRow rows = (TableRow)gameTable.getChildAt(i);
-                    if(pressedDownX > rows.getLeft() && pressedDownX < rows.getRight() && pressedDownY > rows.getTop() && pressedDownY < rows.getBottom()){
-
-                        for(int j=0; j< rows.getChildCount(); ++j){
-                            Cell cell = (Cell)gameTable.getChildAt(i);
-                            if(pressedDownX > cell.getLeft() && pressedDownX < cell.getRight() && pressedDownY > cell.getTop() && pressedDownY < cell.getBottom()){
-                                selectedCellArrays.add(cell);
-                            }
-                        }
-                        //touch is within this child
-                        if(event.getAction() == MotionEvent.ACTION_UP){
-                            //touch has ended
-                            pressedDownX = event.getX();
-                            pressedDownY = event.getY();
-
-                            for (int x=0; i < gameTable.getChildCount(); ++x) {
-                                TableRow rowsEnd = (TableRow) gameTable.getChildAt(x);
-                                if (pressedDownX > rowsEnd.getLeft() && pressedDownX < rowsEnd.getRight() && pressedDownY > rowsEnd.getTop() && pressedDownY < rowsEnd.getBottom()) {
-
-                                    for (int y = 0; y < rowsEnd.getChildCount(); ++y) {
-                                        Cell cell = (Cell) gameTable.getChildAt(i);
-                                        if (pressedDownX > cell.getLeft() && pressedDownX < cell.getRight() && pressedDownY > cell.getTop() && pressedDownY < cell.getBottom()) {
-                                            selectedCellArrays.add(cell);
-                                            //CheckIfAdjacent(selectedCellArrays);
-                                            selectedCellArrays.clear();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-    };
-
-*/
     private void removeAndUpdateCells(List<Cell> arr){
-        String test = "";
+        String test = "";/*
         for(Cell cell: arr){
             int idx = gameTable.indexOfChild(cell);
             int id = Integer.parseInt(cell.getText().toString());
@@ -449,7 +372,7 @@ public final class Game extends AbstractBaseActivity {
             for(int i = 0; i < nbSwitches+1; ++i){
                 swapBtn(cell, cell.getTopCell(), true);
             }
-/*
+
             idx = gameTable.indexOfChild(cell);
             Random rand = new Random();
             //TODO use rand when done
@@ -477,13 +400,13 @@ public final class Game extends AbstractBaseActivity {
             gameMatch3 = Game.getInstance();
             btn.overrideEventListener(btn, gameMatch3);
             test += cell.getText() + "\t";
-            */
-        }
+
+        }*/
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
     }
 
-    protected void victoryAppDialog(String title, String msg) {
+    protected void endGameAppDialog(String title, String msg) {
         new AlertDialog.Builder(currentActivity)
                 .setTitle(title)
                 .setMessage(msg)

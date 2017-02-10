@@ -29,7 +29,7 @@ public class Cell extends Button{
     private Cell bottomNeighbour;
     private Cell leftNeighbour;
     private GridLayout parent;
-    private static final int [] colorsArray = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
+    private static final int [] COLORS_ARRAY = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
 
     public Cell(Context context) {
         super(context);
@@ -41,15 +41,10 @@ public class Cell extends Button{
         //TODO remove blue
         int colorTemp;
         if(rand == null)
-            colorTemp = colorsArray[0];
+            colorTemp = COLORS_ARRAY[0];
         else
-            colorTemp = colorsArray[rand.nextInt(colorsArray.length)];
-        //params.weight = 1;
-        //btn.setLayoutParams(params);
-
-
-        //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(this,colorTemp));
-        //btn.setBackground(cd);
+            colorTemp = COLORS_ARRAY[rand.nextInt(COLORS_ARRAY.length)];
+        //END OF TODO REMOVE BLUE
         setBackground(ContextCompat.getDrawable(context, R.drawable.shape));
 
         final GradientDrawable bgShape = (GradientDrawable) getBackground();
@@ -100,60 +95,6 @@ public class Cell extends Button{
     public GridLayout getParentLayout() {
         return this.parent;
     }
-
-/*
-    public void overrideEventListener(final Cell cell, final GridActivity gridActivity, final Game instance){
-
-        cell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cell.setFocusable(true);
-                cell.setFocusableInTouchMode(true);///add this line
-                cell.requestFocus();
-            }
-
-        });
-        cell.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int dx, dy;
-                try{
-
-                    switch (event.getAction())
-                    {
-                        case MotionEvent.ACTION_DOWN:
-                            v.getBackground().setAlpha(128);
-                            v.setSelected(true);
-                            instance.addSelectedToArray(cell);
-                            v.invalidate();
-                            x = (int)event.getX();
-                            y = (int)event.getY();
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            dx = (int)(event.getX());
-                            dy = (int)(event.getY());
-                            Cell cell2 = SwipeCheckDirection(x, y, dx, dy, cell, instance);
-                            if(cell2 != null && cell != cell2){
-                                instance.addSelectedToArray(cell2);
-                                GridLayout gl = (GridLayout)v.getParent().getParent();
-                                gl.performClick();
-                            }
-                            v.invalidate();
-                            //v.getBackground().setAlpha(255);
-                            break;
-                    }
-                }
-                catch (Exception e){
-                    v.getBackground().setAlpha(255);
-                    e.printStackTrace();
-                }
-                //instance.clearData();
-                return true;
-            }
-        });
-    }*/
 
     public void overrideEventListener(final Cell cell, final Game instance){
         cell.setOnClickListener(new View.OnClickListener() {
@@ -219,8 +160,6 @@ public class Cell extends Button{
         Log.d("DIR", dir);
         if(cell != null) Log.d("cell1", " " + cell.getText());
         if(cell2!= null) Log.d("cell2", " " + cell2.getText());
-
-
         return cell2;
     }
 

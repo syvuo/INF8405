@@ -38,9 +38,16 @@ public class GridActivity extends AbstractBaseActivity {
     private static List<Cell> cells = new ArrayList<Cell>();
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
-    int cellSpacing = 5;
+    private int cellSpacing = 5;
     private int tableRows = 8;
     private int tableColumns = 8;
+
+    private final int LEVEL1_COL = 5;
+    private final int LEVEL2_COL = 6;
+    private final int LEVEL3_ROW = 7;
+    private final int LEVEL3_COL = 7;
+    private final int LEVEL4_ROW = 7;
+    private final int LEVEL4_COL = 8;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
@@ -121,30 +128,6 @@ public class GridActivity extends AbstractBaseActivity {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-        switch(event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                x1 = event.getX();
-                break;
-            case MotionEvent.ACTION_UP:
-                x2 = event.getX();
-                float deltaX = x2 - x1;
-                if (Math.abs(deltaX) > MIN_DISTANCE)
-                {
-                    //Toast.makeText(this, "left2right swipe", Toast.LENGTH_SHORT).show ();
-                }
-                else
-                {
-                    // consider as something else - a screen tap for example
-                }
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
-
-    @Override
     public void onBackPressed() {
         Log.d("CDA", "onBackPressed Called");
         //Intent setIntent = new Intent(Intent.ACTION_MAIN);
@@ -169,27 +152,25 @@ public class GridActivity extends AbstractBaseActivity {
 
         switch(level){
             case 1:
-                tableColumns = 5;
+                tableColumns = LEVEL1_COL;
                 break;
             case 2:
-                tableColumns = 6;
+                tableColumns = LEVEL2_COL;
                 break;
             case 3:
-                tableRows = 7;
-                tableColumns = 7;
+                tableRows = LEVEL3_ROW;
+                tableColumns = LEVEL3_COL;
                 break;
             case 4:
-                tableRows = 7;
-                tableColumns = 8;
+                tableRows = LEVEL4_ROW;
+                tableColumns = LEVEL4_COL;
                 break;
             default: // for future usage
         }
-        //popToast(level);
         table = new GridLayout(this);
         table = (GridLayout) findViewById(R.id.view_root);
         table.setColumnCount(tableColumns);
         table.setRowCount(tableRows);
-
 
         Random rand = new Random();
 
@@ -231,8 +212,7 @@ public class GridActivity extends AbstractBaseActivity {
                                 //cells.get(yPos * tableColumns + xPos).setCellId(yPos * tableColumns + xPos);
                             }
                         }
-                        // Register neighbours
-
+                        // Update neighbours (left, right, top and bottom)
                         for (int y = 0; y < tableRows; ++y) {
                             for (int x = 0; x < tableColumns; ++x) {
                                 Cell cell = cells.get(y * tableColumns + x);
@@ -270,7 +250,7 @@ public class GridActivity extends AbstractBaseActivity {
                 switch(v.getId()) {
                     case R.id.view_root:
                         try{
-                            // TODO delete try catch
+                            // TODO delete try catch when appropriate
                             gameMatch3.scanCells(getApplicationContext());
                         }
                         catch (Exception e){
