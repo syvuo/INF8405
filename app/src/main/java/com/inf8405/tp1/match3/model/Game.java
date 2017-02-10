@@ -125,7 +125,7 @@ public final class Game extends AbstractBaseActivity {
                 //
                 swapBtn(selectedCellArrays.get(1), selectedCellArrays.get(0));
             } else {
-                removeAndUpdateCells(cellToRemoveArrays);
+                //removeAndUpdateCells(cellToRemoveArrays);
                 clearCellToRemoveArrays();
                 // TODO CHECK DOUBLE POINTAGE IF MATCH3 SEE BELOW :
                 /*
@@ -369,11 +369,11 @@ public final class Game extends AbstractBaseActivity {
         final int idx = gameTable.indexOfChild(cell);
         Cell cell2 = (Cell)gameTable.getChildAt(idx-gameTable.getColumnCount());
         cell.setTopCell(cell2);
-        cell2 = (Cell)gameTable.getChildAt(idx+1);
+        cell2 = idx%nbColumns == nbColumns-1 ? null : (Cell)gameTable.getChildAt(idx+1);
         cell.setRightCell(cell2);
         cell2 = (Cell)gameTable.getChildAt(idx+gameTable.getColumnCount());
         cell.setBottomCell(cell2);
-        cell2 = (Cell)gameTable.getChildAt(idx-1);
+        cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
         cell.setLeftCell(cell2);
     }
 

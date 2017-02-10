@@ -20,13 +20,12 @@
         <activity
             android:name="com.inf8405.tp1.match3.ui.SetupActivity"
             android:label="SetupActivity"
-            android:parentActivityName="com.inf8405.tp1.match3.MainActivity"
-            android:screenOrientation="portrait" >
+            android:parentActivityName="com.inf8405.tp1.match3.MainActivity">
         </activity>
         <activity android:name="com.inf8405.tp1.match3.ui.GridActivity"
             android:label="GridView"
             android:parentActivityName="com.inf8405.tp1.match3.ui.SetupActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="userPortrait"/>
     </application>
 
 </manifest>
