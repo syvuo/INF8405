@@ -24,7 +24,6 @@ import com.inf8405.tp1.match3.ui.SetupActivity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Lam on 1/26/2017.
@@ -72,7 +71,7 @@ public final class Game extends AbstractBaseActivity {
         currentActivity = activity;
         setGameStatus(level);
         isStarted = value;
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     public void clearData() {
@@ -83,6 +82,7 @@ public final class Game extends AbstractBaseActivity {
         currentMove = 0;
         scoreToWin = 100;
         currentScore = 0;
+        comboCount = 1;
     }
 
     public int getGameLevel(){
@@ -140,10 +140,15 @@ public final class Game extends AbstractBaseActivity {
                     }
                     // If true, toast combo after updating score
                     if(updateScore(comboCheck)){
-                        Toast toast = Toast.makeText(this.context, getString(R.string.combo_x)+comboCount, Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER, 0,0);
-                        toast.getView().setBackgroundColor(Color.RED);
-                        toast.show();
+                        try{
+                            Toast toast = Toast.makeText(this.context, this.context.getString(R.string.combo_x)+comboCount, Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0,0);
+                            toast.getView().setBackgroundColor(Color.TRANSPARENT);
+                            toast.show();
+                        }
+                        catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
                     }
                     Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
@@ -167,7 +172,8 @@ public final class Game extends AbstractBaseActivity {
                 combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
                  */
                 if(doubleMatch3 == 2){
-                    Toast toast = Toast.makeText(this.context, R.string.double_match, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(this.context, this.context.getString(R.string.double_match), Toast.LENGTH_LONG);
+                    toast.getView().setBackgroundColor(Color.TRANSPARENT);
                     toast.setGravity(Gravity.CENTER, 0,0);
                     toast.show();
                 }
@@ -226,7 +232,7 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void addComboArray(Cell cell){
-        if(!comboArray.contains(cell)){
+        if(cell!= null && !comboArray.contains(cell)){
             comboArray.add(cell);
         }
     }
@@ -472,7 +478,7 @@ public final class Game extends AbstractBaseActivity {
             Log.d("afterSwapCell", "idx is " + idx + " for id " + id);
             Random rand = new Random();
             //TODO use rand when done
-            Cell btn = new Cell(gameTable.getContext(), rand, id, gameTable);
+            Cell btn = new Cell(this.context, rand, id, gameTable);
 
             // Get neighbour before removal
             final Cell cellL2 = cell.getLeftCell();
@@ -486,7 +492,31 @@ public final class Game extends AbstractBaseActivity {
             btn.setBottomCell(cellB2);
             btn.setText(String.valueOf(cell.getText()));
 
-            animateFade(cell, btn);
+            //animateFade(cell, btn);
+
+
+            cell.setVisibility(View.GONE);
+            idx = gameTable.indexOfChild(cell);
+            gameTable.removeView(cell);
+            gameTable.addView(btn, idx);
+            int gridLayoutWidth = gameTable.getWidth();
+            int gridLayoutHeight = gameTable.getHeight();
+            int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
+            int cellHeight = gridLayoutHeight / gameTable.getRowCount();
+            GridLayout.LayoutParams params =
+                    (GridLayout.LayoutParams) btn.getLayoutParams();
+            params.width = cellWidth - 2 * CELL_SPACING;
+            params.height = cellHeight - 2 * CELL_SPACING;
+            params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
+            btn.setLayoutParams(params);
+            gameMatch3 = Game.getInstance();
+            btn.overrideEventListener(btn, gameMatch3);
+            addComboArray(btn);
+            lazyUpdateAllSurroundingAllCells();
+            addComboArray(btn.getTopCell());
+            addComboArray(btn.getLeftCell());
+            addComboArray(btn.getRightCell());
+            addComboArray(btn.getBottomCell());
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
@@ -556,6 +586,10 @@ public final class Game extends AbstractBaseActivity {
                 cell2.overrideEventListener(cell2, gameMatch3);
                 addComboArray(cell2);
                 lazyUpdateAllSurroundingAllCells();
+                addComboArray(cell2.getTopCell());
+                addComboArray(cell2.getLeftCell());
+                addComboArray(cell2.getRightCell());
+                addComboArray(cell2.getBottomCell());
             }
             public void onAnimationRepeat(Animation animation) {}
             public void onAnimationStart(Animation animation) {}
