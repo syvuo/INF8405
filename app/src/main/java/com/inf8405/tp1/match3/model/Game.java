@@ -114,12 +114,12 @@ public final class Game extends AbstractBaseActivity {
         int doubleMatch3 = 0;
         if(selectedArr.size() > 0){
             // TODO REMOVE DEBUG USAGE
-            if(comboCheck){
+            /*if(comboCheck){
                 Log.d("below", "here" );
                 printAllTable();
                 printAllTableWithColor();
                 Log.d("above", "here" );
-            }
+            }*/
             //END TODO
 
             int i = 0;
@@ -141,10 +141,7 @@ public final class Game extends AbstractBaseActivity {
                     // If true, toast combo after updating score
                     if(updateScore(comboCheck)){
                         try{
-                            Toast toast = Toast.makeText(this.context, this.context.getString(R.string.combo_x)+comboCount, Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0,0);
-                            toast.getView().setBackgroundColor(Color.TRANSPARENT);
-                            toast.show();
+                            popToast(this.context.getString(R.string.combo_x)+comboCount);
                         }
                         catch (NullPointerException e){
                             e.printStackTrace();
@@ -172,10 +169,7 @@ public final class Game extends AbstractBaseActivity {
                 combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
                  */
                 if(doubleMatch3 == 2){
-                    Toast toast = Toast.makeText(this.context, this.context.getString(R.string.double_match), Toast.LENGTH_LONG);
-                    toast.getView().setBackgroundColor(Color.TRANSPARENT);
-                    toast.setGravity(Gravity.CENTER, 0,0);
-                    toast.show();
+                    popToast(this.context.getString(R.string.double_match));
                 }
                 // TODO CHECK REMOVE AND UPDATE METHOD
                 removeAndUpdateCells(cellToRemoveArray);
@@ -194,7 +188,6 @@ public final class Game extends AbstractBaseActivity {
             clearMatchFoundArrays(true);
             clearColorVerifiedArray();
             clearSelectedArray();
-            doubleMatch3 = 0;
         }
         if(!comboCheck){
             ++currentMove;
@@ -619,5 +612,13 @@ public final class Game extends AbstractBaseActivity {
     private void setComboArray(List<Cell> comboArray) {
         if(comboArray != null) this.comboArray = comboArray;
         else this.comboArray = new ArrayList<>();
+    }
+
+    private void popToast(String msg){
+        Toast toast = Toast.makeText(this.context, msg, Toast.LENGTH_LONG);
+        toast.getView().setBackgroundColor(Color.TRANSPARENT);
+        int yOffSet = gameTable.getHeight()/4;
+        toast.setGravity(Gravity.TOP, 0, yOffSet);
+        toast.show();
     }
 }

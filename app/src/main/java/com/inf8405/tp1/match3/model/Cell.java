@@ -138,30 +138,32 @@ public class Cell extends Button{
         Cell cell2 = null;
         dir = "UNKNOWN";
         boolean horizontal = Math.abs(y - dy) < getHeight();
+        boolean widthSurpass = Math.abs(x - dx) > getWidth();
         // RIGHT
-        if(dx > x && horizontal){
+        if(dx > x && horizontal && widthSurpass){
             cell2 = cell.getRightCell();
             dir = "RIGHT";
         }
         // LEFT
-        else if (dx < x && horizontal){
+        else if (dx < x && horizontal && widthSurpass){
             cell2 = cell.getLeftCell();
             dir = "LEFT";
         }
         // DOWN
-        else if (dy > y && !horizontal) {
+        else if (dy > y && !horizontal && !widthSurpass) {
             cell2 = cell.getBottomCell();
             dir = "DOWN";
         }
         // UP
-        else if (dy < y && !horizontal){
+        else if (dy < y && !horizontal && !widthSurpass){
             cell2 = cell.getTopCell();
             dir = "UP";
         }
-        Toast.makeText(getContext(), dir, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), dir, Toast.LENGTH_SHORT).show();
         Log.d("DIR", dir);
         if(cell != null) Log.d("cell1", " " + cell.getText());
         if(cell2!= null) Log.d("cell2", " " + cell2.getText());
+        Log.d("DIRinfo", "x "+ x + "y "+y+" dx" +dx + "dy "+dy + " H " + getHeight());
         return cell2;
     }
 }
