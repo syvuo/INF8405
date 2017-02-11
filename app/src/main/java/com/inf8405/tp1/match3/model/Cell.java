@@ -28,7 +28,6 @@ public class Cell extends Button{
     private Cell rightNeighbour;
     private Cell bottomNeighbour;
     private Cell leftNeighbour;
-    private GridLayout parent;
     private static final int [] COLORS_ARRAY = {R.color.blue, R.color.green, R.color.orange, R.color.purple, R.color.red, R.color.yellow};
 
     public Cell(Context context) {
@@ -37,7 +36,6 @@ public class Cell extends Button{
 
     public Cell(Context context, final Random rand, int text, GridLayout layout){
         super(context);
-        parent = layout;
         //TODO remove blue
         int colorTemp;
         if(rand == null)
@@ -71,10 +69,6 @@ public class Cell extends Button{
         leftNeighbour = cell;
     }
 
-    public void setParentLayout(GridLayout parent) {
-        this.parent = parent;
-    }
-
     public Cell getTopCell() {
         return topNeighbour;
     }
@@ -89,10 +83,6 @@ public class Cell extends Button{
 
     public Cell getLeftCell() {
         return leftNeighbour;
-    }
-
-    public GridLayout getParentLayout() {
-        return this.parent;
     }
 
     public void overrideEventListener(final Cell cell, final Game instance){
@@ -118,7 +108,7 @@ public class Cell extends Button{
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     v.setSelected(true);
                     GridLayout tl = (GridLayout)v.getParent();
-                    Cell cell2 = swipeCheckDirection(xPosI, yPosI, (int)event.getX(), (int)event.getY(), cell, instance);
+                    Cell cell2 = swipeCheckDirection(xPosI, yPosI, (int)event.getX(), (int)event.getY(), cell);
                     if(cell2 != null){
                         instance.addSelectedToArray(cell2);
                         tl.performClick();
@@ -144,11 +134,7 @@ public class Cell extends Button{
         isMatched = checked;
     }
 
-    public boolean getCellIsMatched(){
-        return isMatched;
-    }
-
-    private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell, final Game instance) {
+    private Cell swipeCheckDirection(int x, int y, int dx, int dy, Cell cell) {
         Cell cell2 = null;
         dir = "UNKNOWN";
         boolean horizontal = Math.abs(y - dy) < getHeight();

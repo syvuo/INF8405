@@ -40,17 +40,6 @@ public class MainActivity extends AbstractBaseActivity {
         containerLayout.addView(rulesMsg, layoutParams);
         popUpWindow.setContentView(containerLayout);
         setContentView(mainLayout);
-/*
-        dv = new DrawingView(this, mPaint);
-        setContentView(dv);
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        mPaint.setColor(Color.GREEN);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(12);*/
     }
 
     @Override
@@ -74,7 +63,6 @@ public class MainActivity extends AbstractBaseActivity {
         if (isClicked) {
             isClicked = false;
             popUpWindow.showAtLocation(mainLayout, Gravity.CENTER, 0, 0);
-            //popUpWindow.update(5, 10, 320, 90);
         } else {
             closePopUpWindow();
         }

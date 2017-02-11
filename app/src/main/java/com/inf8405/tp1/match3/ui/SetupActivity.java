@@ -64,7 +64,6 @@ public class SetupActivity extends AbstractBaseActivity {
                     if(btnLevel <= levelAllowed){
                         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //gameMatch3.setIsStarted(false);
                         intent.putExtra("level", btnLevel);
                         popUpWindow.dismiss();
                         startActivity(intent);

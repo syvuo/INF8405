@@ -29,19 +29,13 @@ public final class Game extends AbstractBaseActivity {
     private List<Cell> cellToRemoveArray = new ArrayList<>();
     private List<Cell> matchFoundArrays = new ArrayList<>();
     private int nbColumns = -1;
-    private int nbRows = -1;
-    private int sizeOfTable = -1;
-
-    private float pressedDownX;
-    private float pressedDownY;
     private GridLayout gameTable;
-    private final int CELL_SPACING = 1;
     private int nbMoves = 100;
     private int currentMove = 0;
     private int scoreToWin = 100;
     private int currentScore = 0;
     private int gameLevel = 1;
-
+    private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
     private final int LEVEL1_SCORE = 800;
     private final int LEVEL2_MOVE = 10;
@@ -50,6 +44,7 @@ public final class Game extends AbstractBaseActivity {
     private final int LEVEL3_SCORE = 1400;
     private final int LEVEL4_MOVE = 10;
     private final int LEVEL4_SCORE = 1800;
+    private final int LEVEL_MAX = 4;
 
     private Game(){}
 
@@ -60,12 +55,8 @@ public final class Game extends AbstractBaseActivity {
     public void setIsStarted(boolean value, Activity activity, int level) {
         clearData();
         currentActivity = activity;
-        gameLevel = level;
-        setGameStatus(gameLevel);
+        setGameStatus(level);
         isStarted = value;
-        if(isStarted){
-            sizeOfTable= nbColumns*nbRows;
-        }
     }
 
     public void clearData() {
@@ -156,18 +147,10 @@ public final class Game extends AbstractBaseActivity {
         nbColumns = tableColumns;
     }
 
-    public void setTableRows(int tableRows) {
-        nbRows = tableRows;
-    }
-
     public void addSelectedToArray(Cell cell){
         if(!selectedCellArray.contains(cell) && selectedCellArray.size()<=1){
             selectedCellArray.add(cell);
         }
-    }
-
-    public int getNbColumns() {
-        return nbColumns;
     }
 
     private void addCellToRemoveArray(Cell cell){
@@ -196,7 +179,7 @@ public final class Game extends AbstractBaseActivity {
     private void checkGameStatus(){
         if(currentScore >= scoreToWin){
             // TODO VICTORY
-            ++gameLevel;
+            gameLevel = gameLevel <  LEVEL_MAX ? gameLevel + 1 : gameLevel;
             endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
         }
         else if(currentMove >= nbMoves){

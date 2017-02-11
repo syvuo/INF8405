@@ -1,28 +1,18 @@
 package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import com.inf8405.tp1.match3.R;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import com.inf8405.tp1.match3.model.*;
 
@@ -36,8 +26,6 @@ public class GridActivity extends AbstractBaseActivity {
     private static final int DEFAULT_LEVEL = 0;
     private static GridLayout table = null;
     private static List<Cell> cells = new ArrayList<Cell>();
-    private float x1,x2;
-    static final int MIN_DISTANCE = 150;
     private int cellSpacing = 5;
     private int tableRows = 8;
     private int tableColumns = 8;
@@ -240,7 +228,6 @@ public class GridActivity extends AbstractBaseActivity {
         );
 
         gameMatch3.setTableColumns(tableColumns);
-        gameMatch3.setTableRows(tableRows);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(true, this, level);
 
@@ -269,14 +256,5 @@ public class GridActivity extends AbstractBaseActivity {
         table = null;
         gameMatch3.clearData();
         gameMatch3 = Game.getInstance();
-    }
-
-    private void clearAlphaAllCells(){
-        for(int i = 0; i < table.getChildCount(); ++i){
-            Cell cell = (Cell)table.getChildAt(i);
-            if(!cell.getCellIsMatched()){
-                cell.getBackground().setAlpha(255);
-            }
-        }
     }
 }
