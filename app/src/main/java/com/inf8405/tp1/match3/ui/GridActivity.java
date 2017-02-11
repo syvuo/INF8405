@@ -97,7 +97,7 @@ public class GridActivity extends AbstractBaseActivity {
                             case R.id.view_root:
                                 try{
                                     // TODO delete try catch
-                                    gameMatch3.scanCells(getApplicationContext(), null);
+                                    gameMatch3.scanCells(null);
                                 }
                                 catch (Exception e){
                                     e.printStackTrace();
@@ -229,7 +229,7 @@ public class GridActivity extends AbstractBaseActivity {
 
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setTableLayout(table);
-        gameMatch3.setIsStarted(true, this, level);
+        gameMatch3.setIsStarted(this, true, this, level);
 
         table.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -238,7 +238,7 @@ public class GridActivity extends AbstractBaseActivity {
                     case R.id.view_root:
                         try{
                             // TODO delete try catch when appropriate
-                            gameMatch3.scanCells(getApplicationContext(), null);
+                            gameMatch3.scanCells(null);
                         }
                         catch (Exception e){
                             e.printStackTrace();

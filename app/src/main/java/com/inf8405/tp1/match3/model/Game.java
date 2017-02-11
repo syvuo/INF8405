@@ -48,6 +48,7 @@ public final class Game extends AbstractBaseActivity {
     private int currentScore = 0;
     private int gameLevel = 1;
     private int comboCount = 1;
+    private Context context;
     private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
     private final int LEVEL1_SCORE = 800;
@@ -58,7 +59,7 @@ public final class Game extends AbstractBaseActivity {
     private final int LEVEL4_MOVE = 10;
     private final int LEVEL4_SCORE = 1800;
     private final int LEVEL_MAX = 4;
-    private final int TIME_FADEOUT = 1500;
+    private final int TIME_FADEOUT = 750;
 
     private Game(){}
 
@@ -66,11 +67,12 @@ public final class Game extends AbstractBaseActivity {
         return singletonInstance;
     }
 
-    public void setIsStarted(boolean value, Activity activity, int level) {
+    public void setIsStarted(Context context, boolean value, Activity activity, int level) {
         clearData();
         currentActivity = activity;
         setGameStatus(level);
         isStarted = value;
+        this.context = context;
     }
 
     public void clearData() {
@@ -91,11 +93,11 @@ public final class Game extends AbstractBaseActivity {
         return CELL_SPACING;
     }
 
-    public void scanCells(Context context, List<Cell> arr){
-        scanCells(context, arr, false);
+    public void scanCells(List<Cell> arr){
+        scanCells(arr, false);
     }
 
-    public void scanCells(Context context, List<Cell> arr, boolean comboCheck) {
+    public void scanCells(List<Cell> arr, boolean comboCheck) {
         List<Cell> selectedArr = arr;
         boolean switchMode = false;
         if(selectedArr == null){
@@ -138,7 +140,7 @@ public final class Game extends AbstractBaseActivity {
                     }
                     // If true, toast combo after updating score
                     if(updateScore(comboCheck)){
-                        Toast toast = Toast.makeText(context, getString(R.string.combo_x)+comboCount, Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(this.context, getString(R.string.combo_x)+comboCount, Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0,0);
                         toast.getView().setBackgroundColor(Color.RED);
                         toast.show();
@@ -165,12 +167,12 @@ public final class Game extends AbstractBaseActivity {
                 combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
                  */
                 if(doubleMatch3 == 2){
-                    Toast toast = Toast.makeText(context, R.string.double_match, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(this.context, R.string.double_match, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0,0);
                     toast.show();
                 }
                 // TODO CHECK REMOVE AND UPDATE METHOD
-                removeAndUpdateCells(cellToRemoveArray, context);
+                removeAndUpdateCells(cellToRemoveArray);
                 clearCellToRemoveArrays();
             }
 
@@ -454,7 +456,7 @@ public final class Game extends AbstractBaseActivity {
         Log.d("allTable",test);
     }
 
-    private void removeAndUpdateCells(List<Cell> arr, Context context){
+    private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
             int idx;
@@ -489,8 +491,8 @@ public final class Game extends AbstractBaseActivity {
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
 
-        delayThread(TIME_FADEOUT);
-        scanCells(context, comboArray,true);
+        delayThread(TIME_FADEOUT*arr.size());
+        scanCells(comboArray,true);
     }
 
     // TODO optimize this.
