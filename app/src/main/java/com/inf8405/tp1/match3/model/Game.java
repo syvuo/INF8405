@@ -1,5 +1,7 @@
 package com.inf8405.tp1.match3.model;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import com.inf8405.tp1.match3.R;
@@ -416,7 +420,7 @@ public final class Game extends AbstractBaseActivity {
             updateSurroundingCells(cellL);
             updateSurroundingCells(cellR);
             updateSurroundingCells(cellB);
-
+            animateFade(btn);
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
@@ -444,5 +448,14 @@ public final class Game extends AbstractBaseActivity {
                 })
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
+    }
+
+    private void animateFade(Cell cell){
+
+        AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(1000);
+        anim.setRepeatCount(1);
+        anim.setRepeatMode(Animation.REVERSE);
+        cell.startAnimation(anim);
     }
 }
