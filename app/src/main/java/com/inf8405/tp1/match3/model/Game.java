@@ -2,8 +2,10 @@ package com.inf8405.tp1.match3.model;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,7 +38,7 @@ public final class Game extends AbstractBaseActivity {
     private List<Cell> selectedCellArray = new ArrayList<>();
     private List<Cell> colorVerifiedCellArray = new ArrayList<>();
     private List<Cell> cellToRemoveArray = new ArrayList<>();
-    private List<Cell> matchFoundArrays = new ArrayList<>();
+    private List<Cell> matchFoundArray = new ArrayList<>();
     private List<Cell> comboArray = new ArrayList<>();
     private int nbColumns = -1;
     private GridLayout gameTable;
@@ -45,6 +47,7 @@ public final class Game extends AbstractBaseActivity {
     private int scoreToWin = 100;
     private int currentScore = 0;
     private int gameLevel = 1;
+    private int comboCount = 1;
     private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
     private final int LEVEL1_SCORE = 800;
@@ -72,6 +75,7 @@ public final class Game extends AbstractBaseActivity {
 
     public void clearData() {
         //cellArrays = new ArrayList<>();
+        comboArray = new ArrayList<>();
         selectedCellArray =  new ArrayList<>();
         nbMoves = 100;
         currentMove = 0;
@@ -87,40 +91,58 @@ public final class Game extends AbstractBaseActivity {
         return CELL_SPACING;
     }
 
-    public void scanCells(List<Cell> arr){
-        scanCells(arr, false);
+    public void scanCells(Context context, List<Cell> arr){
+        scanCells(context, arr, false);
     }
 
-    public void scanCells(List<Cell> arr, boolean comboCheck) {
+    public void scanCells(Context context, List<Cell> arr, boolean comboCheck) {
         List<Cell> selectedArr = arr;
+        boolean switchMode = false;
         if(selectedArr == null){
             selectedArr = selectedCellArray;
+            if(selectedArr.size() >= 2){
+                switchMode = true;
+                swapBtn(selectedArr.get(0), selectedArr.get(1));
+            }
         }
+        lazyUpdateAllSurroundingAllCells();
         int nbMatch = 0;
         String cellTest = "";
         boolean foundMatch3 = false;
         int doubleMatch3 = 0;
-        if(selectedArr.size() >= 2){
-            //printAllTable();
-            swapBtn(selectedArr.get(0), selectedArr.get(1));
-            //printAllTable();
+        if(selectedArr.size() > 0){
+            // TODO REMOVE DEBUG USAGE
+            if(comboCheck){
+                Log.d("below", "here" );
+                printAllTable();
+                printAllTableWithColor();
+                Log.d("above", "here" );
+            }
+            //END TODO
+
             int i = 0;
 
             while(i < selectedArr.size()){
                 //Log.d("selectedArraySize", selectedCellArrays.size()+ "");
                 findSelectedManager(selectedArr.get(i),  selectedArr.get(i).getCurrentTextColor());
-                if(matchFoundArrays.size()>= 3){
+                if(matchFoundArray.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
                     ++doubleMatch3;
                     String matchFoundArrayString = ""; //
-                    for(int x = 0; x < matchFoundArrays.size(); ++x){
-                        Cell cell = matchFoundArrays.get(x);
+                    for(int x = 0; x < matchFoundArray.size(); ++x){
+                        Cell cell = matchFoundArray.get(x);
                         matchFoundArrayString+= cell.getText() + " ";
                         cell.setSelected(false);
                         cell.getBackground().setAlpha(0);
                     }
-                    updateScore();
+                    // If true, toast combo after updating score
+                    if(updateScore(comboCheck)){
+                        Toast toast = Toast.makeText(context, getString(R.string.combo_x)+comboCount, Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER, 0,0);
+                        toast.getView().setBackgroundColor(Color.RED);
+                        toast.show();
+                    }
                     Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
                     Log.d("non valid move", "non valid move");
@@ -130,7 +152,9 @@ public final class Game extends AbstractBaseActivity {
             }
             if(!foundMatch3){
                 //
-                swapBtn(selectedArr.get(1), selectedArr.get(0));
+                if(switchMode){
+                    swapBtn(selectedArr.get(1), selectedArr.get(0));
+                }
             } else {
                 // TODO CHECK DOUBLE POINTAGE IF MATCH3 SEE BELOW :
                 /*
@@ -141,12 +165,12 @@ public final class Game extends AbstractBaseActivity {
                 combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
                  */
                 if(doubleMatch3 == 2){
-                    Toast toast = Toast.makeText(gameTable.getContext(), "!!!DOUBLE MATCH!!!", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(context, R.string.double_match, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0,0);
                     toast.show();
                 }
                 // TODO CHECK REMOVE AND UPDATE METHOD
-                removeAndUpdateCells(cellToRemoveArray);
+                removeAndUpdateCells(cellToRemoveArray, context);
                 clearCellToRemoveArrays();
             }
 
@@ -167,7 +191,7 @@ public final class Game extends AbstractBaseActivity {
         if(!comboCheck){
             ++currentMove;
         } else {
-            //printSurroundingCell();
+            setComboArray(null);
         }
         checkGameStatus();
         delayThread(TIME_FADEOUT);
@@ -194,13 +218,19 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void addMatchFoundArrays(Cell cell){
-        if(!matchFoundArrays.contains(cell)){
-            matchFoundArrays.add(cell);
+        if(!matchFoundArray.contains(cell)){
+            matchFoundArray.add(cell);
         }
     }
 
-    private void updateScore(){
-        int nbMatches = matchFoundArrays.size();
+    private void addComboArray(Cell cell){
+        if(!comboArray.contains(cell)){
+            comboArray.add(cell);
+        }
+    }
+
+    private boolean updateScore(boolean comboCheck){
+        int nbMatches = matchFoundArray.size();
         if(nbMatches >= 5){
             currentScore+= 300;
         } else if(nbMatches == 4) {
@@ -208,6 +238,14 @@ public final class Game extends AbstractBaseActivity {
         } else {
             currentScore+= 100;
         }
+        // Combo appears only when there was previously a match3. Combo will be verified in the second scanCell after the first match3 (after all removal and
+        // all adding view processes
+        if(comboCheck){
+            ++comboCount;
+            currentScore*=comboCount;
+            return true;
+        }
+        return false;
     }
 
     private void checkGameStatus(){
@@ -256,43 +294,47 @@ public final class Game extends AbstractBaseActivity {
         txM.setText(currentActivity.getResources().getString(R.string.move)+" " + String.valueOf(nbMoves-currentMove) + " ");
     }
 
-    // TODO penser a un algo moins naif. Presentement on triple check le meme cell. perte de performance.
-    // TODO l'utilisation recursive ou de quoi meilleure est souhaitable
     private void findSelectedManager(Cell cell1, int cellColorToCheck){
-        if(!matchFoundArrays.contains(cell1)){
+        if(!matchFoundArray.contains(cell1)){
             addMatchFoundArrays(cell1);
         }
         // Check RIGHT
-        checkColor(cell1, cell1.getRightCell(), cellColorToCheck);
+        checkColor(cell1, cell1.getRightCell(), cellColorToCheck, "RIGHT");
         // Check LEFT
-        checkColor(cell1, cell1.getLeftCell(), cellColorToCheck);
+        checkColor(cell1, cell1.getLeftCell(), cellColorToCheck, "LEFT");
         // Check TOP
-        checkColor(cell1, cell1.getTopCell(), cellColorToCheck);
+        checkColor(cell1, cell1.getTopCell(), cellColorToCheck, "TOP");
         // Check BOTTOM
-        checkColor(cell1, cell1.getBottomCell(), cellColorToCheck);
+        checkColor(cell1, cell1.getBottomCell(), cellColorToCheck, "BOTTOM");
         cell1.setCellIsVerified(true);
     }
 
-    private int checkColor(Cell cell1, Cell cell2, int cellColor){
-        if(cell2 != null && !cell2.getCellIsVerified()){
-            Log.d("checkColor", cell1.getText() + " && " +cell2.getText());
-            //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
-            cell2.setCellIsVerified(true);
+    private int checkColor(Cell cell1, Cell cell2, int cellColor, String additionnalMsg){
+        try {
+            if (cell2 != null && !cell2.getCellIsVerified()) {
+                Log.d("checkColor", cell1.getText() + " && " + cell2.getText());
+                //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
+                cell2.setCellIsVerified(true);
 
-            if(cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor() ){
-                cell1.setCellIsMatched(true);
-                cell2.setCellIsMatched(true);
-                addMatchFoundArrays(cell1);
-                addMatchFoundArrays(cell2);
-                addCellToRemoveArray(cell1);
-                addCellToRemoveArray(cell2);
-                findSelectedManager(cell2, cellColor);
-                //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
-                return 1;
+                if (cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor()) {
+                    cell1.setCellIsMatched(true);
+                    cell2.setCellIsMatched(true);
+                    addMatchFoundArrays(cell1);
+                    addMatchFoundArrays(cell2);
+                    addCellToRemoveArray(cell1);
+                    addCellToRemoveArray(cell2);
+                    findSelectedManager(cell2, cellColor);
+                    //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
+                    return 1;
+                }
+                Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
             }
-            Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
         }
-        //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        if(cell2 != null)
+            Log.d("ChckClrVerFail"+additionnalMsg, cell1.getText() + " && " + cell2.getText());
         colorVerifiedCellArray.add(cell2);
         return 0;
     }
@@ -307,11 +349,11 @@ public final class Game extends AbstractBaseActivity {
 
     private void clearMatchFoundArrays(boolean clear){
         if(clear){
-            for(Cell cell : matchFoundArrays){
+            for(Cell cell : matchFoundArray){
                 cell.getBackground().setAlpha(255);
             }
         }
-        matchFoundArrays = new ArrayList<>();
+        matchFoundArray = new ArrayList<>();
     }
 
     private void clearCellToRemoveArrays(){
@@ -399,7 +441,20 @@ public final class Game extends AbstractBaseActivity {
         Log.d("allTable",test);
     }
 
-    private void removeAndUpdateCells(List<Cell> arr){
+    private void printAllTableWithColor(){
+
+        String test = "";
+        for (int i=0; i < gameTable.getChildCount(); ++i){
+
+            if(i%gameTable.getColumnCount() == 0){
+                test+="\n";
+            }
+            test += "("+((Cell)gameTable.getChildAt(i)).getText()+")"+((Cell)gameTable.getChildAt(i)).getCurrentTextColor() + "\t\t";
+        }
+        Log.d("allTable",test);
+    }
+
+    private void removeAndUpdateCells(List<Cell> arr, Context context){
         String test = "";
         for(Cell cell: arr){
             int idx;
@@ -434,6 +489,8 @@ public final class Game extends AbstractBaseActivity {
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
 
+        delayThread(TIME_FADEOUT);
+        scanCells(context, comboArray,true);
     }
 
     // TODO optimize this.
@@ -470,12 +527,7 @@ public final class Game extends AbstractBaseActivity {
 
     // Source: http://stackoverflow.com/questions/14156837/animation-fade-in-and-out
     private void animateFade(final Cell cell1, final Cell cell2){
-/*
-        AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
-        anim.setDuration(1000);
-        anim.setRepeatCount(1);
-        anim.setRepeatMode(Animation.REVERSE);
-        cell.startAnimation(anim);*/
+
         Animation fadeOut = new AlphaAnimation(1, 0);
         fadeOut.setInterpolator(new AccelerateInterpolator());
         fadeOut.setDuration(TIME_FADEOUT);
@@ -500,7 +552,7 @@ public final class Game extends AbstractBaseActivity {
                 cell2.setLayoutParams(params);
                 gameMatch3 = Game.getInstance();
                 cell2.overrideEventListener(cell2, gameMatch3);
-                comboArray.add(cell2);
+                addComboArray(cell2);
                 lazyUpdateAllSurroundingAllCells();
             }
             public void onAnimationRepeat(Animation animation) {}
@@ -512,23 +564,16 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void delayThread(int time){
-        delayThread(time, null);
-    }
-
-    private void delayThread(int time, final Callable<Integer> func){
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        delayThread(time, new Runnable() {
             @Override
             public void run() {
-                /*try {
-                    func.call();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
-                scanCells(getComboArray(), true);
-                setComboArray(null);
             }
-        }, time);
+        });
+    }
+
+    private void delayThread(int time, Runnable func){
+        final Handler handler = new Handler();
+        handler.postDelayed(func, time);
     }
 
     private List<Cell> getComboArray() {

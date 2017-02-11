@@ -13,5 +13,7 @@
     <string name="retry_msg">Recommcencez?</string>
     <string name="victory">Victoire</string>
     <string name="victory_msg">Poursuivre au prochain niveau?</string>
+    <string name="double_match">!DOUBLE MATCH!</string>
+    <string name="combo_x">COMBO X</string>
 
 </resources>
