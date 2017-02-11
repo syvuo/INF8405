@@ -1,18 +1,20 @@
 package com.inf8405.tp1.match3.model;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.GridActivity;
@@ -20,6 +22,7 @@ import com.inf8405.tp1.match3.ui.SetupActivity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Lam on 1/26/2017.
@@ -34,6 +37,7 @@ public final class Game extends AbstractBaseActivity {
     private List<Cell> colorVerifiedCellArray = new ArrayList<>();
     private List<Cell> cellToRemoveArray = new ArrayList<>();
     private List<Cell> matchFoundArrays = new ArrayList<>();
+    private List<Cell> comboArray = new ArrayList<>();
     private int nbColumns = -1;
     private GridLayout gameTable;
     private int nbMoves = 100;
@@ -51,6 +55,7 @@ public final class Game extends AbstractBaseActivity {
     private final int LEVEL4_MOVE = 10;
     private final int LEVEL4_SCORE = 1800;
     private final int LEVEL_MAX = 4;
+    private final int TIME_FADEOUT = 1500;
 
     private Game(){}
 
@@ -82,21 +87,32 @@ public final class Game extends AbstractBaseActivity {
         return CELL_SPACING;
     }
 
-    public void scanCells(Context context) {
+    public void scanCells(List<Cell> arr){
+        scanCells(arr, false);
+    }
+
+    public void scanCells(List<Cell> arr, boolean comboCheck) {
+        List<Cell> selectedArr = arr;
+        if(selectedArr == null){
+            selectedArr = selectedCellArray;
+        }
         int nbMatch = 0;
         String cellTest = "";
-        if(selectedCellArray.size() >= 2){
+        boolean foundMatch3 = false;
+        int doubleMatch3 = 0;
+        if(selectedArr.size() >= 2){
             //printAllTable();
-            swapBtn(selectedCellArray.get(0), selectedCellArray.get(1));
+            swapBtn(selectedArr.get(0), selectedArr.get(1));
             //printAllTable();
             int i = 0;
-            boolean foundMatch3 = false;
-            while(i < selectedCellArray.size()){
+
+            while(i < selectedArr.size()){
                 //Log.d("selectedArraySize", selectedCellArrays.size()+ "");
-                findSelectedManager(selectedCellArray.get(i),  selectedCellArray.get(i).getCurrentTextColor());
+                findSelectedManager(selectedArr.get(i),  selectedArr.get(i).getCurrentTextColor());
                 if(matchFoundArrays.size()>= 3){
                     // for the swap only
                     foundMatch3 = true;
+                    ++doubleMatch3;
                     String matchFoundArrayString = ""; //
                     for(int x = 0; x < matchFoundArrays.size(); ++x){
                         Cell cell = matchFoundArrays.get(x);
@@ -114,10 +130,8 @@ public final class Game extends AbstractBaseActivity {
             }
             if(!foundMatch3){
                 //
-                swapBtn(selectedCellArray.get(1), selectedCellArray.get(0));
+                swapBtn(selectedArr.get(1), selectedArr.get(0));
             } else {
-                removeAndUpdateCells(cellToRemoveArray);
-                clearCellToRemoveArrays();
                 // TODO CHECK DOUBLE POINTAGE IF MATCH3 SEE BELOW :
                 /*
                  Lorsque des combos sont réalisés (après la disparition d’un groupe, un nouveau groupe
@@ -126,6 +140,14 @@ public final class Game extends AbstractBaseActivity {
                 formation d’un nouveau groupe), le score est multiplié par 3. Et ainsi de suite jusqu’à ce que le
                 combo soit brisé, c’est-à-dire jusqu’à ce que le joueur ait à nouveau effectué une action
                  */
+                if(doubleMatch3 == 2){
+                    Toast toast = Toast.makeText(gameTable.getContext(), "!!!DOUBLE MATCH!!!", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0,0);
+                    toast.show();
+                }
+                // TODO CHECK REMOVE AND UPDATE METHOD
+                removeAndUpdateCells(cellToRemoveArray);
+                clearCellToRemoveArrays();
             }
 
             for(int x = 0; x < colorVerifiedCellArray.size(); ++x){
@@ -140,9 +162,15 @@ public final class Game extends AbstractBaseActivity {
             clearMatchFoundArrays(true);
             clearColorVerifiedArray();
             clearSelectedArray();
+            doubleMatch3 = 0;
         }
-        currentMove++;
+        if(!comboCheck){
+            ++currentMove;
+        } else {
+            //printSurroundingCell();
+        }
         checkGameStatus();
+        delayThread(TIME_FADEOUT);
     }
 
     public void setTableLayout(GridLayout tl){
@@ -309,10 +337,12 @@ public final class Game extends AbstractBaseActivity {
         addCellToParent(cell1, idx2);
         removeCellFromParent(cell2);
         addCellToParent(cell2, idx1);
+
         updateSurroundingCells(cell1);
         if(!onRemoveState){
             updateSurroundingCells(cell2);
         }
+        lazyUpdateAllSurroundingAllCells();
         printAllTable();
     }
 
@@ -342,7 +372,7 @@ public final class Game extends AbstractBaseActivity {
             cell.setBottomCell(cell2);
             cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
             cell.setLeftCell(cell2);
-            printSurroundingCell(cell);
+            //printSurroundingCell(cell);
         }
     }
 
@@ -372,58 +402,46 @@ public final class Game extends AbstractBaseActivity {
     private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
-            int idx = gameTable.indexOfChild(cell);
+            int idx;
             int id = Integer.parseInt(cell.getText().toString());
-
-            // Nb of row affected
-            int nbSwitches = (int)Math.ceil(idx/nbColumns);
-            Log.d("Switch", ""+nbSwitches);
-
-            final Cell cellL = cell.getLeftCell();
-            final Cell cellR = cell.getRightCell();
-            final Cell cellB = cell.getBottomCell();
-            final Cell cellT = cell.getTopCell();
-
-            for(int i = 0; i < nbSwitches+1; ++i){
+            Cell tempCellTop;
+            do{
                 swapBtn(cell, cell.getTopCell(), true);
+                tempCellTop = cell.getTopCell();
             }
+            while(tempCellTop != null);
 
             idx = gameTable.indexOfChild(cell);
+            Log.d("afterSwapCell", "idx is " + idx + " for id " + id);
             Random rand = new Random();
             //TODO use rand when done
             Cell btn = new Cell(gameTable.getContext(), rand, id, gameTable);
 
+            // Get neighbour before removal
+            final Cell cellL2 = cell.getLeftCell();
+            final Cell cellR2 = cell.getRightCell();
+            final Cell cellB2 = cell.getBottomCell();
+            final Cell cellT2 = cell.getTopCell();
 
-            btn.setTopCell(cellT);
-            btn.setRightCell(cellR);
-            btn.setLeftCell(cellL);
-            btn.setBottomCell(cellB);
+            btn.setTopCell(cellT2);
+            btn.setRightCell(cellR2);
+            btn.setLeftCell(cellL2);
+            btn.setBottomCell(cellB2);
             btn.setText(String.valueOf(cell.getText()));
 
-            gameTable.removeView(cell);
-            gameTable.addView(btn, idx);
-
-            int gridLayoutWidth = gameTable.getWidth();
-            int gridLayoutHeight = gameTable.getHeight();
-            int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
-            int cellHeight = gridLayoutHeight / gameTable.getRowCount();
-            GridLayout.LayoutParams params =
-                    (GridLayout.LayoutParams) btn.getLayoutParams();
-            params.width = cellWidth - 2 * CELL_SPACING;
-            params.height = cellHeight - 2 * CELL_SPACING;
-            params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
-            btn.setLayoutParams(params);
-            gameMatch3 = Game.getInstance();
-            btn.overrideEventListener(btn, gameMatch3);
-            test += cell.getText() + "\t";
-            updateSurroundingCells(cellT);
-            updateSurroundingCells(cellL);
-            updateSurroundingCells(cellR);
-            updateSurroundingCells(cellB);
-            animateFade(btn);
+            animateFade(cell, btn);
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
+
+    }
+
+    // TODO optimize this.
+    private void lazyUpdateAllSurroundingAllCells() {
+        for (int i = 0; i < gameTable.getChildCount(); ++i){
+            Cell cell = (Cell)gameTable.getChildAt(i);
+            updateSurroundingCells(cell);
+        }
     }
 
     private void endGameAppDialog(String title, String msg) {
@@ -450,12 +468,75 @@ public final class Game extends AbstractBaseActivity {
                 .show();
     }
 
-    private void animateFade(Cell cell){
-
+    // Source: http://stackoverflow.com/questions/14156837/animation-fade-in-and-out
+    private void animateFade(final Cell cell1, final Cell cell2){
+/*
         AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
         anim.setDuration(1000);
         anim.setRepeatCount(1);
         anim.setRepeatMode(Animation.REVERSE);
-        cell.startAnimation(anim);
+        cell.startAnimation(anim);*/
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(TIME_FADEOUT);
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener()
+        {
+            public void onAnimationEnd(Animation animation)
+            {
+                cell1.setVisibility(View.GONE);
+                final int idx = gameTable.indexOfChild(cell1);
+                gameTable.removeView(cell1);
+                gameTable.addView(cell2, idx);
+                int gridLayoutWidth = gameTable.getWidth();
+                int gridLayoutHeight = gameTable.getHeight();
+                int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
+                int cellHeight = gridLayoutHeight / gameTable.getRowCount();
+                GridLayout.LayoutParams params =
+                        (GridLayout.LayoutParams) cell2.getLayoutParams();
+                params.width = cellWidth - 2 * CELL_SPACING;
+                params.height = cellHeight - 2 * CELL_SPACING;
+                params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
+                cell2.setLayoutParams(params);
+                gameMatch3 = Game.getInstance();
+                cell2.overrideEventListener(cell2, gameMatch3);
+                comboArray.add(cell2);
+                lazyUpdateAllSurroundingAllCells();
+            }
+            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
+        });
+
+        cell1.startAnimation(fadeOut);
+
+    }
+
+    private void delayThread(int time){
+        delayThread(time, null);
+    }
+
+    private void delayThread(int time, final Callable<Integer> func){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                /*try {
+                    func.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+                scanCells(getComboArray(), true);
+                setComboArray(null);
+            }
+        }, time);
+    }
+
+    private List<Cell> getComboArray() {
+        return comboArray;
+    }
+
+    private void setComboArray(List<Cell> comboArray) {
+        if(comboArray != null) this.comboArray = comboArray;
+        else this.comboArray = new ArrayList<>();
     }
 }

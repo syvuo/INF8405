@@ -97,7 +97,7 @@ public class GridActivity extends AbstractBaseActivity {
                             case R.id.view_root:
                                 try{
                                     // TODO delete try catch
-                                    gameMatch3.scanCells(getApplicationContext());
+                                    gameMatch3.scanCells(null);
                                 }
                                 catch (Exception e){
                                     e.printStackTrace();
@@ -238,7 +238,7 @@ public class GridActivity extends AbstractBaseActivity {
                     case R.id.view_root:
                         try{
                             // TODO delete try catch when appropriate
-                            gameMatch3.scanCells(getApplicationContext());
+                            gameMatch3.scanCells(null);
                         }
                         catch (Exception e){
                             e.printStackTrace();
