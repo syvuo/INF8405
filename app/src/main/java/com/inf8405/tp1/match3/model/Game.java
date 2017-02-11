@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.inf8405.tp1.match3.ui.GridActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Lam on 1/26/2017.
@@ -312,6 +314,7 @@ public final class Game extends AbstractBaseActivity {
 
     private void addCellToParent(Cell cell, int idx){
         if(gameTable.indexOfChild(cell) == -1){
+            Log.d("indexInAdd", "\t"+idx);
             gameTable.addView(cell, idx);
         }
     }
@@ -320,21 +323,23 @@ public final class Game extends AbstractBaseActivity {
         if(cell.getParent() != null){
             GridLayout glP = (GridLayout)cell.getParent();
             glP.removeView(cell);
-            Log.d("removeE", "error while removing cell1. Had to attempt twice");
+            Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
         }
     }
 
     private void updateSurroundingCells(Cell cell){
-        final int idx = gameTable.indexOfChild(cell);
-        Cell cell2 = (Cell)gameTable.getChildAt(idx-gameTable.getColumnCount());
-        cell.setTopCell(cell2);
-        cell2 = idx%nbColumns == nbColumns-1 ? null : (Cell)gameTable.getChildAt(idx+1);
-        cell.setRightCell(cell2);
-        cell2 = (Cell)gameTable.getChildAt(idx+gameTable.getColumnCount());
-        cell.setBottomCell(cell2);
-        cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
-        cell.setLeftCell(cell2);
-        printSurroundingCell(cell);
+        if(cell != null){
+            final int idx = gameTable.indexOfChild(cell);
+            Cell cell2 = (Cell)gameTable.getChildAt(idx-gameTable.getColumnCount());
+            cell.setTopCell(cell2);
+            cell2 = idx%nbColumns == nbColumns-1 ? null : (Cell)gameTable.getChildAt(idx+1);
+            cell.setRightCell(cell2);
+            cell2 = (Cell)gameTable.getChildAt(idx+gameTable.getColumnCount());
+            cell.setBottomCell(cell2);
+            cell2 = idx%nbColumns == 0 ? null : (Cell)gameTable.getChildAt(idx-1);
+            cell.setLeftCell(cell2);
+            printSurroundingCell(cell);
+        }
     }
 
     private void printSurroundingCell(Cell cell){
@@ -361,7 +366,7 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void removeAndUpdateCells(List<Cell> arr){
-        String test = "";/*
+        String test = "";
         for(Cell cell: arr){
             int idx = gameTable.indexOfChild(cell);
             int id = Integer.parseInt(cell.getText().toString());
@@ -369,6 +374,12 @@ public final class Game extends AbstractBaseActivity {
             // Nb of row affected
             int nbSwitches = (int)Math.ceil(idx/nbColumns);
             Log.d("Switch", ""+nbSwitches);
+
+            final Cell cellL = cell.getLeftCell();
+            final Cell cellR = cell.getRightCell();
+            final Cell cellB = cell.getBottomCell();
+            final Cell cellT = cell.getTopCell();
+
             for(int i = 0; i < nbSwitches+1; ++i){
                 swapBtn(cell, cell.getTopCell(), true);
             }
@@ -376,13 +387,14 @@ public final class Game extends AbstractBaseActivity {
             idx = gameTable.indexOfChild(cell);
             Random rand = new Random();
             //TODO use rand when done
-            Cell btn = new Cell(gameTable.getContext(), null, id, gameTable);
+            Cell btn = new Cell(gameTable.getContext(), rand, id, gameTable);
 
 
-            btn.setTopCell(cell.getTopCell());
-            btn.setRightCell(cell.getRightCell());
-            btn.setLeftCell(cell.getLeftCell());
-            btn.setBottomCell(cell.getBottomCell());
+            btn.setTopCell(cellT);
+            btn.setRightCell(cellR);
+            btn.setLeftCell(cellL);
+            btn.setBottomCell(cellB);
+            btn.setText(String.valueOf(cell.getText()));
 
             gameTable.removeView(cell);
             gameTable.addView(btn, idx);
@@ -400,8 +412,12 @@ public final class Game extends AbstractBaseActivity {
             gameMatch3 = Game.getInstance();
             btn.overrideEventListener(btn, gameMatch3);
             test += cell.getText() + "\t";
+            updateSurroundingCells(cellT);
+            updateSurroundingCells(cellL);
+            updateSurroundingCells(cellR);
+            updateSurroundingCells(cellB);
 
-        }*/
+        }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);
     }
