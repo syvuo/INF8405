@@ -23,7 +23,6 @@
     <string name="double_match">!DOUBLE MATCH!</string>
     <string name="combo_x">COMBO X</string>
     <string name="quittez_partie">Quittez la partie?</string>
-    <string name="stop_music">Stop Music</string>
-    <string name="play_music">Play Music</string>
+    <string name="play_music">Play/Stop Music</string>
 
 </resources>

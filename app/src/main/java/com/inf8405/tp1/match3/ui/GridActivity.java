@@ -249,11 +249,8 @@ public class GridActivity extends AbstractBaseActivity {
         Intent svc=new Intent(this, BackgroundService.class);
         if(!bgMusic){
             startService(svc);
-            ((Button)v).setText(R.string.stop_music);
-
         } else {
             stopService(svc);
-            ((Button)v).setText(R.string.play_music);
         }
         bgMusic = !bgMusic;
     }
