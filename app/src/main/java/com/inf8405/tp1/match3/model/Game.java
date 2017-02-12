@@ -246,7 +246,9 @@ public final class Game extends AbstractBaseActivity {
         startDisplayGain();
         stopDisplayGain();
         fadeOutGainTV();
-        popToast(this.context.getString(R.string.combo_x)+comboCount, Gravity.BOTTOM);
+        if(comboCheck){
+            popToast(this.context.getString(R.string.combo_x)+comboCount, Gravity.BOTTOM);
+        }
     }
 
     private void checkGameStatus(){
