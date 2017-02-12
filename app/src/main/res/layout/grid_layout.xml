@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:background="@color/blue"
+    android:background="@color/black"
     android:orientation="horizontal"
     android:padding="10dp">
 
@@ -11,26 +11,30 @@
         android:id="@+id/text_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/score" />
+        android:text="@string/score"
+        android:textColor="@color/teal"/>
 
     <TextView
         android:id="@+id/text_score_player"
         android:layout_toRightOf="@id/text_score"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/teal"/>
 
     <TextView
         android:id="@+id/text_move"
         android:layout_below="@id/text_score"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/teal"/>
 
     <TextView
         android:id="@+id/text_move_player"
         android:layout_below="@id/text_score_player"
         android:layout_toRightOf="@id/text_move"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/teal"/>
 
     <GridLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

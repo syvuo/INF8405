@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.Toast;
 import com.inf8405.tp1.match3.R;
 import java.util.Random;
 

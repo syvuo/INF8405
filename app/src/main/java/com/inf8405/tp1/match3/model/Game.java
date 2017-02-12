@@ -390,17 +390,27 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void addCellToParent(Cell cell, int idx){
-        if(gameTable.indexOfChild(cell) == -1){
-            Log.d("indexInAdd", "\t"+idx);
+        if(gameTable.indexOfChild(cell) == -1 && idx != -1){
+            Log.d("indexInAdd",  "\tId "+cell.getText() + "\tidx "+idx);
             gameTable.addView(cell, idx);
+        } else {
+            Log.d("indexInAddFAILLLL",  "\tId "+cell.getText() + "\tidx "+idx);
         }
     }
 
     private void removeCellFromParent(Cell cell){
         if(cell.getParent() != null){
             GridLayout glP = (GridLayout)cell.getParent();
-            glP.removeView(cell);
-            Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
+            do{
+
+                glP.removeView(cell);
+                gameTable.removeView(cell);
+                glP.removeView(cell);
+                gameTable.invalidate();
+                gameTable.removeView(cell);
+                Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
+            }
+            while(glP.indexOfChild(cell) > -1 && gameTable.indexOfChild(cell) > -1);
         }
     }
 
@@ -487,11 +497,10 @@ public final class Game extends AbstractBaseActivity {
 
             //animateFade(cell, btn);
 
-
             cell.setVisibility(View.GONE);
             idx = gameTable.indexOfChild(cell);
-            gameTable.removeView(cell);
-            gameTable.addView(btn, idx);
+            removeCellFromParent(cell);
+            addCellToParent(btn, idx);
             int gridLayoutWidth = gameTable.getWidth();
             int gridLayoutHeight = gameTable.getHeight();
             int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
@@ -510,6 +519,7 @@ public final class Game extends AbstractBaseActivity {
             addComboArray(btn.getLeftCell());
             addComboArray(btn.getRightCell());
             addComboArray(btn.getBottomCell());
+
         }
         gameTable.invalidate();
         Log.d("ARR", "test : " + arr.size() + " with " + test);

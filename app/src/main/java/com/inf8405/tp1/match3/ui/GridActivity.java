@@ -30,16 +30,17 @@ public class GridActivity extends AbstractBaseActivity {
     private static final int DEFAULT_LEVEL = 0;
     private static GridLayout table = null;
     private static List<Cell> cells = new ArrayList<Cell>();
-    private int cellSpacing = 5;
-    private int tableRows = 8;
+    private int cellSpacing = 1;
+    private int tableRows = 5;
     private int tableColumns = 8;
 
-    private final int LEVEL1_COL = 5;
-    private final int LEVEL2_COL = 6;
+    private final int LEVEL1_COL = 8;
+    private final int LEVEL2_ROW = 6;
+    private final int LEVEL2_COL = 8;
     private final int LEVEL3_ROW = 7;
     private final int LEVEL3_COL = 7;
-    private final int LEVEL4_ROW = 7;
-    private final int LEVEL4_COL = 8;
+    private final int LEVEL4_ROW = 8;
+    private final int LEVEL4_COL = 7;
 
     // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
@@ -147,6 +148,7 @@ public class GridActivity extends AbstractBaseActivity {
                 tableColumns = LEVEL1_COL;
                 break;
             case 2:
+                tableRows = LEVEL2_ROW;
                 tableColumns = LEVEL2_COL;
                 break;
             case 3:
@@ -189,7 +191,8 @@ public class GridActivity extends AbstractBaseActivity {
                         int gridLayoutHeight = table.getHeight();
                         int cellWidth = gridLayoutWidth / tableColumns;
                         int cellHeight = gridLayoutHeight / tableRows;
-
+                        cellHeight = cellWidth <= cellHeight ? cellWidth: cellHeight;
+                        cellWidth = cellHeight <= cellWidth ? cellHeight: cellWidth;
                         Log.d("width", cellWidth + "" + " cell spacing " + cellSpacing);
 
                         for (int yPos = 0; yPos < tableRows; yPos++) {

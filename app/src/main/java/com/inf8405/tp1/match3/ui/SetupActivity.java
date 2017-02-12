@@ -52,6 +52,11 @@ public class SetupActivity extends AbstractBaseActivity {
             btn.setText("Niveau "+i);
             LinearLayout.LayoutParams layoutParamsBtn = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
+            layoutParamsBtn.weight = 1;
+            int padding_in_dp = 2;
+            final float scale = getResources().getDisplayMetrics().density;
+            int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
+            btn.setPadding(padding_in_px,padding_in_px,padding_in_px,padding_in_px);
             btn.setLayoutParams(layoutParamsBtn);
             btn.setDuplicateParentStateEnabled(true);
             btn.setOnClickListener(new View.OnClickListener(){
