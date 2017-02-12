@@ -42,7 +42,6 @@ public class GridActivity extends AbstractBaseActivity {
     private final int LEVEL4_ROW = 8;
     private final int LEVEL4_COL = 7;
 
-    // source: https://www.mkyong.com/android/android-gridview-example/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
