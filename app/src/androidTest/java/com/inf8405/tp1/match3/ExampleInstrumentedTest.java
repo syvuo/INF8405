@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.sly.a8405_tp1", appContext.getPackageName());
+        assertEquals("com.inf8405.tp1.match3.MainActivity", appContext.getPackageName());
     }
 }

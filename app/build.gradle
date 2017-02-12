@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId 'com.example.sly.a8405_tp1'
+        applicationId 'com.inf8405.tp1.match3'
         minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
