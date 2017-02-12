@@ -1,16 +1,14 @@
 package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.Toast;
 
 import com.inf8405.tp1.match3.R;
 
@@ -18,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.inf8405.tp1.match3.Utility.BackgroundService;
 import com.inf8405.tp1.match3.model.*;
 
 /**
@@ -33,6 +32,7 @@ public class GridActivity extends AbstractBaseActivity {
     private int cellSpacing = 1;
     private int tableRows = 5;
     private int tableColumns = 8;
+    private boolean bgMusic = false;
 
     private final int LEVEL1_COL = 8;
     private final int LEVEL2_ROW = 6;
@@ -244,6 +244,19 @@ public class GridActivity extends AbstractBaseActivity {
                 }
             }
         });
+    }
+
+    public void musicOnClick(View v){
+        Intent svc=new Intent(this, BackgroundService.class);
+        if(!bgMusic){
+            startService(svc);
+            ((Button)v).setText(R.string.stop_music);
+
+        } else {
+            stopService(svc);
+            ((Button)v).setText(R.string.play_music);
+        }
+        bgMusic = !bgMusic;
     }
 
     private void clearAttributes(){
