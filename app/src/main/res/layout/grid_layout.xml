@@ -22,6 +22,13 @@
         android:textColor="@color/teal"/>
 
     <TextView
+        android:id="@+id/text_score_gain"
+        android:layout_toRightOf="@id/text_score_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/teal"/>
+
+    <TextView
         android:id="@+id/text_move"
         android:layout_below="@id/text_score"
         android:layout_width="wrap_content"
@@ -34,6 +41,7 @@
         android:layout_toRightOf="@id/text_move"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:alpha="1"
         android:textColor="@color/teal"/>
 
     <GridLayout
