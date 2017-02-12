@@ -149,7 +149,7 @@ public final class Game extends AbstractBaseActivity {
                     }
                     Log.d("matchFoundArrayString", matchFoundArrayString);
                 } else {
-                    Log.d("non valid move", "non valid move");
+                    ;//Log.d("non valid move", "non valid move");
                 }
                 clearMatchFoundArrays(!foundMatch3);
                 ++i;
@@ -334,8 +334,9 @@ public final class Game extends AbstractBaseActivity {
         catch (NullPointerException e){
             e.printStackTrace();
         }
-        if(cell2 != null)
-            Log.d("ChckClrVerFail"+additionnalMsg, cell1.getText() + " && " + cell2.getText());
+        if(cell2 != null) {
+            ;//Log.d("ChckClrVerFail" + additionnalMsg, cell1.getText() + " && " + cell2.getText());
+        }
         colorVerifiedCellArray.add(cell2);
         return 0;
     }
@@ -370,8 +371,8 @@ public final class Game extends AbstractBaseActivity {
         if(cell2 == null){
             return;
         }
-        final int idx1 = gameTable.indexOfChild(cell1);
-        final int idx2 = gameTable.indexOfChild(cell2);
+        final int idx1 = gameTable.indexOfChild(cell1) == -1 ? findChildByText(cell2.getText().toString()) : gameTable.indexOfChild(cell2);
+        final int idx2 = gameTable.indexOfChild(cell2) == -1 ? findChildByText(cell2.getText().toString()) : gameTable.indexOfChild(cell2);
 
         Log.d("swap: cell 1 ", cell1.getText()+"");
         Log.d("swap: cell 2 ", cell2.getText()+"");
@@ -401,17 +402,22 @@ public final class Game extends AbstractBaseActivity {
     private void removeCellFromParent(Cell cell){
         if(cell.getParent() != null){
             GridLayout glP = (GridLayout)cell.getParent();
-            do{
-
-                glP.removeView(cell);
-                gameTable.removeView(cell);
+            {
                 glP.removeView(cell);
                 gameTable.invalidate();
-                gameTable.removeView(cell);
                 Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
             }
-            while(glP.indexOfChild(cell) > -1 && gameTable.indexOfChild(cell) > -1);
         }
+        // sometime removeView wont work because of cell modification and its parent wont be able to find him
+        CharSequence id = cell.getText();
+        for(int i = 0; i < gameTable.getChildCount(); ++i){
+            if(id == ((Cell)gameTable.getChildAt(i)).getText()){
+                gameTable.removeViewAt(i);
+                Log.d("RemovalFail222222", "Got yaaaaaaaaaaaaaaaaaaaa " + i + " id " + id);
+                return;
+            }
+        }
+
     }
 
     private void updateSurroundingCells(Cell cell){
@@ -468,17 +474,19 @@ public final class Game extends AbstractBaseActivity {
     private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
+            animateFade(cell);
+        }
+        for(Cell cell: arr){
             int idx;
-            int id = Integer.parseInt(cell.getText().toString());
+            final int id = Integer.parseInt(cell.getText().toString());
             Cell tempCellTop;
             do{
                 swapBtn(cell, cell.getTopCell(), true);
                 tempCellTop = cell.getTopCell();
+                addComboArray(tempCellTop);
             }
             while(tempCellTop != null);
 
-            idx = gameTable.indexOfChild(cell);
-            Log.d("afterSwapCell", "idx is " + idx + " for id " + id);
             Random rand = new Random();
             //TODO use rand when done
             Cell btn = new Cell(this.context, rand, id, gameTable);
@@ -498,7 +506,11 @@ public final class Game extends AbstractBaseActivity {
             //animateFade(cell, btn);
 
             cell.setVisibility(View.GONE);
-            idx = gameTable.indexOfChild(cell);
+            idx = gameTable.indexOfChild(cell) == -1 ? findChildByText(cell.getText().toString()) : gameTable.indexOfChild(cell);
+            if(idx == -1){
+                printAllTable();
+                idx = findChildByText(String.valueOf(id));
+            }
             removeCellFromParent(cell);
             addCellToParent(btn, idx);
             int gridLayoutWidth = gameTable.getWidth();
@@ -526,6 +538,15 @@ public final class Game extends AbstractBaseActivity {
 
         delayThread(TIME_FADEOUT*arr.size());
         scanCells(comboArray,true);
+    }
+
+    private int findChildByText(String id) {
+        for(int i = 0; i < gameTable.getChildCount(); ++i){
+            if(id == ((Cell)gameTable.getChildAt(i)).getText()){
+                return i;
+            }
+        }
+        return -1;
     }
 
     // TODO optimize this.
@@ -560,7 +581,25 @@ public final class Game extends AbstractBaseActivity {
                 .show();
     }
 
+    private void animateFade(final Cell cell1){
+
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(TIME_FADEOUT);
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener()
+        {
+            public void onAnimationEnd(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
+        });
+
+        cell1.startAnimation(fadeOut);
+
+    }
+
     // Source: http://stackoverflow.com/questions/14156837/animation-fade-in-and-out
+    /*
     private void animateFade(final Cell cell1, final Cell cell2){
 
         Animation fadeOut = new AlphaAnimation(1, 0);
@@ -600,7 +639,7 @@ public final class Game extends AbstractBaseActivity {
 
         cell1.startAnimation(fadeOut);
 
-    }
+    }*/
 
     private void delayThread(int time){
         delayThread(time, new Runnable() {
