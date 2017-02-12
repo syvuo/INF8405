@@ -51,6 +51,8 @@ public final class Game extends AbstractBaseActivity {
     private Context context;
     private Handler handler = new Handler();
     private int gain;
+    private boolean gameWon = false;
+    private int currentLevel = 0;
     private TextView gainTV;
     private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
@@ -73,11 +75,13 @@ public final class Game extends AbstractBaseActivity {
     public void setIsStarted(Context context, boolean value, Activity activity, int level) {
         clearData();
         currentActivity = activity;
+        currentLevel = level;
         setGameStatus(level);
         isStarted = value;
         this.context = context.getApplicationContext();
         gainTV = (TextView)currentActivity.findViewById(R.id.text_score_gain);
         gainTV.setText("");
+        gameWon = false;
     }
 
     public void clearData() {
@@ -254,7 +258,10 @@ public final class Game extends AbstractBaseActivity {
     private void checkGameStatus(){
         if(currentScore >= scoreToWin){
             // TODO VICTORY
-            gameLevel = gameLevel <  LEVEL_MAX ? gameLevel + 1 : gameLevel;
+            if(!gameWon && currentLevel == gameLevel){
+                gameLevel = gameLevel <  LEVEL_MAX ? gameLevel + 1 : gameLevel;
+                gameWon = true;
+            }
             endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
         }
         else if(currentMove >= nbMoves){
@@ -293,7 +300,7 @@ public final class Game extends AbstractBaseActivity {
     private void printGameStatus(){
         TextView txM = (TextView) currentActivity.findViewById(R.id.text_move_player);
         TextView txS = (TextView) currentActivity.findViewById(R.id.text_score_player);
-        txS.setText(currentActivity.getResources().getString(R.string.score)+" " + String.valueOf(scoreToWin) + " " + currentActivity.getResources().getString(R.string.current_score) + currentScore);
+        txS.setText(" " + String.valueOf(scoreToWin) + " " + currentActivity.getResources().getString(R.string.current_score) + currentScore);
         txM.setText(currentActivity.getResources().getString(R.string.move)+" " + String.valueOf(nbMoves-currentMove) + " ");
     }
 
@@ -562,6 +569,9 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void endGameAppDialog(String title, String msg) {
+        if((currentLevel == LEVEL_MAX) && msg.toString().contains("prochain")){
+            msg = "Bravo, vous avez termine tous les niveaux. Recommencez une partie du dernier niveau?";
+        }
         new AlertDialog.Builder(currentActivity)
                 .setTitle(title)
                 .setMessage(msg)

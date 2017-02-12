@@ -83,7 +83,7 @@ public class GridActivity extends AbstractBaseActivity {
                 //table.removeAllViews();
                 //table = null;
                 //clearAttributes();
-                closeAppDialog(SetupActivity.class);
+                closeAppDialog(SetupActivity.class,  getString(R.string.quittez_partie));
                 //NavUtils.navigateUpFromSameTask(this);
                 return true;
             // Refresh button

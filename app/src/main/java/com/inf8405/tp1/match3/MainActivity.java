@@ -1,7 +1,9 @@
 package com.inf8405.tp1.match3;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.Gravity;

@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NavUtils;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 
 import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.model.Game;
+
+import java.util.ArrayList;
 
 /**
  * Created by Lam on 1/28/2017.
@@ -108,6 +112,19 @@ public class SetupActivity extends AbstractBaseActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Close or back button
+            case R.id.action_close:
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.action_settings:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void setupOnClick(View v){
         popUpWindow.dismiss();

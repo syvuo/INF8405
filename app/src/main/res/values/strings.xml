@@ -1,19 +1,27 @@
 <resources>
     <string name="app_name">8405_TP1</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Settings (N/A) Sorry!</string>
     <string name="close_message">Quitter le jeu? Vos donnees vont etre effacees!</string>
     <string name="retry_message">Recommencez la partie?</string>
     <string name="refresh">Refreshing</string>
-    <string name="rules">Regles du jeu blablabal</string>
+    <string name="rules">
+        Regles du jeu\n
+        Le swipe se fait horizontalement ou bien verticalement\n
+        Un match constitue un groupement au moins de 3 cellules de la meme couleur\n
+        Double Match a lieu lors dune swipe qui cree 2 match en un geste\n
+        Un combo a lieu suite a la generation des matchs (dautre match avec les nouvelles cellules)\n
+        Amusez-vous
+    </string>
     <string name="allowed_level">Vous navez pas encore debloque ce niveau. Essayer le niveau :</string>
     <string name="score">Score</string>
     <string name="move">Move left</string>
-    <string name="current_score">Current score :</string>
+    <string name="current_score">Your Score </string>
     <string name="defeat">Defaite</string>
     <string name="retry_msg">Recommcencez?</string>
     <string name="victory">Victoire</string>
     <string name="victory_msg">Poursuivre au prochain niveau?</string>
     <string name="double_match">!DOUBLE MATCH!</string>
     <string name="combo_x">COMBO X</string>
+    <string name="quittez_partie">Quittez la partie?</string>
 
 </resources>

@@ -62,13 +62,16 @@ public class AbstractBaseActivity  extends AppCompatActivity {
     }
 
     protected void closeAppDialog(){
-        closeAppDialog(MainActivity.class);
+        closeAppDialog(MainActivity.class, null);
     }
 
     // source: https://www.developpez.net/forums/d1214833/java/general-java/java-mobiles/android/evenement-clic-bouton-item-d-listview/
-    protected void closeAppDialog(final Class tClass) {
+    protected void closeAppDialog(final Class tClass, String msg) {
+        if(msg == null){
+            msg = this.getString(R.string.close_message);
+        }
         new AlertDialog.Builder(this)
-                .setMessage(R.string.close_message).setPositiveButton("Quitter", new DialogInterface.OnClickListener() {
+                .setMessage(msg).setPositiveButton("Quitter", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if (AbstractBaseActivity.this instanceof MainActivity) {
                             Toast.makeText(getApplicationContext(), "Aurevoir", Toast.LENGTH_SHORT).show();
