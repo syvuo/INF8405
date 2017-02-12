@@ -76,11 +76,20 @@ public class MainActivity extends AbstractBaseActivity {
 
     public void exitButtonClicked(View v){
         popToast("Application Closed");
-        finish();
+        killApp();
     }
 
     private void closePopUpWindow(){
         isClicked = true;
         popUpWindow.dismiss();
+    }
+
+    private void killApp(){
+        // Termine l activity actuel
+        finish();
+        // Termine le programme
+        System.exit(0);
+        // Termine le process par PID
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

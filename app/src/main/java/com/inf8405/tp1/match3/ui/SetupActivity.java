@@ -17,8 +17,6 @@ import android.widget.TextView;
 import com.inf8405.tp1.match3.R;
 import com.inf8405.tp1.match3.model.Game;
 
-import java.util.ArrayList;
-
 /**
  * Created by Lam on 1/28/2017.
  */
@@ -38,6 +36,7 @@ public class SetupActivity extends AbstractBaseActivity {
         int levelAllowed = Game.getInstance().getGameLevel();
         setContentView(R.layout.level_menu);
         setupLevelLayout = (LinearLayout)findViewById(R.id.level);
+        // Create a popUpWindow to signal the user
         popUpWindow = new PopupWindow(this);
         containerLayout = new LinearLayout(this);
         rulesMsg = new TextView(this);
@@ -51,7 +50,7 @@ public class SetupActivity extends AbstractBaseActivity {
         popUpWindow.setContentView(containerLayout);
 
         for(int i = 1; i <= NB_LEVEL; ++i){
-
+            // Create a button dyanamically with Niveau + level as text
             Button btn = new Button(this);
             btn.setText("Niveau "+i);
             LinearLayout.LayoutParams layoutParamsBtn = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -71,14 +70,12 @@ public class SetupActivity extends AbstractBaseActivity {
                     int levelAllowed = Game.getInstance().getGameLevel();
                     int btnLevel = Integer.valueOf(btn.getText().toString().substring(btn.getText().length() - 1));
                     if(btnLevel <= levelAllowed){
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("level", btnLevel);
                         popUpWindow.dismiss();
                         startActivity(intent);
                     }
                     else {
-
+                        // Popup a window to signal the player of wrong prerequisis
                         popUpWindow.showAtLocation(setupLevelLayout, Gravity.CENTER, 0, 0);
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
@@ -89,13 +86,12 @@ public class SetupActivity extends AbstractBaseActivity {
                                 popUpWindow.dismiss();
                             }
 
-                        }, 3000); // 3,000 ms delay
+                        }, 3000);
 
                     }
                 }
             });
             Drawable bgShape = btn.getBackground();
-            //bgShape.setColor(ContextCompat.getColor(this, R.color.silver));
             bgShape.setAlpha(32);
             btn.setBackground(bgShape);
             btn.setTag(i);

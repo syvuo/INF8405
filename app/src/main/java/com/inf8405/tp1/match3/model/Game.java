@@ -93,6 +93,7 @@ public final class Game extends AbstractBaseActivity {
         scoreToWin = 100;
         currentScore = 0;
         comboCount = 1;
+        clearToastQueue();
     }
 
     public int getGameLevel(){
@@ -124,7 +125,7 @@ public final class Game extends AbstractBaseActivity {
         lazyUpdateAllSurroundingAllCells();
         boolean foundMatch3 = false;
         int doubleMatch3 = 0;
-        // On pracourt chaque cellule
+        // On parcourt chaque cellule
         if(selectedArr.size() > 0){
             int i = 0;
             while(i < selectedArr.size()){
@@ -171,6 +172,7 @@ public final class Game extends AbstractBaseActivity {
         if(!comboCheck){
             ++currentMove;
         } else {
+            comboCount = 1;
             setComboArray(null);
         }
         // Mettre a jour des stats
@@ -300,7 +302,7 @@ public final class Game extends AbstractBaseActivity {
     private int checkColor(Cell cell1, Cell cell2, int cellColor, String additionnalMsg){
         try {
             if (cell2 != null && !cell2.getCellIsVerified()) {
-                Log.d("checkColor", cell1.getText() + " && " + cell2.getText());
+                //Log.d("checkColor", cell1.getText() + " && " + cell2.getText());
                 //Log.d("checkColor2", cell1.getCurrentTextColor() + " && " + cell2.getCurrentTextColor() + " && " + cellColor);
                 if (cell1.getCurrentTextColor() == cell2.getCurrentTextColor() && cellColor == cell1.getCurrentTextColor()) {
                     // Si match de couleur, on marque les deux cellules comme MATCHED
@@ -317,7 +319,7 @@ public final class Game extends AbstractBaseActivity {
                     //Log.d("matchFoundArray", " is " + matchFoundArrays.size() + " <=====================================");
                     return 1;
                 }
-                Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
+                //Log.d("checkColor1", "failed with " + cell1.getText() + " " + cell2.getText());
             }
         }
         catch (NullPointerException e){
@@ -325,7 +327,7 @@ public final class Game extends AbstractBaseActivity {
         }
         // Pour deboggage
         if(cell2 != null) {
-            Log.d("ChckClrVerFail" + additionnalMsg, cell1.getText() + " && " + cell2.getText());
+            //Log.d("ChckClrVerFail" + additionnalMsg, cell1.getText() + " && " + cell2.getText());
         }
         // Pour memorise toutes les cellules vues. On va remettre a letat neuf a la fin
         colorVerifiedCellArray.add(cell2);
@@ -378,8 +380,8 @@ public final class Game extends AbstractBaseActivity {
         final int idx1 = gameTable.indexOfChild(cell1) == -1 ? findChildByText(cell1.getText().toString()) : gameTable.indexOfChild(cell1);
         final int idx2 = gameTable.indexOfChild(cell2) == -1 ? findChildByText(cell2.getText().toString()) : gameTable.indexOfChild(cell2);
 
-        Log.d("swap: cell 1 ", cell1.getText()+"");
-        Log.d("swap: cell 2 ", cell2.getText()+"");
+        //Log.d("swap: cell 1 ", cell1.getText()+"");
+        //Log.d("swap: cell 2 ", cell2.getText()+"");
 
         removeCellFromParent(cell1);
         addCellToParent(cell1, idx2);
@@ -390,12 +392,12 @@ public final class Game extends AbstractBaseActivity {
         if(!onRemoveState){
             updateSurroundingCells(cell2);
         }
-        printAllTable();
+        //printAllTable();
     }
 
     private void addCellToParent(Cell cell, int idx){
         if(gameTable.indexOfChild(cell) == -1 && idx != -1){
-            Log.d("indexInAdd",  "\tId "+cell.getText() + "\tidx "+idx);
+            //Log.d("indexInAdd",  "\tId "+cell.getText() + "\tidx "+idx);
             gameTable.addView(cell, idx);
         } else {
             Log.d("indexInAddFAILLLL",  "\tId "+cell.getText() + "\tidx "+idx);
@@ -408,7 +410,7 @@ public final class Game extends AbstractBaseActivity {
             {
                 glP.removeView(cell);
                 gameTable.invalidate();
-                Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
+                //Log.d("removeE", "error while removing cell1. Had to attempt twice : " + cell.getText());
             }
         }
         // sometime removeView wont work because of cell modification and its parent wont be able to find him
@@ -474,18 +476,20 @@ public final class Game extends AbstractBaseActivity {
         Log.d("allTable",test);
     }
 
-    // TODO combo
+    // TODO verify combo if its really working.. the score increase very fast with combo activated.
     private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
             int idx;
             final int id = Integer.parseInt(cell.getText().toString());
+            // Swap the cell to be deleted with the ones above him until his new top neighbour is a null
+            // which means that hes at the first row
             Cell tempCellTop;
             int i = 0;
             do{
                 swapBtn(cell, cell.getTopCell(), true);
                 tempCellTop = cell.getTopCell();
-                //addComboArray(tempCellTop);
+                addComboArray(tempCellTop);
                 ++i;
             }
             while(tempCellTop != null && i < gameTable.getRowCount());
@@ -498,13 +502,13 @@ public final class Game extends AbstractBaseActivity {
             final Cell cellR2 = cell.getRightCell();
             final Cell cellB2 = cell.getBottomCell();
             final Cell cellT2 = cell.getTopCell();
-
+            // Update new cell with the proper neighbour
             btn.setTopCell(cellT2);
             btn.setRightCell(cellR2);
             btn.setLeftCell(cellL2);
             btn.setBottomCell(cellB2);
             btn.setText(String.valueOf(cell.getText()));
-
+            // Remove cell from the table
             cell.setVisibility(View.GONE);
             idx = gameTable.indexOfChild(cell) == -1 ? findChildByText(cell.getText().toString()) : gameTable.indexOfChild(cell);
             if(idx == -1){
@@ -512,6 +516,7 @@ public final class Game extends AbstractBaseActivity {
                 idx = findChildByText(String.valueOf(id));
             }
             removeCellFromParent(cell);
+            // Add new cell to the table at the right index with the right params
             addCellToParent(btn, idx);
             int gridLayoutWidth = gameTable.getWidth();
             int gridLayoutHeight = gameTable.getHeight();
@@ -525,16 +530,14 @@ public final class Game extends AbstractBaseActivity {
             btn.setLayoutParams(params);
             gameMatch3 = Game.getInstance();
             btn.overrideEventListener(btn, gameMatch3);
-            //addComboArray(btn);
+            // Add new cell to the comboArray for new match-3 verification at the end (see scanCells() call below)
+            addComboArray(btn);
+            //String tempT = btn == null ? "" : btn.getText().toString();
+            //test += " " + tempT;
             lazyUpdateAllSurroundingAllCells();
-            //addComboArray(btn.getTopCell());
-            //addComboArray(btn.getLeftCell());
-            //addComboArray(btn.getRightCell());
-            //addComboArray(btn.getBottomCell());
-
         }
         gameTable.invalidate();
-        Log.d("ARR", "test : " + arr.size() + " with " + test);
+        //Log.d("comboArray", "test : " + comboArray.size() + " with " + test);
 
         //delayThread(TIME_FADEOUT*arr.size());
         scanCells(comboArray,true);
@@ -583,7 +586,7 @@ public final class Game extends AbstractBaseActivity {
                 })
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
-        clearToastQueue();
+
     }
 
     public Runnable displayGain = new Runnable() {

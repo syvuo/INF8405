@@ -67,7 +67,7 @@ public class GridActivity extends AbstractBaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Log.d("CDA", "onKeyDown Called");
+            Log.d("KeyDownCalled", "onKeyDown Called");
             onBackPressed();
             return true;
         }
@@ -80,11 +80,7 @@ public class GridActivity extends AbstractBaseActivity {
             // Close or back button
             case R.id.action_close:
             case android.R.id.home:
-                //table.removeAllViews();
-                //table = null;
-                //clearAttributes();
                 closeAppDialog(SetupActivity.class,  getString(R.string.quittez_partie));
-                //NavUtils.navigateUpFromSameTask(this);
                 return true;
             // Refresh button
             case R.id.action_refresh:
@@ -94,7 +90,6 @@ public class GridActivity extends AbstractBaseActivity {
                 clearAttributes();
                 gameMatch3.clearData();
                 setupGrid(level);
-
                 table.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
@@ -112,7 +107,6 @@ public class GridActivity extends AbstractBaseActivity {
                     }
 
                 });
-                //onCreate(new Bundle());
                 return true;
             case R.id.action_settings:
                 return true;
@@ -122,13 +116,7 @@ public class GridActivity extends AbstractBaseActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("CDA", "onBackPressed Called");
-        //Intent setIntent = new Intent(Intent.ACTION_MAIN);
-        //setIntent.addCategory(Intent.CATEGORY_HOME);
-        //setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //Intent intent = new Intent(GridActivity.this, MainActivity.class);
-        //moveTaskToBack(true);
-        //startActivity(intent);
+        Log.d("BackCalled", "onBackPressed Called");
         table.removeAllViews();
         closeAppDialog();
         clearAttributes();
@@ -142,7 +130,6 @@ public class GridActivity extends AbstractBaseActivity {
     }
 
     private void setupGrid(int level){
-
         switch(level){
             case 1:
                 tableColumns = LEVEL1_COL;
@@ -183,6 +170,9 @@ public class GridActivity extends AbstractBaseActivity {
                 ++btnPos;
             }
         }
+        // SOURCE IMPORTANTS:
+        // http://stackoverflow.com/questions/21455495/gridlayoutnot-gridview-spaces-between-the-cells
+        // http://stackoverflow.com/questions/10016343/gridlayout-not-gridview-how-to-stretch-all-children-evenly
         table.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -193,21 +183,21 @@ public class GridActivity extends AbstractBaseActivity {
                         int cellHeight = gridLayoutHeight / tableRows;
                         cellHeight = cellWidth <= cellHeight ? cellWidth: cellHeight;
                         cellWidth = cellHeight <= cellWidth ? cellHeight: cellWidth;
-                        Log.d("width", cellWidth + "" + " cell spacing " + cellSpacing);
+                        //Log.d("width", cellWidth + "" + " cell spacing " + cellSpacing);
 
                         for (int yPos = 0; yPos < tableRows; yPos++) {
                             for (int xPos = 0; xPos < tableColumns; xPos++) {
-                                GridLayout.LayoutParams params =
-                                        (GridLayout.LayoutParams) cells.get(yPos * tableColumns + xPos).getLayoutParams();
+                                // Create the cell with params with equal spacings
+                                GridLayout.LayoutParams params = (GridLayout.LayoutParams) cells.get(yPos * tableColumns + xPos).getLayoutParams();
                                 params.width = cellWidth - 2 * cellSpacing;
                                 params.height = cellHeight - 2 * cellSpacing;
-
+                                // Set margins
                                 params.setMargins(cellSpacing, cellSpacing, cellSpacing, cellSpacing);
+                                // All cells are found in a array for easier maintenance
                                 cells.get(yPos * tableColumns + xPos).setLayoutParams(params);
-                                //cells.get(yPos * tableColumns + xPos).setCellId(yPos * tableColumns + xPos);
                             }
                         }
-                        // Update neighbours (left, right, top and bottom)
+                        // Update neighbours (left, right, top and bottom) -- same logic is found in class Game
                         for (int y = 0; y < tableRows; ++y) {
                             for (int x = 0; x < tableColumns; ++x) {
                                 Cell cell = cells.get(y * tableColumns + x);
@@ -249,9 +239,6 @@ public class GridActivity extends AbstractBaseActivity {
                         }
                         catch (NullPointerException e){
                             e.printStackTrace();
-                        }
-                        finally{
-                            //clearAlphaAllCells();
                         }
                         break;
                 }
