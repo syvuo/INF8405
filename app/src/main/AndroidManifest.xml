@@ -25,7 +25,8 @@
         </activity>
         <activity android:name="com.inf8405.tp1.match3.ui.GridActivity"
             android:label="GridView"
-            android:parentActivityName="com.inf8405.tp1.match3.ui.SetupActivity"/>
+            android:parentActivityName="com.inf8405.tp1.match3.ui.SetupActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
