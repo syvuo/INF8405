@@ -2,13 +2,12 @@ package com.inf8405.tp1.match3.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.GridLayout;
 
 import com.inf8405.tp1.match3.R;
 
@@ -212,28 +211,6 @@ public class GridActivity extends AbstractBaseActivity {
                                 cells.get(yPos * tableColumns + xPos).setLayoutParams(params);
                             }
                         }
-                        // Update neighbours (left, right, top and bottom) -- same logic is found in class Game
-                        for (int y = 0; y < tableRows; ++y) {
-                            for (int x = 0; x < tableColumns; ++x) {
-                                Cell cell = cells.get(y * tableColumns + x);
-                                // Bottom neighbour
-                                if (y < tableRows - 1) {
-                                    cell.setBottomCell(cells.get((y + 1) * tableColumns + x));
-                                }
-                                // Right neighbour
-                                if (x < tableColumns - 1) {
-                                    cell.setRightCell(cells.get(y * tableColumns + x + 1));
-                                }
-                                // Top neighbour
-                                if (y > 0) {
-                                    cell.setTopCell(cells.get((y - 1) * tableColumns + x));
-                                }
-                                // Left neighbour
-                                if (x > 0) {
-                                    cell.setLeftCell(cells.get(y * tableColumns + x - 1));
-                                }
-                            }
-                        }
                         table.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
@@ -262,7 +239,6 @@ public class GridActivity extends AbstractBaseActivity {
         table = (GridLayout)findViewById(R.id.view_root);
         for(Cell cell : cells){
             cell.setAlpha(1);
-            cell.getBackground().setAlpha(255);
             cell.setCellIsVerified(false);
             cell.setCellIsMatched(false);
             cell.setCellIsVerified(false);
@@ -277,6 +253,7 @@ public class GridActivity extends AbstractBaseActivity {
         gameMatch3.setTableColumns(tableColumns);
         gameMatch3.setTableLayout(table);
         gameMatch3.setIsStarted(getBaseContext(), true, this, level);
+        gameMatch3.lazyUpdateAllSurroundingAllCells();
     }
 
     private void clearAttributes(){

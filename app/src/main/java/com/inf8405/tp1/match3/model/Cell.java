@@ -3,11 +3,11 @@ package com.inf8405.tp1.match3.model;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
 import com.inf8405.tp1.match3.R;
 import java.util.Random;
 
@@ -36,13 +36,8 @@ public class Cell extends Button{
 
     public Cell(Context context, final Random rand, int text, GridLayout layout){
         super(context);
-        //TODO remove blue
         int colorTemp;
-        if(rand == null)
-            colorTemp = COLORS_ARRAY[0];
-        else
-            colorTemp = COLORS_ARRAY[rand.nextInt(COLORS_ARRAY.length)];
-        //END OF TODO REMOVE BLUE
+        colorTemp = COLORS_ARRAY[rand.nextInt(COLORS_ARRAY.length)];
         setBackground(ContextCompat.getDrawable(context, R.drawable.shape));
 
         final GradientDrawable bgShape = (GradientDrawable) getBackground();
@@ -51,6 +46,7 @@ public class Cell extends Button{
 
         setText(String.valueOf(text));
         setTextColor(ContextCompat.getColor(context, colorTemp));
+        setTextSize(0);
     }
 
     public void setTopCell(Cell cell) {

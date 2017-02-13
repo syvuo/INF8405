@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:id="@+id/activity_main"
     tools:context="com.inf8405.tp1.match3.MainActivity"
-    android:onClick="mainOnClick">
+    android:background="@color/black">
 
     <include layout="@layout/content_main" />
 

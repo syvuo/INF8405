@@ -24,5 +24,6 @@
     <string name="combo_x">COMBO X</string>
     <string name="quittez_partie">Quittez la partie?</string>
     <string name="play_music">Play/Stop Music</string>
+    <string name="end_game">Bravo, vous avez termine tous les niveaux. Recommencez le dernier niveau?</string>
 
 </resources>

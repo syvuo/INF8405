@@ -1,5 +1,7 @@
 package com.inf8405.tp1.match3;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -13,34 +15,27 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.inf8405.tp1.match3.ui.AbstractBaseActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
 
 public class MainActivity extends AbstractBaseActivity {
-    private PopupWindow popUpWindow;
     private CoordinatorLayout mainLayout;
-    private boolean isClicked = true;
     private TextView rulesMsg;
     private LinearLayout.LayoutParams layoutParams;
-    private LinearLayout containerLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        containerLayout = new LinearLayout(this);
         mainLayout = (CoordinatorLayout)findViewById(R.id.activity_main);
-        popUpWindow = new PopupWindow(this);
         rulesMsg = new TextView(this);
         rulesMsg.setText(R.string.rules);
         rulesMsg.setBackgroundColor(Color.WHITE);
 
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        containerLayout.setOrientation(LinearLayout.VERTICAL);
-        containerLayout.addView(rulesMsg, layoutParams);
-        popUpWindow.setContentView(containerLayout);
         setContentView(mainLayout);
     }
 
@@ -56,32 +51,22 @@ public class MainActivity extends AbstractBaseActivity {
         Intent intent = new Intent(MainActivity.this, SetupActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        closePopUpWindow();
         this.startActivity(intent);
     }
 
     public void rulesButtonClicked(View v){
         popToast("Rules Clicked");
-        if (isClicked) {
-            isClicked = false;
-            popUpWindow.showAtLocation(mainLayout, Gravity.CENTER, 0, 0);
-        } else {
-            closePopUpWindow();
-        }
-    }
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.rules)).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
 
-    public void mainOnClick(View v){
-        closePopUpWindow();
+            }
+        }).show();
     }
 
     public void exitButtonClicked(View v){
         popToast("Application Closed");
         killApp();
-    }
-
-    private void closePopUpWindow(){
-        isClicked = true;
-        popUpWindow.dismiss();
     }
 
     private void killApp(){
