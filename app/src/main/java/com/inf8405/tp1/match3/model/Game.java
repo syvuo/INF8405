@@ -23,6 +23,7 @@ import com.inf8405.tp1.match3.ui.GridActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -40,7 +41,8 @@ public final class Game extends AbstractBaseActivity {
     private List<Cell> cellToRemoveArray = new ArrayList<>();
     private List<Cell> matchFoundArray = new ArrayList<>();
     private List<Cell> comboArray = new ArrayList<>();
-    private List<Toast> toatsArray = new ArrayList<>();
+    private List<Toast> toastArray = new ArrayList<>();
+    private List<Animation> animationArray = new ArrayList<>();
     private int nbColumns = -1;
     private GridLayout gameTable;
     private int nbMoves = 100;
@@ -94,6 +96,7 @@ public final class Game extends AbstractBaseActivity {
         currentScore = 0;
         comboCount = 1;
         clearToastQueue();
+        stopAnimations();
     }
 
     public void clearArrays(){
@@ -102,7 +105,9 @@ public final class Game extends AbstractBaseActivity {
         cellToRemoveArray = new ArrayList<>();
         matchFoundArray = new ArrayList<>();
         comboArray = new ArrayList<>();
-        toatsArray = new ArrayList<>();
+        toastArray = new ArrayList<>();
+        stopAnimations();
+        animationArray = new ArrayList<>();
     }
 
     public int getGameLevel(){
@@ -184,6 +189,7 @@ public final class Game extends AbstractBaseActivity {
             comboCount = 1;
             setComboArray(null);
         }
+        gameTable.invalidate();
         // Mettre a jour des stats
         checkGameStatus();
     }
@@ -202,6 +208,9 @@ public final class Game extends AbstractBaseActivity {
         for (int i = 0; i < gameTable.getChildCount(); ++i){
             Cell cell = (Cell)gameTable.getChildAt(i);
             updateSurroundingCells(cell);
+            cell.setVisibility(View.VISIBLE);
+            cell.setAlpha(1);
+            cell.getBackground().setAlpha(255);
         }
     }
 
@@ -363,7 +372,7 @@ public final class Game extends AbstractBaseActivity {
     private void clearMatchFoundArrays(boolean clear){
         if(clear){
             for(Cell cell : matchFoundArray){
-                cell.getBackground().setAlpha(255);
+                cell.setAlpha(1);
             }
         }
         matchFoundArray = new ArrayList<>();
@@ -374,14 +383,14 @@ public final class Game extends AbstractBaseActivity {
     }
 
     private void addToatsArray(Toast toast) {
-        if(!this.toatsArray.contains(toast)){
-            this.toatsArray.add(toast);
+        if(!this.toastArray.contains(toast)){
+            this.toastArray.add(toast);
         }
     }
 
     // Cancel all toast
     private void clearToastQueue(){
-        for(Toast toast : this.toatsArray){
+        for(Toast toast : this.toastArray){
             toast.cancel();
         }
     }
@@ -398,9 +407,6 @@ public final class Game extends AbstractBaseActivity {
         lazyUpdateAllSurroundingAllCells();
         final int idx1 = gameTable.indexOfChild(cell1) == -1 ? findChildByText(cell1.getText().toString()) : gameTable.indexOfChild(cell1);
         final int idx2 = gameTable.indexOfChild(cell2) == -1 ? findChildByText(cell2.getText().toString()) : gameTable.indexOfChild(cell2);
-
-        //Log.d("swap: cell 1 ", cell1.getText()+"");
-        //Log.d("swap: cell 2 ", cell2.getText()+"");
 
         removeCellFromParent(cell1);
         addCellToParent(cell1, idx2);
@@ -499,67 +505,16 @@ public final class Game extends AbstractBaseActivity {
     private void removeAndUpdateCells(List<Cell> arr){
         String test = "";
         for(Cell cell: arr){
-            int idx;
-            final int id = Integer.parseInt(cell.getText().toString());
-            // Swap the cell to be deleted with the ones above him until his new top neighbour is a null
-            // which means that hes at the first row
-            Cell tempCellTop;
-            int i = 0;
-            do{
-                swapBtn(cell, cell.getTopCell(), true);
-                tempCellTop = cell.getTopCell();
-                addComboArray(tempCellTop);
-                ++i;
-            }
-            while(tempCellTop != null && i < gameTable.getRowCount());
-
-            Random rand = new Random();
-            Cell btn = new Cell(this.context, rand, id, gameTable);
-
-            // Get neighbour before removal
-            final Cell cellL2 = cell.getLeftCell();
-            final Cell cellR2 = cell.getRightCell();
-            final Cell cellB2 = cell.getBottomCell();
-            final Cell cellT2 = cell.getTopCell();
-            // Update new cell with the proper neighbour
-            btn.setTopCell(cellT2);
-            btn.setRightCell(cellR2);
-            btn.setLeftCell(cellL2);
-            btn.setBottomCell(cellB2);
-            btn.setText(String.valueOf(cell.getText()));
-            // Remove cell from the table
-            cell.setVisibility(View.GONE);
-            idx = gameTable.indexOfChild(cell) == -1 ? findChildByText(cell.getText().toString()) : gameTable.indexOfChild(cell);
-            if(idx == -1){
-                printAllTable();
-                idx = findChildByText(String.valueOf(id));
-            }
-            removeCellFromParent(cell);
-            // Add new cell to the table at the right index with the right params
-            addCellToParent(btn, idx);
-            int gridLayoutWidth = gameTable.getWidth();
-            int gridLayoutHeight = gameTable.getHeight();
-            int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
-            int cellHeight = gridLayoutHeight / gameTable.getRowCount();
-            GridLayout.LayoutParams params =
-                    (GridLayout.LayoutParams) btn.getLayoutParams();
-            params.width = cellWidth - 2 * CELL_SPACING;
-            params.height = cellHeight - 2 * CELL_SPACING;
-            params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
-            btn.setLayoutParams(params);
-            gameMatch3 = Game.getInstance();
-            btn.overrideEventListener(btn, gameMatch3);
-            // Add new cell to the comboArray for new match-3 verification at the end (see scanCells() call below)
-            addComboArray(btn);
-            //String tempT = btn == null ? "" : btn.getText().toString();
-            //test += " " + tempT;
-            lazyUpdateAllSurroundingAllCells();
+            fadeOutCell(cell);
         }
-        gameTable.invalidate();
-        //Log.d("comboArray", "test : " + comboArray.size() + " with " + test);
-
-        //delayThread(TIME_FADEOUT*arr.size());
-        scanCells(comboArray,true);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                lazyUpdateAllSurroundingAllCells();
+                gameTable.invalidate();
+                scanCells(comboArray, true);
+            }
+        }, 2*TIME_FADEOUT);
     }
 
     private int findChildByText(String id) {
@@ -601,13 +556,98 @@ public final class Game extends AbstractBaseActivity {
 
     }
 
-    public Runnable displayGain = new Runnable() {
-        @Override
-        public void run() {
-            gainTV.setText("\t\t+++"+gain);
-            handler.post(displayGain);
-        }
-    };
+    private void fadeInCell(final Cell cell){
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new AccelerateInterpolator());
+        fadeIn.setDuration(TIME_FADEOUT);
+        fadeIn.setAnimationListener(new Animation.AnimationListener()
+        {
+            public void onAnimationEnd(Animation animation)
+            {
+                cell.setVisibility(View.VISIBLE);
+                cell.setAlpha(1);
+            }
+            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
+        });
+        fadeIn.setFillAfter(true);
+        animationArray.add(fadeIn);
+        cell.startAnimation(fadeIn);
+    }
+
+    private void fadeOutCell(final Cell cell)
+    {
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(TIME_FADEOUT);
+        fadeOut.setAnimationListener(new Animation.AnimationListener()
+        {
+            public void onAnimationEnd(Animation animation)
+            {
+                int idx;
+                final int id = Integer.parseInt(cell.getText().toString());
+                // Swap the cell to be deleted with the ones above him until his new top neighbour is a null
+                // which means that hes at the first row
+                Cell tempCellTop;
+                int i = 0;
+                do{
+                    swapBtn(cell, cell.getTopCell(), true);
+                    tempCellTop = cell.getTopCell();
+                    addComboArray(tempCellTop);
+                    ++i;
+                }
+                while(tempCellTop != null && i < gameTable.getRowCount());
+
+                Random rand = new Random();
+                Cell btn = new Cell(context, rand, id, gameTable);
+
+                // Get neighbour before removal
+                final Cell cellL2 = cell.getLeftCell();
+                final Cell cellR2 = cell.getRightCell();
+                final Cell cellB2 = cell.getBottomCell();
+                final Cell cellT2 = cell.getTopCell();
+                // Update new cell with the proper neighbour
+                btn.setTopCell(cellT2);
+                btn.setRightCell(cellR2);
+                btn.setLeftCell(cellL2);
+                btn.setBottomCell(cellB2);
+                btn.setText(String.valueOf(cell.getText()));
+                // Remove cell from the table
+
+                idx = gameTable.indexOfChild(cell) == -1 ? findChildByText(cell.getText().toString()) : gameTable.indexOfChild(cell);
+                if(idx == -1){
+                    printAllTable();
+                    idx = findChildByText(String.valueOf(id));
+                }
+                removeCellFromParent(cell);
+                // Add new cell to the table at the right index with the right params
+                btn.setVisibility(View.INVISIBLE);
+                addCellToParent(btn, idx);
+                int gridLayoutWidth = gameTable.getWidth();
+                int gridLayoutHeight = gameTable.getHeight();
+                int cellWidth = gridLayoutWidth / gameTable.getColumnCount();
+                int cellHeight = gridLayoutHeight / gameTable.getRowCount();
+                GridLayout.LayoutParams params =
+                        (GridLayout.LayoutParams) btn.getLayoutParams();
+                params.width = cellWidth - 2 * CELL_SPACING;
+                params.height = cellHeight - 2 * CELL_SPACING;
+                params.setMargins(CELL_SPACING, CELL_SPACING, CELL_SPACING, CELL_SPACING);
+                btn.setLayoutParams(params);
+                gameMatch3 = Game.getInstance();
+                btn.overrideEventListener(btn, gameMatch3);
+                // Add new cell to the comboArray for new match-3 verification at the end (see scanCells() call below)
+                addComboArray(btn);
+                lazyUpdateAllSurroundingAllCells();
+                fadeInCell(btn);
+            }
+            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationStart(Animation animation) {}
+        });
+        fadeOut.setFillAfter(true);
+        animationArray.add(fadeOut);
+        cell.startAnimation(fadeOut);
+    }
 
     private void fadeOutGainTV(){
         Animation fadeOut = new AlphaAnimation(1f, 0f);
@@ -616,6 +656,23 @@ public final class Game extends AbstractBaseActivity {
         fadeOut.setFillAfter(true);
         gainTV.startAnimation(fadeOut);
     }
+
+    private void stopAnimations(){
+        for(Cell cell : comboArray){
+            cell.clearAnimation();
+        }
+        for(Cell cell : cellToRemoveArray){
+            cell.clearAnimation();
+        }
+    }
+
+    public Runnable displayGain = new Runnable() {
+        @Override
+        public void run() {
+            gainTV.setText("\t\t+++"+gain);
+            handler.post(displayGain);
+        }
+    };
 
     void startDisplayGain()
     {

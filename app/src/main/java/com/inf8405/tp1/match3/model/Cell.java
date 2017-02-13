@@ -36,13 +36,8 @@ public class Cell extends Button{
 
     public Cell(Context context, final Random rand, int text, GridLayout layout){
         super(context);
-        //TODO remove blue
         int colorTemp;
-        if(rand == null)
-            colorTemp = COLORS_ARRAY[0];
-        else
-            colorTemp = COLORS_ARRAY[rand.nextInt(COLORS_ARRAY.length)];
-        //END OF TODO REMOVE BLUE
+        colorTemp = COLORS_ARRAY[rand.nextInt(COLORS_ARRAY.length)];
         setBackground(ContextCompat.getDrawable(context, R.drawable.shape));
 
         final GradientDrawable bgShape = (GradientDrawable) getBackground();

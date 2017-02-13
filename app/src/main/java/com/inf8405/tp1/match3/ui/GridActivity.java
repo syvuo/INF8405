@@ -240,7 +240,6 @@ public class GridActivity extends AbstractBaseActivity {
         table = (GridLayout)findViewById(R.id.view_root);
         for(Cell cell : cells){
             cell.setAlpha(1);
-            cell.getBackground().setAlpha(255);
             cell.setCellIsVerified(false);
             cell.setCellIsMatched(false);
             cell.setCellIsVerified(false);
