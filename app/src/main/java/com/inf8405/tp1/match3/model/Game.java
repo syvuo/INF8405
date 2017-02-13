@@ -96,6 +96,15 @@ public final class Game extends AbstractBaseActivity {
         clearToastQueue();
     }
 
+    public void clearArrays(){
+        selectedCellArray = new ArrayList<>();
+        colorVerifiedCellArray = new ArrayList<>();
+        cellToRemoveArray = new ArrayList<>();
+        matchFoundArray = new ArrayList<>();
+        comboArray = new ArrayList<>();
+        toatsArray = new ArrayList<>();
+    }
+
     public int getGameLevel(){
         return gameLevel;
     }
@@ -377,6 +386,7 @@ public final class Game extends AbstractBaseActivity {
         if(cell2 == null){
             return;
         }
+        lazyUpdateAllSurroundingAllCells();
         final int idx1 = gameTable.indexOfChild(cell1) == -1 ? findChildByText(cell1.getText().toString()) : gameTable.indexOfChild(cell1);
         final int idx2 = gameTable.indexOfChild(cell2) == -1 ? findChildByText(cell2.getText().toString()) : gameTable.indexOfChild(cell2);
 
@@ -392,7 +402,7 @@ public final class Game extends AbstractBaseActivity {
         if(!onRemoveState){
             updateSurroundingCells(cell2);
         }
-        //printAllTable();
+        printAllTable();
     }
 
     private void addCellToParent(Cell cell, int idx){
@@ -404,7 +414,7 @@ public final class Game extends AbstractBaseActivity {
         }
     }
 
-    private void removeCellFromParent(Cell cell){
+    private void  removeCellFromParent(Cell cell){
         if(cell.getParent() != null){
             GridLayout glP = (GridLayout)cell.getParent();
             {

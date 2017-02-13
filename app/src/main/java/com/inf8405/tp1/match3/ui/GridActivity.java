@@ -83,12 +83,10 @@ public class GridActivity extends AbstractBaseActivity {
                 return true;
             // Refresh button
             case R.id.action_refresh:
-                table.removeAllViews();
-                table = null;
-                cells = new ArrayList<>();
+
                 clearAttributes();
-                gameMatch3.clearData();
-                setupGrid(level);
+                replaceTableWithInitial();
+                setGameMatchInfo();
                 table.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
@@ -111,6 +109,16 @@ public class GridActivity extends AbstractBaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void musicOnClick(View v){
+        Intent svc=new Intent(this, BackgroundService.class);
+        if(!bgMusic){
+            startService(svc);
+        } else {
+            stopService(svc);
+        }
+        bgMusic = !bgMusic;
     }
 
     @Override
@@ -151,6 +159,11 @@ public class GridActivity extends AbstractBaseActivity {
         table = (GridLayout) findViewById(R.id.view_root);
         table.setColumnCount(tableColumns);
         table.setRowCount(tableRows);
+        setupTableCells();
+        updateTableAndCells();
+    }
+
+    private void setupTableCells(){
 
         Random rand = new Random();
 
@@ -169,6 +182,9 @@ public class GridActivity extends AbstractBaseActivity {
                 ++btnPos;
             }
         }
+    }
+
+    private void updateTableAndCells(){
         // SOURCE IMPORTANTS:
         // http://stackoverflow.com/questions/21455495/gridlayoutnot-gridview-spaces-between-the-cells
         // http://stackoverflow.com/questions/10016343/gridlayout-not-gridview-how-to-stretch-all-children-evenly
@@ -222,11 +238,6 @@ public class GridActivity extends AbstractBaseActivity {
                     }
                 }
         );
-
-        gameMatch3.setTableColumns(tableColumns);
-        gameMatch3.setTableLayout(table);
-        gameMatch3.setIsStarted(getBaseContext(), true, this, level);
-
         table.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -243,19 +254,33 @@ public class GridActivity extends AbstractBaseActivity {
                 }
             }
         });
+
+        setGameMatchInfo();
     }
 
-    public void musicOnClick(View v){
-        Intent svc=new Intent(this, BackgroundService.class);
-        if(!bgMusic){
-            startService(svc);
-        } else {
-            stopService(svc);
+    private void replaceTableWithInitial(){
+        table = (GridLayout)findViewById(R.id.view_root);
+        for(Cell cell : cells){
+            cell.setAlpha(1);
+            cell.getBackground().setAlpha(255);
+            cell.setCellIsVerified(false);
+            cell.setCellIsMatched(false);
+            cell.setCellIsVerified(false);
+            cell.setSelected(false);
+            cell.setVisibility(View.VISIBLE);
+            table.addView(cell);
         }
-        bgMusic = !bgMusic;
+    }
+
+    private void setGameMatchInfo(){
+        gameMatch3.clearArrays();
+        gameMatch3.setTableColumns(tableColumns);
+        gameMatch3.setTableLayout(table);
+        gameMatch3.setIsStarted(getBaseContext(), true, this, level);
     }
 
     private void clearAttributes(){
+        table.removeAllViews();
         table = null;
         gameMatch3.clearData();
         gameMatch3 = Game.getInstance();
