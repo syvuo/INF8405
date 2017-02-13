@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.inf8405.tp1.match3"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="18"
+        android:targetSdkVersion="25" />
+
+    <application
+        android:name="com.android.tools.fd.runtime.BootstrapApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/match3logo"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" >
+        <service android:name="com.inf8405.tp1.match3.Utility.BackgroundService" />
+
+        <activity
+            android:name="com.inf8405.tp1.match3.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.inf8405.tp1.match3.ui.SetupActivity"
+            android:label="SetupActivity"
+            android:parentActivityName="com.inf8405.tp1.match3.MainActivity" >
+        </activity>
+        <activity
+            android:name="com.inf8405.tp1.match3.ui.GridActivity"
+            android:label="GridView"
+            android:parentActivityName="com.inf8405.tp1.match3.ui.SetupActivity"
+            android:screenOrientation="portrait" />
+    </application>
+
+</manifest>
