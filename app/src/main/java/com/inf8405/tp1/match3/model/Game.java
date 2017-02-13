@@ -157,7 +157,7 @@ public final class Game extends AbstractBaseActivity {
             } else {
                 // A chaque match3 (on verifie sil y a un doublematch - valide seulement si on est en mode swipe et non combo)
                 if(doubleMatch3 == 2 && !comboCheck){
-                    popToast(this.context.getString(R.string.double_match), Gravity.BOTTOM);
+                    popToast(this.context.getString(R.string.double_match), Gravity.BOTTOM|Gravity.RIGHT);
                 }
                 // Mise a jour des nouvelles cellules
                 removeAndUpdateCells(cellToRemoveArray);
@@ -194,6 +194,15 @@ public final class Game extends AbstractBaseActivity {
 
     public void setTableColumns(int tableColumns) {
         nbColumns = tableColumns;
+    }
+
+    // TODO optimize this.
+    // Mise a jour de toutes les cellules avec leur entourage. Evidement, ce nest pas performant.
+    public void lazyUpdateAllSurroundingAllCells() {
+        for (int i = 0; i < gameTable.getChildCount(); ++i){
+            Cell cell = (Cell)gameTable.getChildAt(i);
+            updateSurroundingCells(cell);
+        }
     }
 
     // Utilise pour le swipe et scanCell
@@ -562,14 +571,7 @@ public final class Game extends AbstractBaseActivity {
         return -1;
     }
 
-    // TODO optimize this.
-    // Mise a jour de toutes les cellules avec leur entourage. Evidement, ce nest pas performant.
-    private void lazyUpdateAllSurroundingAllCells() {
-        for (int i = 0; i < gameTable.getChildCount(); ++i){
-            Cell cell = (Cell)gameTable.getChildAt(i);
-            updateSurroundingCells(cell);
-        }
-    }
+
 
     private void endGameAppDialog(String title, String msg) {
         if((currentLevel == LEVEL_MAX) && msg.toString().contains("prochain")){
