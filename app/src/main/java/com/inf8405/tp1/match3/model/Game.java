@@ -567,6 +567,7 @@ public final class Game extends AbstractBaseActivity {
             {
                 cell.setVisibility(View.VISIBLE);
                 cell.setAlpha(1);
+                cell.getBackground().setAlpha(255);
             }
             public void onAnimationRepeat(Animation animation) {}
             public void onAnimationStart(Animation animation) {}
@@ -601,7 +602,6 @@ public final class Game extends AbstractBaseActivity {
 
                 Random rand = new Random();
                 Cell btn = new Cell(context, rand, id, gameTable);
-
                 // Get neighbour before removal
                 final Cell cellL2 = cell.getLeftCell();
                 final Cell cellR2 = cell.getRightCell();
@@ -620,6 +620,8 @@ public final class Game extends AbstractBaseActivity {
                     printAllTable();
                     idx = findChildByText(String.valueOf(id));
                 }
+                cell.setAlpha(0);
+                cell.getBackground().setAlpha(0);
                 removeCellFromParent(cell);
                 // Add new cell to the table at the right index with the right params
                 btn.setVisibility(View.INVISIBLE);
