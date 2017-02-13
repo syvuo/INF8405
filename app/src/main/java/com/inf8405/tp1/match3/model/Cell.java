@@ -46,6 +46,7 @@ public class Cell extends Button{
 
         setText(String.valueOf(text));
         setTextColor(ContextCompat.getColor(context, colorTemp));
+        setTextSize(0);
     }
 
     public void setTopCell(Cell cell) {

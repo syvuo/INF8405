@@ -352,10 +352,6 @@ public final class Game extends AbstractBaseActivity {
         catch (NullPointerException e){
             e.printStackTrace();
         }
-        // Pour deboggage
-        if(cell2 != null) {
-            //Log.d("ChckClrVerFail" + additionnalMsg, cell1.getText() + " && " + cell2.getText());
-        }
         // Pour memorise toutes les cellules vues. On va remettre a letat neuf a la fin
         colorVerifiedCellArray.add(cell2);
         return 0;
@@ -424,8 +420,6 @@ public final class Game extends AbstractBaseActivity {
         if(gameTable.indexOfChild(cell) == -1 && idx != -1){
             //Log.d("indexInAdd",  "\tId "+cell.getText() + "\tidx "+idx);
             gameTable.addView(cell, idx);
-        } else {
-            Log.d("indexInAddFAILLLL",  "\tId "+cell.getText() + "\tidx "+idx);
         }
     }
 
