@@ -57,7 +57,6 @@ public final class Game extends AbstractBaseActivity {
     private boolean gameWon = false;
     private int currentLevel = 0;
     private TextView gainTV;
-    private boolean endlessScore = true;
     private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
     private final int LEVEL1_SCORE = 800;
@@ -86,7 +85,6 @@ public final class Game extends AbstractBaseActivity {
         gainTV = (TextView)currentActivity.findViewById(R.id.text_score_gain);
         gainTV.setText("");
         gameWon = false;
-        endlessScore = false;
     }
 
     public void clearData() {
@@ -99,7 +97,6 @@ public final class Game extends AbstractBaseActivity {
         comboCount = 1;
         clearToastQueue();
         stopAnimations();
-        endlessScore = false;
     }
 
     public void clearArrays(){
@@ -265,20 +262,18 @@ public final class Game extends AbstractBaseActivity {
     }
     // Mettre a juor les statistiques. Pop un alert dialogue si fin de jeu
     private void checkGameStatus(){
-        if(!endlessScore){
-            if(currentScore >= scoreToWin){
-                // VICTORY
-                // Verification si nous avons battu le bon niveau
-                if(!gameWon && currentLevel == gameLevel){
-                    gameLevel = gameLevel <  LEVEL_MAX ? gameLevel + 1 : gameLevel;
-                    gameWon = true;
-                }
-                endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
+        if(currentScore >= scoreToWin){
+            // VICTORY
+            // Verification si nous avons battu le bon niveau
+            if(!gameWon && currentLevel == gameLevel){
+                gameLevel = gameLevel <  LEVEL_MAX ? gameLevel + 1 : gameLevel;
+                gameWon = true;
             }
-            else if(currentMove >= nbMoves){
-                // DEFEAT
-                endGameAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
-            }
+            endGameAppDialog(currentActivity.getString(R.string.victory), currentActivity.getString(R.string.victory_msg));
+        }
+        else if(currentMove >= nbMoves){
+            // DEFEAT
+            endGameAppDialog(currentActivity.getString(R.string.defeat), currentActivity.getString(R.string.retry_msg));
         }
         printGameStatus();
     }
@@ -520,6 +515,7 @@ public final class Game extends AbstractBaseActivity {
                 e.printStackTrace();
             }
         }
+
     }
 
     private int findChildByText(String id) {
@@ -534,55 +530,32 @@ public final class Game extends AbstractBaseActivity {
 
 
     private void endGameAppDialog(String title, String msg) {
-        boolean endlessGame = false;
         if((currentLevel == LEVEL_MAX) && msg.toString().contains("prochain")){
-            msg = "Bravo, vous avez termine tous les niveaux. Continuer la partie sans fin?";
-            endlessGame = true;
+            msg = this.context.getString(R.string.end_game);
         }
         if(isStarted){
-            if(!endlessGame){
-                isStarted = false;
-                new AlertDialog.Builder(currentActivity)
-                        .setTitle(title)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(currentActivity, GridActivity.class);
-                                intent.putExtra("level", gameLevel);
-                                clearData();
-                                currentActivity.startActivity(intent);// continue with delete
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(currentActivity, SetupActivity.class);
-                                intent.putExtra("level", gameLevel);
-                                clearData();
-                                currentActivity.startActivity(intent);// continue with delete
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show();
-            } else {
-                new AlertDialog.Builder(currentActivity)
-                        .setTitle(title)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                endlessScore = true;
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(currentActivity, SetupActivity.class);
-                                intent.putExtra("level", gameLevel);
-                                clearData();
-                                currentActivity.startActivity(intent);// continue with delete
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show();
-            }
+            isStarted = false;
+            new AlertDialog.Builder(currentActivity)
+                    .setTitle(title)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(currentActivity, GridActivity.class);
+                            intent.putExtra("level", gameLevel);
+                            clearData();
+                            currentActivity.startActivity(intent);// continue with delete
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(currentActivity, SetupActivity.class);
+                            intent.putExtra("level", gameLevel);
+                            clearData();
+                            currentActivity.startActivity(intent);// continue with delete
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show();
         }
     }
 
