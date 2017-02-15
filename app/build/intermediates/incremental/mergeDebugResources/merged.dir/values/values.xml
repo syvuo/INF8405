@@ -666,7 +666,7 @@
     <string name="current_score">Your Score </string>
     <string name="defeat">Defaite</string>
     <string name="double_match">!DOUBLE MATCH!</string>
-    <string name="end_game">Bravo, vous avez termine tous les niveaux. Recommencez le dernier niveau?</string>
+    <string name="end_game">Bravo, vous avez termine tous les niveaux. Recommencez la partie 4?</string>
     <string name="move">Move left</string>
     <string name="password_toggle_content_description">Toggle password visibility</string>
     <string name="path_password_eye">M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27,-3.11 11,-7.5c-1.73,-4.39 -6,-7.5 -11,-7.5zM12,17c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5zM12,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3 3,-1.34 3,-3 -1.34,-3 -3,-3z</string>

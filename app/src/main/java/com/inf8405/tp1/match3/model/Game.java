@@ -23,6 +23,7 @@ import com.inf8405.tp1.match3.ui.GridActivity;
 import com.inf8405.tp1.match3.ui.SetupActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -31,31 +32,42 @@ import java.util.Random;
  */
 
 public final class Game extends AbstractBaseActivity {
+    // Singleton pattern
     private static Game singletonInstance = new Game();
     private Activity currentActivity;
     private boolean isStarted = false;
-
+    // Array contains cells that are swiped to be verified
     private List<Cell> selectedCellArray = new ArrayList<>();
+    // Array contains cells that are verified and will not be checked again to save ressource
     private List<Cell> colorVerifiedCellArray = new ArrayList<>();
+    // Array contains all the cells that will be removed after recurisve verification
     private List<Cell> cellToRemoveArray = new ArrayList<>();
+    // Array contains all the match cells regarding a specific color. It is resetted at the end of a recursive cal
     private List<Cell> matchFoundArray = new ArrayList<>();
+    // Array contains all the cells that will have to be checked for a combo situation (after first scanCell)
     private List<Cell> comboArray = new ArrayList<>();
+    // Array contains all the toast pointer to be canceled when needed
     private List<Toast> toastArray = new ArrayList<>();
+    // Array contains all the animation pointer handler to be canced or used when needed
     private List<Animation> animationArray = new ArrayList<>();
     private int nbColumns = -1;
     private GridLayout gameTable;
+    // Statistics
     private int nbMoves = 100;
     private int currentMove = 0;
     private int scoreToWin = 100;
     private int currentScore = 0;
     private int gameLevel = 1;
     private int comboCount = 1;
-    private Context context;
-    private Handler handler = new Handler();
     private int gain;
     private boolean gameWon = false;
     private int currentLevel = 0;
+    // Context used for getting ressource or toasting info
+    private Context context;
+    private Handler handler = new Handler();
+    // Specific textView for animation of gains
     private TextView gainTV;
+    // CONSTANTS
     private final int CELL_SPACING = 1;
     private final int LEVEL1_MOVE = 6;
     private final int LEVEL1_SCORE = 800;
@@ -145,8 +157,10 @@ public final class Game extends AbstractBaseActivity {
                 findSelectedManager(selectedArr.get(i),  selectedArr.get(i).getCurrentTextColor());
                 if(matchFoundArray.size()>= 3){
                     // for the swap only
-                    foundMatch3 = true;
-                    ++doubleMatch3;
+                    if(doubleCheckColor(matchFoundArray)){
+                        foundMatch3 = true;
+                        ++doubleMatch3;
+                    }
                     // Update score
                     updateScore(comboCheck);
                 }
@@ -192,6 +206,7 @@ public final class Game extends AbstractBaseActivity {
         // Mettre a jour des stats
         checkGameStatus();
     }
+
 
     public void setTableLayout(GridLayout tl){
         gameTable = tl;
@@ -242,7 +257,31 @@ public final class Game extends AbstractBaseActivity {
             comboArray.add(cell);
         }
     }
-    // Mettre a jour du score
+
+    // Double check the MatchFoundArray is valid
+    private boolean doubleCheckColor(List<Cell> matchFoundArray) {
+        HashMap<Integer, ArrayList<Cell>> colorArray = new HashMap<>();
+        for(Cell cell : matchFoundArray){
+            int colorTemp = cell.getCurrentTextColor();
+            if(colorArray.containsKey(colorTemp)){
+                colorArray.get(colorTemp).add(cell);
+                colorArray.put(colorTemp, colorArray.get(colorTemp));
+            } else {
+                ArrayList<Cell> temp = new ArrayList<>();
+                temp.add(cell);
+                colorArray.put(colorTemp, temp);
+            }
+        }
+        for (HashMap.Entry<Integer,ArrayList<Cell>> hm : colorArray.entrySet()){
+            if(hm.getValue().size()>=3){
+                for(Cell cell : hm.getValue()){
+                    addCellToRemoveArray(cell);
+                }
+            }
+        }
+        return cellToRemoveArray.size() >= 3 ? true : false;
+    }
+    // Update the score
     private void updateScore(boolean comboCheck){
         int nbMatches = matchFoundArray.size();
         if(comboCheck){
@@ -358,8 +397,6 @@ public final class Game extends AbstractBaseActivity {
         cell2.setCellIsVerified(true);
         addMatchFoundArrays(cell1);
         addMatchFoundArrays(cell2);
-        addCellToRemoveArray(cell1);
-        addCellToRemoveArray(cell2);
     }
 
 
